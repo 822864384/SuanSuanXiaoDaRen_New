@@ -1,0 +1,185 @@
+/**
+ * 语文识字 · 字表（60 字 / 6 主题）
+ *
+ * 口径：4~5 岁（依据《3-6 岁儿童学习与发展指南》语言领域——4~5 岁**没有识字量指标**，
+ * 且明确反对机械记忆和强化训练式的过早识字。所以只做"字 ↔ 图 ↔ 音"的联结与兴趣，
+ * 不做拼音、不做笔顺、不做书写。方案见 `三科课程内容方案-v1.md`。
+ *
+ * 选字原则（改字表时请守住这四条，否则 4 岁认不动）：
+ * 1. 独体字优先，笔画 ≤ 8 画（`你/他` 这种左右结构七八画的，4 岁认形很吃力）
+ * 2. 生活高频：身体、家人、吃的、动物、自然、动作
+ * 3. 每个字都能配一个 emoji（题面靠图，不靠插图资源，包体零增长）
+ * 4. `word` 必须是孩子听过的 2 字词——读题用"苹果的果"，不用孤立的字音，
+ *    因为孤立字音容易被多音字和 TTS 断句带偏
+ *
+ * `near` = 形近字，只用于听音找字/找字的干扰项。可以是本表外的字（形近优先于陌生），
+ * 孩子在识字量少时干扰会自然弱化，学多了才真正生效——这是可接受的渐进难度，不是 bug。
+ */
+
+export class CnWord {
+	/** 字 */
+	ch: string = ''
+	/** 组词（读题说"苹果的果"） */
+	word: string = ''
+	/** 题面图 */
+	emoji: string = ''
+	/** 主题 T1~T6 */
+	theme: string = ''
+	/** 形近字（干扰项用，可为空数组） */
+	near: Array<string> = []
+
+	constructor(ch: string, word: string, emoji: string, theme: string, near: Array<string>) {
+		this.ch = ch
+		this.word = word
+		this.emoji = emoji
+		this.theme = theme
+		this.near = near
+	}
+}
+
+/** 全部 60 字（顺序即教学顺序：主题内按认知难度从易到难） */
+export const CN_WORDS: Array<CnWord> = [
+	/* T1 我自己：身体 + 方位 + 「我」 */
+	new CnWord('人', '大人', '👤', 'T1', ['入', '八']),
+	new CnWord('口', '开口', '👄', 'T1', ['日', '中']),
+	new CnWord('手', '小手', '✋', 'T1', ['毛', '牛']),
+	new CnWord('头', '点头', '😀', 'T1', ['买', '实']),
+	new CnWord('耳', '耳朵', '👂', 'T1', ['目', '取']),
+	new CnWord('大', '大象', '🐘', 'T1', ['太', '犬']),
+	new CnWord('小', '小蚂蚁', '🐜', 'T1', ['少', '水']),
+	new CnWord('上', '上面', '⬆️', 'T1', ['下', '土']),
+	new CnWord('下', '下面', '⬇️', 'T1', ['上', '卜']),
+	new CnWord('我', '我们', '🙋', 'T1', ['找', '成']),
+
+	/* T2 我的家：家里的物 + 家人称谓 */
+	new CnWord('家', '回家', '🏠', 'T2', ['安', '宝']),
+	new CnWord('门', '开门', '🚪', 'T2', ['们', '间']),
+	new CnWord('床', '小床', '🛏', 'T2', []),
+	new CnWord('灯', '台灯', '💡', 'T2', ['打', '丁']),
+	new CnWord('爸', '爸爸', '👨', 'T2', ['巴', '把']),
+	new CnWord('妈', '妈妈', '👩', 'T2', ['马', '吗']),
+	new CnWord('爷', '爷爷', '👴', 'T2', ['父', '节']),
+	new CnWord('奶', '奶奶', '👵', 'T2', ['乃', '仍']),
+	new CnWord('哥', '哥哥', '👦', 'T2', ['歌', '可']),
+	new CnWord('姐', '姐姐', '👧', 'T2', ['且', '组']),
+
+	/* T3 吃的：一日三餐 */
+	new CnWord('米', '大米', '🌾', 'T3', ['来', '半']),
+	new CnWord('饭', '吃饭', '🍚', 'T3', ['反', '板']),
+	new CnWord('水', '喝水', '💧', 'T3', ['永', '冰']),
+	new CnWord('果', '水果', '🍎', 'T3', ['课', '棵']),
+	new CnWord('菜', '蔬菜', '🥕', 'T3', ['采', '彩']),
+	new CnWord('肉', '牛肉', '🍖', 'T3', ['内', '两']),
+	new CnWord('蛋', '鸡蛋', '🥚', 'T3', ['虫', '定']),
+	new CnWord('鱼', '小鱼', '🐟', 'T3', ['田', '龟']),
+	new CnWord('甜', '甜甜', '🍬', 'T3', ['话', '舌']),
+	new CnWord('汤', '热汤', '🍲', 'T3', ['场', '杨']),
+
+	/* T4 动物：全是象形字，字源最好讲 */
+	new CnWord('猫', '小猫', '🐱', 'T4', ['苗', '描']),
+	new CnWord('狗', '小狗', '🐶', 'T4', ['句', '枸']),
+	new CnWord('鸡', '小鸡', '🐔', 'T4', ['鸟', '鸭']),
+	new CnWord('鸭', '小鸭', '🦆', 'T4', ['鸡', '鸟']),
+	new CnWord('羊', '小羊', '🐑', 'T4', ['半', '丰']),
+	new CnWord('牛', '小牛', '🐮', 'T4', ['午', '生']),
+	new CnWord('马', '小马', '🐴', 'T4', ['妈', '鸟']),
+	new CnWord('鸟', '小鸟', '🐦', 'T4', ['马', '鸡']),
+	new CnWord('虫', '小虫', '🐛', 'T4', ['中', '蛋']),
+	new CnWord('兔', '小兔', '🐰', 'T4', ['免', '晚']),
+
+	/* T5 自然：象形字集中营，看图就能猜 */
+	new CnWord('日', '日光', '☀️', 'T5', ['目', '白']),
+	new CnWord('月', '月亮', '🌙', 'T5', ['用', '肉']),
+	new CnWord('山', '大山', '⛰', 'T5', ['出', '击']),
+	new CnWord('云', '白云', '☁️', 'T5', ['去', '会']),
+	new CnWord('雨', '下雨', '🌧', 'T5', ['两', '再']),
+	new CnWord('花', '小花', '🌸', 'T5', ['化', '草']),
+	new CnWord('草', '小草', '🌿', 'T5', ['早', '花']),
+	new CnWord('树', '大树', '🌳', 'T5', ['村', '对']),
+	new CnWord('火', '大火', '🔥', 'T5', ['灭', '大']),
+	new CnWord('河', '小河', '🌊', 'T5', ['可', '和']),
+
+	/* T6 动作：能直接连成句子（"我看小鸟飞"） */
+	new CnWord('车', '汽车', '🚗', 'T6', ['东', '牛']),
+	new CnWord('船', '小船', '🚢', 'T6', ['舟', '般']),
+	new CnWord('飞', '飞机', '✈️', 'T6', ['风', '气']),
+	new CnWord('走', '走路', '🚶', 'T6', ['足', '是']),
+	new CnWord('跑', '跑步', '🏃', 'T6', ['抱', '炮']),
+	new CnWord('看', '看看', '👀', 'T6', ['着', '手']),
+	new CnWord('听', '听音乐', '🎧', 'T6', ['厅', '斤']),
+	new CnWord('说', '说话', '💬', 'T6', ['话', '语']),
+	new CnWord('开', '打开', '🔓', 'T6', ['井', '并']),
+	new CnWord('关', '关上', '🔒', 'T6', ['天', '送'])
+]
+
+/** 主题 → 中文名（单元标题用） */
+export function cnThemeName(theme: string): string {
+	if (theme == 'T1') return '我自己'
+	if (theme == 'T2') return '我的家'
+	if (theme == 'T3') return '吃的'
+	if (theme == 'T4') return '动物'
+	if (theme == 'T5') return '自然'
+	return '动作'
+}
+
+/** 单元号（1~6）→ 主题 key */
+export function cnThemeOfUnit(unit: number): string {
+	const i: number = unit < 1 ? 1 : (unit > 6 ? 6 : unit)
+	return 'T' + i.toString()
+}
+
+/** 某单元的全部字（10 个） */
+export function cnCharsOfUnit(unit: number): Array<string> {
+	const theme: string = cnThemeOfUnit(unit)
+	const out: Array<string> = []
+	for (let i = 0; i < CN_WORDS.length; i++) {
+		if (CN_WORDS[i].theme == theme) out.push(CN_WORDS[i].ch)
+	}
+	return out
+}
+
+/** 按字取记录（找不到返回空对象，调用方需判空：ch.length == 0） */
+export function cnWordOf(ch: string): CnWord {
+	for (let i = 0; i < CN_WORDS.length; i++) {
+		if (CN_WORDS[i].ch == ch) return CN_WORDS[i]
+	}
+	return new CnWord('', '', '', '', [])
+}
+
+/**
+ * 第 5 课用的"字卡小故事"（6 段 × 3 句）
+ *
+ * 关键约束：每句最多 1 个"大人念"的字（用 `|` 隔开标出来，页面上画成灰字）。
+ * 为什么允许灰字：只用 10 个实词根本组不出句子（缺"有/的/在/了"这些虚词），
+ * 洪恩的"子集绘本"能全用学过的字，是因为它一本书对应的是几百字的积累量。
+ * 这里 10 个字配 1 个灰字，是 4 岁能读下去的最小可行结构。
+ */
+export class CnStory {
+	/** 单元号 */
+	unit: number = 1
+	/** 3 句话，`|` 后的一段是"大人念"的字 */
+	sentences: Array<string> = []
+
+	constructor(unit: number, sentences: Array<string>) {
+		this.unit = unit
+		this.sentences = sentences
+	}
+}
+
+export const CN_STORIES: Array<CnStory> = [
+	new CnStory(1, ['我|(有)|大|手', '我|(有)|小|手', '大|手|小|手']),
+	new CnStory(2, ['我|家|(有)|门', '爸|妈|(回)|家', '我|(的)|小|床']),
+	new CnStory(3, ['我|(吃)|米|饭', '鱼|(和)|肉', '汤|甜|甜']),
+	new CnStory(4, ['猫|(和)|狗', '小|鸡|小|鸭', '小|鸟|(飞)']),
+	new CnStory(5, ['日|月|山|河', '花|草|树', '下|雨|(了)']),
+	new CnStory(6, ['我|看|鸟|飞', '我|跑|我|走', '开|门|关|门'])
+]
+
+/** 某单元的故事（找不到返回空数组） */
+export function cnStoryOf(unit: number): Array<string> {
+	const u: number = unit < 1 ? 1 : (unit > 6 ? 6 : unit)
+	for (let i = 0; i < CN_STORIES.length; i++) {
+		if (CN_STORIES[i].unit == u) return CN_STORIES[i].sentences
+	}
+	return []
+}

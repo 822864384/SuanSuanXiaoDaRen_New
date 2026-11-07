@@ -1,0 +1,44 @@
+/**
+ * 算算小达人 · 错题重练的跨页面状态
+ *
+ * 为什么单独一个单例（而不是复用 pages/study 的 mode）：
+ * 数学页与语文英语页都要知道"这次进来是正常闯关，还是错题重练"，
+ * 这个状态要跨三个页面（错题库 → 答题 → 结算）活着，页面参数又不好取，
+ * 所以和 `common/session.uts` 一样用模块级单例。
+ */
+
+let drilling: boolean = false
+let drillSubject: string = 'math'
+let drillTotalCount: number = 0
+
+/** 从错题库点「开始重练」时调用 */
+export function startDrill(mode: string): void {
+	drilling = true
+	drillSubject = mode
+	drillTotalCount = 0
+}
+
+/** 离开重练（回首页 / 回错题库 / 结算后退出）时调用 */
+export function stopDrill(): void {
+	drilling = false
+	drillTotalCount = 0
+}
+
+/** 当前是不是在重练错题 */
+export function inDrill(): boolean {
+	return drilling
+}
+
+/** 正在重练哪一科 */
+export function drillMode(): string {
+	return drillSubject
+}
+
+/** 记下这一轮实际出了几道（结算页写"本次重练 N 道"） */
+export function setDrillTotal(n: number): void {
+	drillTotalCount = n
+}
+
+export function drillTotal(): number {
+	return drillTotalCount
+}

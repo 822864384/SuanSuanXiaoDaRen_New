@@ -1,0 +1,671 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- ========== 卡片阶段：一张一屏，无计时、无超时 ========== -->
+			<view v-if="stage == 'card'" class="play-wrap">
+
+				<view class="play-top">
+					<view class="chip" @click="goBack">
+						<text class="chip-text">← 心情小课堂</text>
+					</view>
+					<view class="chip">
+						<text class="chip-text">{{ theme.emoji }} {{ theme.title }}</text>
+					</view>
+					<view class="chip">
+						<text class="chip-gold">{{ levelName }}</text>
+					</view>
+					<view class="chip">
+						<text class="chip-dim">{{ idx }} / {{ total }}</text>
+					</view>
+					<view v-if="speaking" class="chip">
+						<text class="say-on">🔊 正在说</text>
+					</view>
+					<view class="top-space"></view>
+					<view class="chip" @click="repeatCard">
+						<text class="chip-text">{{ sayLabel }}</text>
+					</view>
+				</view>
+
+				<view class="q-area">
+					<text class="q-face">{{ card.face }}</text>
+					<text class="q-scene">{{ card.scene }}</text>
+					<text class="q-ask">{{ card.ask }}</text>
+				</view>
+
+				<view class="pad">
+					<view v-for="(o, i) in card.options" :key="o" class="ans"
+						:class="ansClassOf(o) + ' ' + (readIdx == i ? 'ans-read' : '')" @click="pick(o)">
+						<text class="ans-text" :class="readIdx == i ? 'ans-text-read' : ''">{{ o }}</text>
+					</view>
+				</view>
+
+				<!-- 反馈浮层：没有"错"这一档；无论选哪个，都要给出"可以这样做" -->
+				<view v-if="feedbackShow" class="feedback">
+					<text class="fb-face">{{ feedbackFace }}</text>
+					<text class="fb-title">{{ feedbackTitle }}</text>
+					<text class="fb-why">{{ feedbackWhy }}</text>
+
+					<view class="fb-solve">
+						<view class="fb-solve-head">
+							<text class="fb-solve-label">{{ solveTitle }}</text>
+						</view>
+						<text class="fb-solve-text">{{ card.solve }}</text>
+					</view>
+				</view>
+
+			</view>
+
+			<!-- ========== 结算阶段：不评星，只说你做了什么 + 选下一关 ========== -->
+			<view v-else-if="stage == 'summary'" class="sm-wrap">
+				<text class="sm-face">{{ smFace }}</text>
+				<text class="sm-title">{{ smTitle }}</text>
+				<text class="sm-sub">{{ smLevelLine }}</text>
+				<text class="sm-text">{{ summary }}</text>
+				<view class="sm-btns">
+					<view class="btn sm-btn btn-gold" @click="nextLevel">
+						<text class="btn-gold-text">{{ nextLabel }}</text>
+					</view>
+					<view class="btn sm-btn" @click="replayLevel">
+						<text class="btn-text">再玩这一关</text>
+					</view>
+					<view class="btn sm-btn" @click="goBack">
+						<text class="btn-text">回心情小课堂</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		judgeMind, mindSummary, themeOf, mindPraise, mindSoftOpen, mindSolveTitle,
+		mindLevelCards, mindLevelCount, mindLevelName, clampMindLevel, nextMindLevel,
+		VERDICT_BEST, VERDICT_OK, VERDICT_RETRY, MindCard, MindTheme
+	} from '@/common/mind.uts'
+	import { getActiveTheme, getActiveLevel, setActiveLevel } from '@/common/mind-session.uts'
+	import {
+		getMindDone, addMindDone, addCandy, getCurrentProfile, getMindLevel, setMindLevel
+	} from '@/common/store.uts'
+	import {
+		speak, stopSpeak, cleanForSpeech, mindSpeech, mindRepeatSpeech, mindSolveSpeech,
+		optionSpeech, pickAskSpeech, estimateSpeakMs, isTtsAvailable, unlockTts,
+		releaseSpeech
+	} from '@/common/tts.uts'
+	import { saySteps, stopSteps } from '@/common/say-queue.uts'
+	import { playAsk, playCorrect, playSoft, releaseSfx } from '@/common/sfx.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** 平台能否真朗读：H5 能（浏览器 TTS），App 真机需自定义基座 */
+	const ttsReady: boolean = isTtsAvailable()
+	const sayLabel: string = ttsReady ? '🔊 再看一遍' : '🔈 朗读待接入'
+
+	let themeId: string = 'P1'
+	const theme = ref<MindTheme>(themeOf('P1'))
+	const name = ref<string>('小朋友')
+	const solveTitle: string = mindSolveTitle()
+
+	/** 本轮卡片：一关只在 onLoad / 换关时取一次，保证不重复 */
+	let cards: Array<MindCard> = []
+
+	const stage = ref<string>('loading')
+	const card = ref<MindCard>(new MindCard())
+	const idx = ref<number>(1)
+	const total = ref<number>(0)
+
+	/** 关卡 */
+	const level = ref<number>(1)
+	const levelMax = ref<number>(1)
+	const levelName = ref<string>('第 1 关')
+	const nextLabel = ref<string>('下一关 →')
+
+	const verdictKey = ref<string>('')
+	const lastVerdict = ref<string>('')
+	let bestCount: number = 0
+
+	const speaking = ref<boolean>(false)
+	/**
+	 * 正在朗读的选项下标（-1 = 没在读选项）
+	 *
+	 * 孩子不识字：听到"第二个，收进箱子"时，眼睛得在屏幕上找到第二格。
+	 * 高亮和朗读必须由同一个下标驱动，不能各算各的。
+	 */
+	const readIdx = ref<number>(-1)
+	const summary = ref<string>('')
+
+	/** 结算页文案（都在 finish 里一次算好，模板只绑字段） */
+	const smFace = ref<string>('🌱')
+	const smTitle = ref<string>('做完了')
+	const smLevelLine = ref<string>('')
+
+	const feedbackShow = ref<boolean>(false)
+	const feedbackFace = ref<string>('👀')
+	const feedbackTitle = ref<string>('')
+	const feedbackWhy = ref<string>('')
+
+	let advanceId: number = -1
+	let sayId: number = -1
+	let sayEndId: number = -1
+
+	onLoad(() => {
+		name.value = getCurrentProfile().name
+		themeId = getActiveTheme()
+		theme.value = themeOf(themeId)
+		levelMax.value = mindLevelCount(themeId)
+		// 深链/刷新进来时单例可能是默认值：以本机存的关卡为准，再夹到合法范围
+		const want: number = Math.max(getActiveLevel(), getMindLevel(themeId))
+		level.value = clampMindLevel(themeId, want)
+		if (level.value < 1) level.value = 1
+		startLevel()
+	})
+
+	onUnload(() => {
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	/* ---------------- 朗读调度（与数学页同一套） ---------------- */
+
+	/**
+	 * 选完之后"解读"的语速倍率
+	 *
+	 * 题干和选项要慢（孩子在认画面、找那一格），解读是他已经选完了、
+	 * 只想知道"为什么/接下来怎么办"，再用读题的慢速会让人等得发慌。
+	 * 1.1 倍听感上仍是"大姐姐慢慢说"，但比读题利索一档。
+	 */
+	const SOLVE_SPEED: number = 1.1
+
+	/** 选项之间的留白：够孩子把视线挪到下一格就行，太长会像卡住 */
+	const OPTION_GAP_MS: number = 300
+
+	function clearSay() {
+		stopSteps()
+		readIdx.value = -1
+		if (sayId >= 0) {
+			clearTimeout(sayId)
+			sayId = -1
+		}
+		if (sayEndId >= 0) {
+			clearTimeout(sayEndId)
+			sayEndId = -1
+		}
+		speaking.value = false
+	}
+
+	function say(text: string, delay: number, speed: number = 1.0) {
+		if (!ttsReady) return
+		const clean: string = cleanForSpeech(text)
+		if (clean.length == 0) return
+		if (sayId >= 0) clearTimeout(sayId)
+		sayId = setTimeout(() => {
+			sayId = -1
+			const started: boolean = speak(clean, 'zh-CN', speed)
+			speaking.value = started
+			if (!started) return
+			if (sayEndId >= 0) clearTimeout(sayEndId)
+			sayEndId = setTimeout(() => {
+				speaking.value = false
+				sayEndId = -1
+			}, estimateSpeakMs(clean, speed))
+		}, delay)
+	}
+
+	/**
+	 * 读一张卡：题干 → 选项逐条（同步高亮）→ 把选择交回孩子
+	 *
+	 * 顺序不能改成"先读选项再读题"：这题问的是"这时候可以怎么做"，
+	 * 先听情境才知道选项在回答什么。
+	 */
+	function readCard(lead: number, again: boolean = false) {
+		if (!ttsReady) return
+		const opts: Array<string> = card.value.options
+		const list: Array<string> = []
+		// 第 0 条是题面；第 1~n 条是选项；最后一条是收尾问句
+		list.push(again
+			? mindRepeatSpeech(card.value.scene, card.value.ask)
+			: mindSpeech(name.value, card.value.scene, card.value.ask))
+		for (let i = 0; i < opts.length; i++) {
+			list.push(optionSpeech(i, opts[i]))
+		}
+		list.push(pickAskSpeech())
+		const n: number = opts.length
+		saySteps(list, 'zh-CN', lead, OPTION_GAP_MS, 1.0, (i: number): void => {
+			// i=0 是题面，读完题面才开始亮第一格
+			readIdx.value = (i >= 1 && i <= n) ? i - 1 : -1
+			speaking.value = true
+		}, (): void => {
+			readIdx.value = -1
+			speaking.value = false
+		})
+	}
+
+	function clearAdvance() {
+		if (advanceId >= 0) {
+			clearTimeout(advanceId)
+			advanceId = -1
+		}
+	}
+
+	/**
+	 * 停留多久再翻到下一张。
+	 * 不写死时间：解决办法有长有短，读不完就翻页等于没读。
+	 * 所以取「朗读估时 + 700ms」与 base 的较大值；不能朗读时用 base。
+	 * @param speed 与 say() 的语速倍率一致，念得快停留也跟着短
+	 */
+	function holdMs(text: string, base: number, speed: number = 1.0): number {
+		if (!ttsReady) return base
+		const n: number = estimateSpeakMs(cleanForSpeech(text), speed)
+		const want: number = n + 700
+		return want > base ? want : base
+	}
+
+	/* ---------------- 一关流程 ---------------- */
+
+	function startLevel() {
+		levelName.value = mindLevelName(level.value)
+		const last: boolean = level.value >= levelMax.value
+		nextLabel.value = last ? '从第 1 关再来 →' : '下一关 →'
+
+		cards = mindLevelCards(themeId, level.value)
+		if (cards.length == 0) {
+			uni.showToast({ title: '这个主题还没有卡片', icon: 'none' })
+			safeBack()
+			return
+		}
+		idx.value = 1
+		total.value = cards.length
+		bestCount = 0
+		card.value = cards[0]
+		stage.value = 'card'
+		askCard()
+	}
+
+	function askCard() {
+		verdictKey.value = ''
+		lastVerdict.value = ''
+		feedbackShow.value = false
+		clearSay()
+		stopSpeak()
+		playAsk()
+		// 读题模板：「豆豆，我们来看看这张图。{情景}。{提问}」，接着逐条读选项
+		readCard(420)
+	}
+
+	function pick(o: string) {
+		if (verdictKey.value.length > 0) return
+		unlockTts()
+		// 孩子不等选项读完就点了：立刻停掉还没念的选项，否则声音会跟反馈打架
+		stopSteps()
+		stopSpeak()
+		readIdx.value = -1
+		speaking.value = false
+		const v: string = judgeMind(card.value, o)
+		verdictKey.value = o
+		lastVerdict.value = v
+		// 看过就算完成，统计口径不变（家长报告里的"看过 N 个情景"）
+		addMindDone(card.value.id)
+
+		// 不管选哪个，都要把"可以这样做"读出来——这是本模块的核心
+		const guide: string = mindSolveSpeech(card.value.why, card.value.solve)
+
+		if (v == VERDICT_BEST) {
+			bestCount++
+			// 心情课不评星，只给一颗糖喂宠物（正向反馈，但不是评分）
+			addCandy(1)
+			playCorrect()
+			showFeedback('🎉', mindPraise(true), card.value.why)
+			say(guide, 620, SOLVE_SPEED)
+			advanceId = setTimeout(() => {
+				nextCard()
+			}, holdMs(guide, 2800, SOLVE_SPEED))
+			return
+		}
+
+		if (v == VERDICT_OK) {
+			// 做法题的次优选择：照样给糖、照样给办法，只换一句开场
+			addCandy(1)
+			playCorrect()
+			showFeedback('👌', '这样也可以', card.value.why)
+			say(guide, 620, SOLVE_SPEED)
+			advanceId = setTimeout(() => {
+				nextCard()
+			}, holdMs(guide, 3000, SOLVE_SPEED))
+			return
+		}
+
+		// 再看看（只出现在认识情绪）：不给分数、不记、不进统计，只给线索 + 办法
+		if (v == VERDICT_RETRY) {
+			playSoft()
+			showFeedback('🔍', mindSoftOpen(), card.value.comfort)
+			const soft: string = mindSoftOpen() + '。' + card.value.comfort + '。' + guide
+			say(soft, 620, SOLVE_SPEED)
+			advanceId = setTimeout(() => {
+				nextCard()
+			}, holdMs(soft, 3200, SOLVE_SPEED))
+		}
+	}
+
+	function showFeedback(face: string, title: string, why: string) {
+		feedbackFace.value = face
+		feedbackTitle.value = title
+		feedbackWhy.value = why
+		feedbackShow.value = true
+	}
+
+	/**
+	 * 选项配色：
+	 *  - 首选做法一律金色（不管孩子选没选它）——选完之后要让他看见"哪个管用"
+	 *  - 孩子点的那个用浅蓝（那是他自己的选择，值得被看见）
+	 *  - 其余变淡
+	 * 没有红色：情绪模块不用红/绿区分对错。
+	 */
+	function ansClassOf(o: string): string {
+		if (verdictKey.value.length == 0) return ''
+		if (o == card.value.answer) return 'ans-best'
+		if (o == verdictKey.value) return 'ans-pick'
+		return 'ans-dim'
+	}
+
+	function nextCard() {
+		clearAdvance()
+		if (idx.value >= total.value) {
+			finish()
+			return
+		}
+		idx.value = idx.value + 1
+		card.value = cards[idx.value - 1]
+		askCard()
+	}
+
+	function finish() {
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		const last: boolean = level.value >= levelMax.value
+		summary.value = mindSummary(themeId, level.value, total.value, bestCount)
+		smFace.value = last ? '🏅' : '🌱'
+		smTitle.value = last ? '这一轮都玩过了' : '这一关做完了'
+		smLevelLine.value = last
+			? '第 ' + level.value.toString() + ' 关 / 共 ' + levelMax.value.toString() + ' 关'
+			: '第 ' + level.value.toString() + ' 关 / 共 ' + levelMax.value.toString() + ' 关 · 可以选下一关'
+		// 进度推进：通关后把下一关记到本机，回大厅时显示的就是新关号
+		if (!last) setMindLevel(themeId, level.value + 1)
+		stage.value = 'summary'
+		say(smTitle.value + '。' + summary.value, 400)
+	}
+
+	/** 下一关（最后一关则回到第 1 关，让孩子能一直玩下去） */
+	function nextLevel() {
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		const nx: number = nextMindLevel(themeId, level.value)
+		level.value = nx
+		setActiveLevel(nx)
+		setMindLevel(themeId, nx)
+		startLevel()
+	}
+
+	/** 再玩这一关（内容固定，适合复习） */
+	function replayLevel() {
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		startLevel()
+	}
+
+	/**
+	 * 再看一遍：题面 + 选项一起重读
+	 *
+	 * 只重读题面不够——孩子点这个按钮，八成是刚才没听清某个选项。
+	 * 重读时同样逐条高亮，和第一次听到的节奏一致。
+	 */
+	function repeatCard() {
+		stopSpeak()
+		clearSay()
+		readCard(120, true)
+	}
+
+	function goBack() {
+		// 清理包起来：任一处抛异常都会让返回不执行，用户看到的就是"点了没反应"
+		try {
+			clearAdvance()
+			clearSay()
+			stopSpeak()
+			releaseSfx()
+			releaseSpeech()
+		} catch (e) {
+			console.log('[play] 离场清理异常')
+		}
+		safeBack()
+	}
+</script>
+
+<style>
+	.play-wrap {
+		flex: 1;
+		width: 100%;
+		flex-direction: column;
+	}
+
+	.play-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.say-on {
+		color: #ffd76e;
+		font-size: 12rpx;
+	}
+
+	.q-area {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+		padding-left: 31rpx;
+		padding-right: 31rpx;
+	}
+
+	.q-face {
+		font-size: 64rpx;
+	}
+
+	.q-scene {
+		color: #dbe4ff;
+		font-size: 20rpx;
+		line-height: 28rpx;
+		text-align: center;
+		margin-top: 10rpx;
+	}
+
+	.q-ask {
+		color: #ffd76e;
+		font-size: 22rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-top: 12rpx;
+	}
+
+	.pad {
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 18rpx;
+	}
+
+	.ans {
+		width: 200rpx;
+		min-height: 58rpx;
+		margin-left: 6rpx;
+		margin-right: 6rpx;
+		padding-left: 8rpx;
+		padding-right: 8rpx;
+		padding-top: 6rpx;
+		padding-bottom: 6rpx;
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.1);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.ans-best {
+		border-color: #ffd76e;
+		background-color: rgba(255, 215, 110, 0.2);
+	}
+
+	.ans-pick {
+		border-color: #9fb4ff;
+		background-color: rgba(159, 180, 255, 0.18);
+	}
+
+	.ans-dim {
+		opacity: 0.45;
+	}
+
+	/* 正在朗读的那一格：读到哪儿亮到哪儿（孩子不识字，全靠这块亮光对上号） */
+	.ans-read {
+		border-color: #3ecf8e;
+		background-color: rgba(62, 207, 142, 0.26);
+		transform: scale(1.05);
+	}
+
+	.ans-text {
+		color: #ffffff;
+		font-size: 15rpx;
+		line-height: 21rpx;
+		text-align: center;
+	}
+
+	.ans-text-read {
+		color: #eafff4;
+		font-weight: bold;
+	}
+
+	/* ---------- 反馈浮层（解释 + 可以这样做） ---------- */
+	.feedback {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(5, 7, 15, 0.88);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.fb-face {
+		font-size: 56rpx;
+	}
+
+	.fb-title {
+		color: #ffd76e;
+		font-size: 22rpx;
+		font-weight: bold;
+		margin-top: 8rpx;
+	}
+
+	.fb-why {
+		color: #dbe4ff;
+		font-size: 15rpx;
+		line-height: 23rpx;
+		text-align: center;
+		width: 620rpx;
+		margin-top: 8rpx;
+	}
+
+	/* "可以这样做"是整页最重要的一块：给它一个独立的框，和上面的解释分开 */
+	.fb-solve {
+		width: 620rpx;
+		margin-top: 14rpx;
+		padding-left: 14rpx;
+		padding-right: 14rpx;
+		padding-top: 10rpx;
+		padding-bottom: 10rpx;
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		border-color: rgba(62, 207, 142, 0.55);
+		background-color: rgba(62, 207, 142, 0.12);
+		align-items: center;
+	}
+
+	.fb-solve-head {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.fb-solve-label {
+		color: #3ecf8e;
+		font-size: 13rpx;
+		font-weight: bold;
+	}
+
+	.fb-solve-text {
+		color: #ffffff;
+		font-size: 15rpx;
+		line-height: 23rpx;
+		text-align: center;
+		margin-top: 5rpx;
+	}
+
+	/* ---------- 结算 ---------- */
+	.sm-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.sm-face {
+		font-size: 56rpx;
+	}
+
+	.sm-title {
+		color: #ffd76e;
+		font-size: 22rpx;
+		font-weight: bold;
+		margin-top: 6rpx;
+	}
+
+	.sm-sub {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		margin-top: 4rpx;
+	}
+
+	.sm-text {
+		color: #dbe4ff;
+		font-size: 15rpx;
+		line-height: 24rpx;
+		text-align: center;
+		width: 600rpx;
+		margin-top: 10rpx;
+	}
+
+	.sm-btns {
+		flex-direction: row;
+		margin-top: 16rpx;
+	}
+
+	.sm-btn {
+		margin-left: 6rpx;
+		margin-right: 6rpx;
+	}
+</style>

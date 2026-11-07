@@ -1,0 +1,25 @@
+/**
+ * 语音朗读插件 · Web 占位实现
+ *
+ * Web 端的朗读由 common/tts.uts 直接用浏览器 speechSynthesis 完成，
+ * 这里只保证插件在 Web 平台可被解析（不会真的被调用）。
+ * 签名必须与 app-android 保持一致，否则跨端类型检查会报错。
+ */
+
+export function ttsSpeak(text: string, rate: number, pitch: number, lang: string): boolean {
+  return false
+}
+
+export function ttsStop(): void {}
+
+export function ttsWarmup(): void {}
+
+export function ttsIsReady(): boolean {
+  return false
+}
+
+export function ttsIsFailed(): boolean {
+  return false
+}
+
+export function ttsRelease(): void {}

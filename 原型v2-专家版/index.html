@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>算算小达人 · 电视端交互原型 v2</title>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<div id="stage">
+  <div class="stars-bg" aria-hidden="true"></div>
+
+  <!-- P1 选人页 -->
+  <section class="page active" id="pg-profile" aria-label="选人页">
+    <h1 class="pg-title">🐾 算算小达人 · 谁来学习呀？</h1>
+    <p class="pg-sub">按 ←→ 选择，按 OK(Enter) 进入；鼠标点击也可以</p>
+    <div class="profile-row">
+      <div class="profile-card fx" data-act="enter-home" role="button" tabindex="0">
+        <div class="face">🐼</div><div class="name">糖糖</div><div class="lvl">⭐ 128 · Lv.3</div></div>
+      <div class="profile-card fx" data-act="enter-home" role="button" tabindex="0">
+        <div class="face">🐰</div><div class="name">跳跳</div><div class="lvl">⭐ 56 · Lv.2</div></div>
+      <div class="profile-card fx dim" data-act="enter-home" role="button" tabindex="0">
+        <div class="face">➕</div><div class="name">新建档案</div><div class="lvl">最多 3 个（mock）</div></div>
+    </div>
+    <div class="foot-tip">原型提示：档案进度为 mock 数据；真实 App 中每档案独立进度</div>
+  </section>
+
+  <!-- P2 学科首页 -->
+  <section class="page" id="pg-home" aria-label="学科首页">
+    <div class="topbar">
+      <div class="chip">🐼 糖糖</div>
+      <div class="chip">⭐ <span id="total-stars">128</span></div>
+      <div class="chip">🍬 <span id="candy">6</span></div>
+      <div class="spacer"></div>
+      <div class="chip fx" data-act="parent-gate" role="button" tabindex="0">🔐 家长门</div>
+    </div>
+    <div class="subject-row">
+      <div class="subject-card c-math fx" data-act="go-math" role="button" tabindex="0">
+        <div class="icon">🧮</div><div class="t">数学思维</div><div class="s">加减 · 等分 · 数数 · 比多少 · 找规律</div><div class="st">★★★☆☆</div></div>
+      <div class="subject-card c-cn fx" data-act="go-cn" role="button" tabindex="0">
+        <div class="icon">📖</div><div class="t">语文启蒙</div><div class="s">识字 · 拼音 · 古诗</div><div class="st">★★☆☆☆</div></div>
+      <div class="subject-card c-en fx" data-act="go-en" role="button" tabindex="0">
+        <div class="icon">🔤</div><div class="t">英语单词</div><div class="s">看图说英语</div><div class="st">★★★★☆</div></div>
+      <div class="subject-card c-so fx" data-act="go-so" role="button" tabindex="0">
+        <div class="icon">🤝</div><div class="t">交往乐园</div><div class="s">情景动画小剧场</div><div class="st">★★★★★</div></div>
+    </div>
+    <div class="pet-bar">
+      <div class="pet" id="pet">🦕</div>
+      <div class="info">小恐龙「糖豆」Lv.3 · 答对喂糖，帮我长大吧！</div>
+      <div class="chip fx" data-act="feed" role="button" tabindex="0" style="font-size:28px">🍬 投喂</div>
+    </div>
+    <div class="foot-tip">遥控器模拟：←→↑↓ 移动焦点 · OK(Enter) 确认 · 返回键(Esc/Backspace) 退出模块</div>
+  </section>
+
+  <!-- P3 数学答题 -->
+  <section class="page" id="pg-math" aria-label="数学答题页">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      <div class="chip">🧮 第 <span id="m-idx">1</span>/5 题</div>
+      <div class="spacer"></div>
+      <div class="combo-chip" id="m-combo">🔥 连击 ×<span id="m-combo-n">0</span></div>
+      <div class="score-chip">⭐ <span id="m-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div class="q-question" id="m-q">3 + 5 = <span class="blank">□</span></div>
+      <div class="q-hint"><span class="mic-dot" id="m-micdot"></span><span id="m-hint">🔊 自动读题中… 听好后说出或按下答案</span></div>
+      <div class="timer-bar"><div class="timer-fill" id="m-timer"></div></div>
+    </div>
+    <div class="ans-pad" id="m-pad"></div>
+    <div class="foot-tip">6 种思维题型：加减 · 等分 · 数数 · 比多少 · 找规律 · 自动读题，不识字也能玩</div>
+  </section>
+
+  <!-- P4 语文 -->
+  <section class="page" id="pg-cn" aria-label="语文看图识字页">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      <div class="chip">📖 看图识字 · 第 <span id="c-idx">1</span>/5 个</div>
+      <div class="spacer"></div>
+      <div class="score-chip">⭐ <span id="c-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div class="big-emoji" id="c-emoji">🍎</div>
+      <div class="q-question q-word"><span id="c-word">？</span>
+        <span class="pinyin" id="c-pinyin"></span></div>
+      <div class="q-hint"><span class="mic-dot"></span>🔊 先听发音，再选出它（不识字也能玩）</div>
+    </div>
+    <div class="ans-pad" id="c-pad"></div>
+    <div class="foot-tip">出题自动朗读 · 方向键移到选项会读出选项 · 答对后汉字放大揭晓（笔顺示意）</div>
+  </section>
+
+  <!-- P5 英语 -->
+  <section class="page" id="pg-en" aria-label="英语看图说词页">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      <div class="chip">🔤 看图说英语 · 第 <span id="e-idx">1</span>/5 个</div>
+      <div class="spacer"></div>
+      <div class="score-chip">⭐ <span id="e-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div class="big-emoji" id="e-emoji">🐱</div>
+      <div class="q-hint q-en-hint">这是……? <span class="en">What's this?</span></div>
+    </div>
+    <div class="ans-pad" id="e-pad"></div>
+    <div class="foot-tip">🔊 自动读题（中文提示+英文示范音）· 方向键听到选项再选 · 宽判定保护开口意愿 😊</div>
+  </section>
+
+  <!-- P6 交往乐园 -->
+  <section class="page" id="pg-so" aria-label="人际交往情景页">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      <div class="chip" id="so-title">🤝 情景剧场</div>
+      <div class="spacer"></div>
+      <div class="score-chip">🌟 交往之星 <span id="s-star">0</span></div>
+    </div>
+    <div class="scene" id="so-scene"><!-- 由 JS 渲染情景动画 --></div>
+    <div class="q-bubble" id="so-q"></div>
+    <div class="ans-pad" id="so-pad"></div>
+    <div class="foot-tip">🔊 情景对话自动朗读（不识字也能跟剧情）· 选错没有惩罚，会看到"另一种结果"</div>
+  </section>
+
+  <!-- P7 结算页 -->
+  <section class="page" id="pg-result" aria-label="结算页">
+    <h1 class="pg-title" id="r-title">🎉 太棒啦！</h1>
+    <div class="q-main">
+      <div class="result-stars" id="r-stars">⭐⭐⭐</div>
+      <div class="result-rows">
+        <div class="result-row" id="r-stat1"></div>
+        <div class="result-row" id="r-stat2"></div>
+        <div class="result-row praise" id="r-praise"></div>
+        <div class="result-row voice-hint" id="r-voice"></div>
+      </div>
+      <div class="result-btns">
+        <div class="btn gold fx" data-act="next-level" role="button" tabindex="0">🚀 下一关</div>
+        <div class="btn ghost fx" data-act="replay" role="button" tabindex="0">🔁 再玩一次</div>
+        <div class="btn ghost fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      </div>
+    </div>
+    <div class="foot-tip">结算页自动听语音：说「下一关」「再玩一次」「回首页」都可以（浏览器支持时）</div>
+  </section>
+
+  <!-- P8 家长报告 -->
+  <section class="page" id="pg-report" aria-label="家长报告页">
+    <h1 class="pg-title">📊 家长报告中心 · 糖糖</h1>
+    <p class="pg-sub">本周学习概况（mock 数据）</p>
+    <div class="report-wrap">
+      <div class="report-bars">
+        <div class="rbar"><div class="label"><span>🧮 数学口算</span><span>正确率 86%</span></div>
+          <div class="track"><div class="fill f-math" style="width:86%"></div></div></div>
+        <div class="rbar"><div class="label"><span>📖 语文启蒙</span><span>识字量 62 字</span></div>
+          <div class="track"><div class="fill f-cn" style="width:62%"></div></div></div>
+        <div class="rbar"><div class="label"><span>🔤 英语单词</span><span>词汇量 45 词</span></div>
+          <div class="track"><div class="fill f-en" style="width:45%"></div></div></div>
+        <div class="rbar"><div class="label"><span>🤝 人际交往</span><span>交往之星 12 颗</span></div>
+          <div class="track"><div class="fill f-so" style="width:75%"></div></div></div>
+      </div>
+      <div class="report-side">
+        <b class="side-title">📌 本周小结</b>
+        <ul class="side-list">
+          <li>数学：退位减法正确率偏低，建议加练</li>
+          <li>语文：古诗接句进步明显 📈</li>
+          <li>英语：动物主题单词已全部点亮</li>
+          <li>交往：《分享玩具》完成 2 遍</li>
+          <li>本周学习时长：1 小时 40 分</li>
+        </ul>
+        <div class="btn ghost fx" data-act="go-home" role="button" tabindex="0">🏠 回首页</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 反馈浮层 -->
+  <div class="feedback" id="feedback" aria-live="polite">
+    <div class="fb-icon" id="fb-icon">🎉</div>
+    <div class="fb-text" id="fb-text"></div>
+    <div class="fb-sub" id="fb-sub"></div>
+  </div>
+
+  <!-- 家长门 -->
+  <div class="modal-mask" id="gate-mask" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="m-t">🔐 家长验证</div>
+      <div class="m-q">12 + 7 = ?</div>
+      <input id="gate-input" type="number" inputmode="numeric" placeholder="？">
+      <div class="m-btns">
+        <div class="btn gold fx" data-act="gate-ok" role="button" tabindex="0">确认</div>
+        <div class="btn ghost fx" data-act="gate-cancel" role="button" tabindex="0">取消</div>
+      </div>
+      <div class="m-err" id="gate-err"></div>
+    </div>
+  </div>
+</div>
+<script src="prototype.js"></script>
+</body>
+</html>

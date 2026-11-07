@@ -1,0 +1,435 @@
+/**
+ * 算算小达人 · 心情小课堂（儿童心理健康教育）数据与判定引擎
+ *
+ * 定位：不教知识，教"我怎么和我的情绪相处"。
+ * 与「🤝 交往剧场」的边界：交往剧场管"对外怎么和别人相处"，本模块管"对内怎么安顿自己"。
+ *
+ * 三条硬约束（改文案前先看）：
+ *  1. 不贴标签：不出现"焦虑/内向/多动/胆小/磨蹭/懒"这类描述孩子的词。
+ *  2. 不惩罚：`one` 之外的判定永不让孩子有失败感；答错分支里不出现"错"字。
+ *  3. 不催促：本模块无计时、无超时、不评星（评星会让孩子学会"表演开心"）。
+ *
+ * 每个情景都必须带一条 `solve`：孩子选完心情之后，一定要听到"那我可以怎么办"。
+ * 只认情绪不给办法，孩子记住的是"我会生气"，不是"我知道生气时怎么做"。
+ *
+ * 结构：50 个场景族 × 20 个变体 = 1000 张卡（见 `mind-bank.uts`），
+ * 每 5 张一关，一关做完选下一关。关卡进度存在本机（`store.uts` 的 `mind.lv.P1`）。
+ */
+
+import { MIND_FAMS, MindFam, fillItem } from './mind-bank.uts'
+
+/* ---------------- 判定类型 ---------------- */
+
+/** 有唯一答案（情绪识别、做法选择） */
+export const JUDGE_ONE: string = 'one'
+/** 全是好答案（回忆自己的成功） */
+export const JUDGE_ANY: string = 'any'
+/** 有更优选项，但都接纳（表达类） */
+export const JUDGE_BETTER: string = 'better'
+
+/** 答得很好 */
+export const VERDICT_BEST: string = 'best'
+/** 答得可以（次优选项，照样给糖） */
+export const VERDICT_OK: string = 'ok'
+/** 再看看（只给提示，不判错） */
+export const VERDICT_RETRY: string = 'retry'
+
+/** 一轮几张卡：一关 5 题 */
+export const MIND_ROUND_SIZE: number = 5
+/** 一关几张卡（与 MIND_ROUND_SIZE 同值，单独命名是为了"关"的语义更清楚） */
+export const MIND_LEVEL_SIZE: number = 5
+
+/* ---------------- 数据结构 ---------------- */
+
+/** 一张卡 */
+export class MindCard {
+	/** 卡号，如 P1-1-07（主题-族序-变体序） */
+	id: string = ''
+	/** 所属主题，如 P1 */
+	theme: string = ''
+	/** 场景族键（如 P1-1）：同一族的提问与选项完全相同，关卡排布要靠它打散 */
+	famKey: string = ''
+	/** 这张卡对应的心情，如 😠 生气 */
+	mood: string = ''
+	/** 大字图形（单独渲染，朗读时会被 cleanForSpeech 去掉） */
+	face: string = ''
+	/** 情景描述（纯文字，不含 emoji） */
+	scene: string = ''
+	/** 提问 */
+	ask: string = ''
+	options: Array<string> = []
+	/** 首选答案 */
+	answer: string = ''
+	judge: string = JUDGE_ONE
+	/** judge=better 时，与 answer 同样算"很好"的选项 */
+	better: Array<string> = []
+	/** 再看看时的提示语（不含"错"字，只描述线索） */
+	comfort: string = ''
+	/** 答完后的一句解释 */
+	why: string = ''
+	/** 怎么解决（本模块的核心，不能为空） */
+	solve: string = ''
+}
+
+/** 主题（一个"岛"） */
+export class MindTheme {
+	id: string = ''
+	emoji: string = ''
+	title: string = ''
+	sub: string = ''
+	/** 是否已开放（false = 显示"正在做"） */
+	ready: boolean = false
+
+	constructor(id: string, emoji: string, title: string, sub: string, ready: boolean) {
+		this.id = id
+		this.emoji = emoji
+		this.title = title
+		this.sub = sub
+		this.ready = ready
+	}
+}
+
+/** 心情天气选项 */
+export class MoodOption {
+	key: string = ''
+	emoji: string = ''
+	label: string = ''
+
+	constructor(key: string, emoji: string, label: string) {
+		this.key = key
+		this.emoji = emoji
+		this.label = label
+	}
+}
+
+/* ---------------- 主题表 ---------------- */
+
+/**
+ * 六个主题岛，全部开放（2026-11-07 补齐 P2/P4/P5/P6）。
+ * 学习顺序仍是 P1 → P3 最短闭环：先能认出情绪，再学会做点什么。
+ */
+export const MIND_THEMES: Array<MindTheme> = [
+	new MindTheme('P1', '😊', '认识情绪', '看看表情，猜猜心情', true),
+	new MindTheme('P2', '💬', '说出情绪', '把心里的感觉说出来', true),
+	new MindTheme('P3', '🌬️', '让自己平静', '生气难过时有办法', true),
+	new MindTheme('P4', '💪', '再试一次', '做不好也没关系', true),
+	new MindTheme('P5', '🛡️', '我的身体', '不舒服要说出来', true),
+	new MindTheme('P6', '🎯', '一次做一件事', '专心、等待、收好', true)
+]
+
+/** 心情天气（存本机，家长报告显示成一条"情绪天气带"） */
+export const MOODS: Array<MoodOption> = [
+	new MoodOption('sun', '☀️', '很开心'),
+	new MoodOption('cloud', '⛅', '还行'),
+	new MoodOption('rain', '🌧️', '有点难过'),
+	new MoodOption('storm', '⛈️', '很生气'),
+	new MoodOption('fog', '🌫️', '说不清')
+]
+
+/* ---------------- 生成 1000 张卡 ---------------- */
+
+/** 两位数补零，保证卡号排序好看（P1-1-07） */
+function pad2(n: number): string {
+	return n < 10 ? '0' + n.toString() : n.toString()
+}
+
+/**
+ * 把 50 个场景族展开成 1000 张卡。
+ *
+ * 判定按主题分两档：
+ *  - P1 认识情绪：只有一个心情说得通（judge=one），答别的给"再看看"的线索，不算答错。
+ *  - P2~P6：做法可以有好几种，judge=better 且 better 为空 → 只有首选是 best，
+ *    其他一律 ok（照样给糖、照样说出解决办法），永远不走 retry。
+ *    这是有意的：做法题如果也走 retry，孩子会因为"选了另一个也能理解的做法"被反复打断。
+ */
+function buildAll(): Array<MindCard> {
+	const out: Array<MindCard> = []
+	for (let f = 0; f < MIND_FAMS.length; f++) {
+		const fam: MindFam = MIND_FAMS[f]
+		for (let i = 0; i < fam.items.length; i++) {
+			const c = new MindCard()
+			c.id = fam.theme + '-' + (f + 1).toString() + '-' + pad2(i + 1)
+			c.theme = fam.theme
+			c.famKey = fam.theme + '-' + (f + 1).toString()
+			c.mood = fam.mood
+			c.face = fam.face
+			c.scene = fillItem(fam.scene, fam.items[i])
+			c.ask = fam.ask
+			c.options = fam.opts
+			c.answer = fam.answer
+			c.judge = fam.theme == 'P1' ? JUDGE_ONE : JUDGE_BETTER
+			c.better = []
+			c.comfort = fam.comfort
+			c.why = fam.why
+			c.solve = fam.solve
+			out.push(c)
+		}
+	}
+	return out
+}
+
+export const MIND_CARDS: Array<MindCard> = buildAll()
+
+/* ---------------- 查询 ---------------- */
+
+/** 主题下的全部卡片 */
+export function cardsOf(themeId: string): Array<MindCard> {
+	const out: Array<MindCard> = []
+	for (let i = 0; i < MIND_CARDS.length; i++) {
+		if (MIND_CARDS[i].theme == themeId) out.push(MIND_CARDS[i])
+	}
+	return out
+}
+
+/** 按 id 找主题（找不到返回第一个，页面不至于空白） */
+export function themeOf(themeId: string): MindTheme {
+	for (let i = 0; i < MIND_THEMES.length; i++) {
+		if (MIND_THEMES[i].id == themeId) return MIND_THEMES[i]
+	}
+	return MIND_THEMES[0]
+}
+
+/** 按 id 找卡 */
+export function cardOf(cardId: string): MindCard {
+	for (let i = 0; i < MIND_CARDS.length; i++) {
+		if (MIND_CARDS[i].id == cardId) return MIND_CARDS[i]
+	}
+	return MIND_CARDS[0]
+}
+
+/** 某主题已看过几张 */
+export function progressOf(themeId: string, doneIds: Array<string>): number {
+	const pool: Array<MindCard> = cardsOf(themeId)
+	let n: number = 0
+	for (let i = 0; i < pool.length; i++) {
+		if (doneIds.indexOf(pool[i].id) >= 0) n++
+	}
+	return n
+}
+
+/** 已开放主题的总卡数 */
+export function readyCardCount(): number {
+	let n: number = 0
+	for (let i = 0; i < MIND_THEMES.length; i++) {
+		if (MIND_THEMES[i].ready) n += cardsOf(MIND_THEMES[i].id).length
+	}
+	return n
+}
+
+/* ---------------- 关卡 ---------------- */
+
+/** 某主题一共几关（向上取整，理论上都能整除） */
+export function mindLevelCount(themeId: string): number {
+	const n: number = cardsOf(themeId).length
+	if (n == 0) return 0
+	return Math.ceil(n / MIND_LEVEL_SIZE)
+}
+
+/** 把任意关号夹到 [1, 总关数]（越界不报错，直接给最近的合法关） */
+export function clampMindLevel(themeId: string, level: number): number {
+	const max: number = mindLevelCount(themeId)
+	if (max <= 0) return 0
+	if (level < 1) return 1
+	if (level > max) return max
+	return level
+}
+
+/**
+ * 主题内"打散后"的卡片顺序：同一关的 5 张来自 5 个不同场景族。
+ *
+ * 为什么不直接按 `cardsOf` 的顺序切关：题库是「场景族 × 20 个变体」排的，
+ * 顺序切会让一整关都是同一族——五道题的图、提问、选项一模一样，只换了物品，
+ * 孩子（和家长）的感受就是"怎么都是同一道题"。
+ *
+ * 打散规则（确定性，不随机）：
+ *   第 r 轮取每个族的第 r 个变体，起点逐轮右移一格（`(j + r) % 族数`）。
+ * 于是相邻 5 张必然来自 5 个不同族，同时"第 8 关就是那 5 个情景"依然成立
+ * （同一关每次取到的内容完全一致，复习才有意义）。
+ */
+const ORDER_THEMES: Array<string> = []
+const ORDER_CARDS: Array<Array<MindCard>> = []
+
+function orderOf(themeId: string): Array<MindCard> {
+	for (let i = 0; i < ORDER_THEMES.length; i++) {
+		if (ORDER_THEMES[i] == themeId) return ORDER_CARDS[i]
+	}
+	const pool: Array<MindCard> = cardsOf(themeId)
+	// 按族分桶：族内保持变体顺序
+	const keys: Array<string> = []
+	const buckets: Array<Array<MindCard>> = []
+	for (let i = 0; i < pool.length; i++) {
+		const k: string = pool[i].famKey
+		let at: number = -1
+		for (let j = 0; j < keys.length; j++) {
+			if (keys[j] == k) {
+				at = j
+				break
+			}
+		}
+		if (at < 0) {
+			keys.push(k)
+			buckets.push([])
+			at = keys.length - 1
+		}
+		buckets[at].push(pool[i])
+	}
+	let maxVar: number = 0
+	for (let i = 0; i < buckets.length; i++) {
+		if (buckets[i].length > maxVar) maxVar = buckets[i].length
+	}
+	const famCount: number = buckets.length
+	const out: Array<MindCard> = []
+	for (let r = 0; r < maxVar; r++) {
+		for (let j = 0; j < famCount; j++) {
+			const b: Array<MindCard> = buckets[(j + r) % famCount]
+			if (r < b.length) out.push(b[r])
+		}
+	}
+	ORDER_THEMES.push(themeId)
+	ORDER_CARDS.push(out)
+	return out
+}
+
+/**
+ * 第 N 关的 5 张卡（1 基）。
+ * 关卡内容固定、不随机（孩子说"我玩到第 8 关"时，第 8 关就该是那 5 个情景），
+ * 但**同一关跨场景族**：五道题的提问与选项各不相同，见 `orderOf`。
+ */
+export function mindLevelCards(themeId: string, level: number): Array<MindCard> {
+	const out: Array<MindCard> = []
+	const pool: Array<MindCard> = orderOf(themeId)
+	const lv: number = clampMindLevel(themeId, level)
+	if (lv == 0) return out
+	const from: number = (lv - 1) * MIND_LEVEL_SIZE
+	const to: number = from + MIND_LEVEL_SIZE
+	for (let i = from; i < to && i < pool.length; i++) out.push(pool[i])
+	return out
+}
+
+/** 关名（页面顶栏用） */
+export function mindLevelName(level: number): string {
+	return '第 ' + level.toString() + ' 关'
+}
+
+/** 下一关是哪一关（已到最后一关则回到第 1 关，让孩子能一直玩下去） */
+export function nextMindLevel(themeId: string, level: number): number {
+	const max: number = mindLevelCount(themeId)
+	if (max <= 0) return 0
+	if (level >= max) return 1
+	return level + 1
+}
+
+/* ---------------- 组卷（保留给"混合复习"，关卡之外用） ---------------- */
+
+/** 从候选里随机不重复抽，直到 out 满或抽完 */
+function pickFrom(src: Array<MindCard>, out: Array<MindCard>, picked: Array<string>): void {
+	const idxPool: Array<number> = []
+	for (let i = 0; i < src.length; i++) {
+		if (picked.indexOf(src[i].id) < 0) idxPool.push(i)
+	}
+	// Fisher-Yates：不用 splice，避免各端数组方法差异
+	for (let i = idxPool.length - 1; i > 0; i--) {
+		const j: number = Math.floor(Math.random() * (i + 1))
+		const t: number = idxPool[i]
+		idxPool[i] = idxPool[j]
+		idxPool[j] = t
+	}
+	for (let i = 0; i < idxPool.length; i++) {
+		if (out.length >= MIND_ROUND_SIZE) return
+		const c: MindCard = src[idxPool[i]]
+		out.push(c)
+		picked.push(c.id)
+	}
+}
+
+/**
+ * 随机组一轮（不影响关卡进度，留给后续"混合复习"用）
+ * 优先没看过的；不够时用看过的补（复习），保证一轮内不重复。
+ */
+export function buildMindRound(themeId: string, doneIds: Array<string>): Array<MindCard> {
+	const out: Array<MindCard> = []
+	const pool: Array<MindCard> = cardsOf(themeId)
+	if (pool.length == 0) return out
+	const fresh: Array<MindCard> = []
+	for (let i = 0; i < pool.length; i++) {
+		if (doneIds.indexOf(pool[i].id) < 0) fresh.push(pool[i])
+	}
+	const picked: Array<string> = []
+	pickFrom(fresh, out, picked)
+	if (out.length < MIND_ROUND_SIZE) pickFrom(pool, out, picked)
+	return out
+}
+
+/* ---------------- 判定 ---------------- */
+
+/**
+ * 判定
+ * - one：只有 answer 是 best，其余给 retry（不判错，只给线索）
+ * - any：任何选项都是 best
+ * - better：answer / better 列表是 best，其余是 ok（照样给糖，并追加"可以这样做"）
+ */
+export function judgeMind(c: MindCard, pick: string): string {
+	if (c.judge == JUDGE_ANY) return VERDICT_BEST
+	if (c.judge == JUDGE_BETTER) {
+		if (pick == c.answer) return VERDICT_BEST
+		for (let i = 0; i < c.better.length; i++) {
+			if (c.better[i] == pick) return VERDICT_BEST
+		}
+		return VERDICT_OK
+	}
+	if (pick == c.answer) return VERDICT_BEST
+	return VERDICT_RETRY
+}
+
+/** 结算的一句话总结（不评星，只描述"你做了什么"） */
+export function mindSummary(themeId: string, level: number, total: number, best: number): string {
+	const head: string = '第 ' + level.toString() + ' 关做完了。'
+	if (themeId == 'P2') {
+		return head + '你今天试着把心里的感觉说出来。说一句"我有点……"，大人就知道怎么帮你了。'
+	}
+	if (themeId == 'P3') {
+		return head + '你今天试了 ' + total.toString() + ' 个让自己平静的小办法。生气的时候，记得慢慢呼吸。'
+	}
+	if (themeId == 'P4') {
+		return head + '做不好也没关系。你今天学到了：慢一点，再试一次。'
+	}
+	if (themeId == 'P5') {
+		return head + '身体是你自己的。不舒服就说不，然后告诉爸爸妈妈。'
+	}
+	if (themeId == 'P6') {
+		return head + '一次做一件事。你今天练了专心、等待和收好。'
+	}
+	return head + '你今天认识了开心、难过、生气、害怕这几种心情。它们都很正常，说出来就好。'
+}
+
+/** 心情 key 对应的中文（家长报告用） */
+export function moodLabelOf(key: string): string {
+	for (let i = 0; i < MOODS.length; i++) {
+		if (MOODS[i].key == key) return MOODS[i].label
+	}
+	return ''
+}
+
+/** 心情 key 对应的天气 emoji（情绪天气带用） */
+export function moodEmojiOf(key: string): string {
+	for (let i = 0; i < MOODS.length; i++) {
+		if (MOODS[i].key == key) return MOODS[i].emoji
+	}
+	return '·'
+}
+
+/** 固定表扬语（不如数学模块花样多，情绪场景要稳，不要热闹） */
+export function mindPraise(best: boolean): string {
+	if (best) return '你看得真仔细'
+	return '谢谢你告诉我'
+}
+
+/** 再看看时的开场（不提"错"） */
+export function mindSoftOpen(): string {
+	return '再看看哦'
+}
+
+/** 反馈浮层上"可以这样做"的标题（页面与朗读共用同一句） */
+export function mindSolveTitle(): string {
+	return '可以这样做'
+}

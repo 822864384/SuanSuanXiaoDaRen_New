@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>算算小达人 · 童声样音试听</title>
+<style>
+  :root {
+    --ink: #1b2340;
+    --muted: #6b7794;
+    --line: #e3e8f3;
+    --gold: #e8b33c;
+    --bg: #f7f9ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 20px 56px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.7 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 26px; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 16px; margin: 0 0 4px; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    color: #8a6a12;
+    background: #fdf3d8;
+    border-radius: 20px;
+    padding: 1px 10px;
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-top: 1px dashed var(--line);
+  }
+  .row:first-of-type { border-top: 0; }
+  .label { width: 104px; flex: none; font-size: 13px; color: var(--muted); }
+  audio { flex: 1; height: 34px; }
+  .note { margin-top: 22px; font-size: 13px; color: var(--muted); }
+  .note b { color: var(--ink); }
+  code { background: #eef2fb; border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>童声样音试听</h1>
+  <p class="sub">同一句真实题目：「豆豆，请听题。篮子里有 3 个苹果，妈妈又放进 2 个，一共有几个？」</p>
+
+  <div class="card">
+    <h2>活泼女声 <span class="tag">推荐</span></h2>
+    <div class="row">
+      <span class="label">慢 20%</span>
+      <audio controls preload="none" src="xiaoyi_20.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">慢 35%</span>
+      <audio controls preload="none" src="xiaoyi_35.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">「真棒！」</span>
+      <audio controls preload="none" src="xiaoyi_20_praise.mp3"></audio>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>温柔女声</h2>
+    <div class="row">
+      <span class="label">慢 20%</span>
+      <audio controls preload="none" src="xiaoxiao_20.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">慢 35%</span>
+      <audio controls preload="none" src="xiaoxiao_35.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">「真棒！」</span>
+      <audio controls preload="none" src="xiaoxiao_20_praise.mp3"></audio>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>可爱男童</h2>
+    <div class="row">
+      <span class="label">慢 20%</span>
+      <audio controls preload="none" src="yunxia_20.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">慢 35%</span>
+      <audio controls preload="none" src="yunxia_35.mp3"></audio>
+    </div>
+    <div class="row">
+      <span class="label">「真棒！」</span>
+      <audio controls preload="none" src="yunxia_20_praise.mp3"></audio>
+    </div>
+  </div>
+
+  <p class="note">
+    这几条是<b>神经语音</b>（云端合成），明显比 App 里的系统 TTS 自然。<br>
+    落地方式二选一：<br>
+    ① <b>只换固定句</b>（表扬、鼓励、超时、请听题）——预生成打进包里，题干仍用系统 TTS，改动小；<br>
+    ② <b>题干也预生成</b>——把 40 个题型里的固定句式 + 数字 + 物品词切成片段，运行时拼接播放，包体会涨到几十 MB，需要一次较大的工程改造。<br>
+    选好音色后告诉我编号，我按对应方案接进 <code>common/tts.uts</code>。
+  </p>
+</div>
+</body>
+</html>

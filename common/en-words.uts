@@ -1,0 +1,172 @@
+/**
+ * 英语单词 · 词表（60 词 / 6 主题）
+ *
+ * 口径：4~5 岁只做"听懂 + 敢说"，**不做拼写、不做 CVC 拼读**（CEFR Pre-A1 不涉及书写；
+ * 叽里呱啦把拼读放在 Y2 后半，斑马 S1~S2 只积累听力词汇）。方案见 `三科课程内容方案-v1.md`。
+ *
+ * 每条必须带的字段，一个都不能省：
+ * - `ipa` + `near`（中文近似音）：电视 TTS 的引擎念英文常常很怪，家长听到不对会以为我们做坏了；
+ *   而且家长要能跟着念，否则这科在客厅里没人陪。`near` 是给家长的，不给孩子看。
+ * - `emoji` 或 `color`：题面靠图/色块，不靠插图资源，包体零增长。
+ *
+ * 颜色主题（T3）没有对应的 emoji 色块，所以用纯色 view 画点；`white` 在白底上会隐形，
+ * 页面里给色点统一加了描边。
+ */
+
+export class EnWord {
+	/** 英文词 */
+	en: string = ''
+	/** 中文意思 */
+	zh: string = ''
+	/** 音标 */
+	ipa: string = ''
+	/** 中文近似音（给家长念，不给孩子看） */
+	near: string = ''
+	/** 题面图（颜色主题为空） */
+	emoji: string = ''
+	/** 颜色主题的色值（其它主题为空） */
+	color: string = ''
+	/** 主题 T1~T6 */
+	theme: string = ''
+
+	constructor(en: string, zh: string, ipa: string, near: string, emoji: string, color: string, theme: string) {
+		this.en = en
+		this.zh = zh
+		this.ipa = ipa
+		this.near = near
+		this.emoji = emoji
+		this.color = color
+		this.theme = theme
+	}
+}
+
+/** 全部 60 词 */
+export const EN_WORDS: Array<EnWord> = [
+	/* T1 Animals：单音节为主，emoji 全都有 */
+	new EnWord('cat', '小猫', '/kæt/', '凯特', '🐱', '', 'T1'),
+	new EnWord('dog', '小狗', '/dɒɡ/', '道格', '🐶', '', 'T1'),
+	new EnWord('duck', '鸭子', '/dʌk/', '达克', '🦆', '', 'T1'),
+	new EnWord('bird', '小鸟', '/bɜːd/', '伯德', '🐦', '', 'T1'),
+	new EnWord('fish', '鱼', '/fɪʃ/', '费什', '🐟', '', 'T1'),
+	new EnWord('pig', '猪', '/pɪɡ/', '皮格', '🐷', '', 'T1'),
+	new EnWord('cow', '奶牛', '/kaʊ/', '考', '🐮', '', 'T1'),
+	new EnWord('rabbit', '兔子', '/ˈræbɪt/', '瑞比特', '🐰', '', 'T1'),
+	new EnWord('bear', '熊', '/beə/', '贝尔', '🐻', '', 'T1'),
+	new EnWord('panda', '熊猫', '/ˈpændə/', '潘达', '🐼', '', 'T1'),
+
+	/* T2 Food */
+	new EnWord('apple', '苹果', '/ˈæpl/', '艾剖', '🍎', '', 'T2'),
+	new EnWord('banana', '香蕉', '/bəˈnɑːnə/', '布拿哪', '🍌', '', 'T2'),
+	new EnWord('egg', '鸡蛋', '/eɡ/', '艾格', '🥚', '', 'T2'),
+	new EnWord('milk', '牛奶', '/mɪlk/', '谬克', '🥛', '', 'T2'),
+	new EnWord('rice', '米饭', '/raɪs/', '瑞斯', '🍚', '', 'T2'),
+	new EnWord('cake', '蛋糕', '/keɪk/', '凯克', '🍰', '', 'T2'),
+	new EnWord('bread', '面包', '/bred/', '布莱德', '🍞', '', 'T2'),
+	new EnWord('water', '水', '/ˈwɔːtə/', '沃特', '💧', '', 'T2'),
+	new EnWord('candy', '糖果', '/ˈkændi/', '坎迪', '🍬', '', 'T2'),
+	new EnWord('grape', '葡萄', '/ɡreɪp/', '格瑞普', '🍇', '', 'T2'),
+
+	/* T3 Colors：用纯色点，不用 emoji */
+	new EnWord('red', '红色', '/red/', '瑞德', '', '#ff5c5c', 'T3'),
+	new EnWord('yellow', '黄色', '/ˈjeləʊ/', '耶楼', '', '#ffd76e', 'T3'),
+	new EnWord('blue', '蓝色', '/bluː/', '布鲁', '', '#4a7bff', 'T3'),
+	new EnWord('green', '绿色', '/ɡriːn/', '格林', '', '#3ecf8e', 'T3'),
+	new EnWord('orange', '橙色', '/ˈɒrɪndʒ/', '奥润吉', '', '#ff9f43', 'T3'),
+	new EnWord('purple', '紫色', '/ˈpɜːpl/', '破剖', '', '#a06bff', 'T3'),
+	new EnWord('pink', '粉色', '/pɪŋk/', '拼克', '', '#ff8ab8', 'T3'),
+	new EnWord('brown', '棕色', '/braʊn/', '布朗', '', '#a9744f', 'T3'),
+	new EnWord('black', '黑色', '/blæk/', '布莱克', '', '#22222c', 'T3'),
+	new EnWord('white', '白色', '/waɪt/', '外特', '', '#f4f4fa', 'T3'),
+
+	/* T4 Body */
+	new EnWord('eye', '眼睛', '/aɪ/', '艾', '👁', '', 'T4'),
+	new EnWord('ear', '耳朵', '/ɪə/', '伊尔', '👂', '', 'T4'),
+	new EnWord('nose', '鼻子', '/nəʊz/', '诺兹', '👃', '', 'T4'),
+	new EnWord('mouth', '嘴巴', '/maʊθ/', '冒斯', '👄', '', 'T4'),
+	new EnWord('hand', '手', '/hænd/', '汉德', '✋', '', 'T4'),
+	new EnWord('foot', '脚', '/fʊt/', '福特', '🚶', '', 'T4'),
+	new EnWord('head', '头', '/hed/', '海德', '😀', '', 'T4'),
+	new EnWord('hair', '头发', '/heə/', '海尔', '💇', '', 'T4'),
+	new EnWord('arm', '手臂', '/ɑːm/', '阿姆', '💪', '', 'T4'),
+	new EnWord('face', '脸', '/feɪs/', '费斯', '😊', '', 'T4'),
+
+	/* T5 Family：grandpa/grandma 三音节，只要求听懂、不要求开口 */
+	new EnWord('mom', '妈妈', '/mɒm/', '玛姆', '👩', '', 'T5'),
+	new EnWord('dad', '爸爸', '/dæd/', '戴德', '👨', '', 'T5'),
+	new EnWord('baby', '宝宝', '/ˈbeɪbi/', '贝比', '👶', '', 'T5'),
+	new EnWord('grandpa', '爷爷', '/ˈɡrænpɑː/', '格兰帕', '👴', '', 'T5'),
+	new EnWord('grandma', '奶奶', '/ˈɡrænmɑː/', '格兰玛', '👵', '', 'T5'),
+	new EnWord('sister', '姐姐', '/ˈsɪstə/', '西斯特', '👧', '', 'T5'),
+	new EnWord('brother', '哥哥', '/ˈbrʌðə/', '布拉泽', '👦', '', 'T5'),
+	new EnWord('family', '家人', '/ˈfæməli/', '法米利', '👨‍👩‍👧', '', 'T5'),
+	new EnWord('home', '家', '/həʊm/', '厚姆', '🏠', '', 'T5'),
+	new EnWord('friend', '朋友', '/frend/', '弗兰德', '🤝', '', 'T5'),
+
+	/* T6 Toys & 日常物：全部 emoji 都在 Unicode 9 以内（Android 7 可显示） */
+	new EnWord('ball', '球', '/bɔːl/', '波', '⚽', '', 'T6'),
+	new EnWord('car', '小汽车', '/kɑː/', '卡', '🚗', '', 'T6'),
+	new EnWord('book', '书', '/bʊk/', '布克', '📖', '', 'T6'),
+	new EnWord('plane', '飞机', '/pleɪn/', '普雷恩', '✈️', '', 'T6'),
+	new EnWord('train', '火车', '/treɪn/', '吹恩', '🚂', '', 'T6'),
+	new EnWord('bike', '自行车', '/baɪk/', '拜克', '🚲', '', 'T6'),
+	new EnWord('balloon', '气球', '/bəˈluːn/', '布伦', '🎈', '', 'T6'),
+	new EnWord('robot', '机器人', '/ˈrəʊbɒt/', '柔伯特', '🤖', '', 'T6'),
+	new EnWord('drum', '鼓', '/drʌm/', '抓姆', '🥁', '', 'T6'),
+	new EnWord('star', '星星', '/stɑː/', '斯塔', '⭐', '', 'T6')
+]
+
+/** 主题 → 中文名 */
+export function enThemeName(theme: string): string {
+	if (theme == 'T1') return '动物'
+	if (theme == 'T2') return '食物'
+	if (theme == 'T3') return '颜色'
+	if (theme == 'T4') return '身体'
+	if (theme == 'T5') return '家人'
+	return '玩具'
+}
+
+/** 单元号（1~6）→ 主题 key */
+export function enThemeOfUnit(unit: number): string {
+	const i: number = unit < 1 ? 1 : (unit > 6 ? 6 : unit)
+	return 'T' + i.toString()
+}
+
+/** 某单元的全部词（10 个） */
+export function enWordsOfUnit(unit: number): Array<string> {
+	const theme: string = enThemeOfUnit(unit)
+	const out: Array<string> = []
+	for (let i = 0; i < EN_WORDS.length; i++) {
+		if (EN_WORDS[i].theme == theme) out.push(EN_WORDS[i].en)
+	}
+	return out
+}
+
+/** 按英文词取记录（找不到返回空对象：en.length == 0） */
+export function enWordOf(en: string): EnWord {
+	for (let i = 0; i < EN_WORDS.length; i++) {
+		if (EN_WORDS[i].en == en) return EN_WORDS[i]
+	}
+	return new EnWord('', '', '', '', '', '', '')
+}
+
+/**
+ * 首字母分组（首音感知题 EN3 用）
+ *
+ * 只有同组 ≥2 个词时才出这道题，否则"哪个和它开头一样"就变成了二选一。
+ * 4 岁理解"开头"要举例，所以读题里会带上那个字母音。
+ */
+export function enFirstLetter(en: string): string {
+	if (en.length == 0) return ''
+	return en.substring(0, 1).toLowerCase()
+}
+
+/** 与 en 首字母相同的其他词（不含自己） */
+export function enSameSound(en: string): Array<string> {
+	const out: Array<string> = []
+	const c: string = enFirstLetter(en)
+	for (let i = 0; i < EN_WORDS.length; i++) {
+		const w: EnWord = EN_WORDS[i]
+		if (w.en != en && enFirstLetter(w.en) == c) out.push(w.en)
+	}
+	return out
+}

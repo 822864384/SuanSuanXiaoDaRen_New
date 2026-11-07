@@ -1,0 +1,148 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://doc.dcloud.net.cn/uni-app-x/collocation/pagesjson.html
+		// 两个角色（豆豆 / 滔滔）→ 启动停在选人页；只剩一个角色时把它挪到第二项、首页提到第一项
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/math/math",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 语文识字 / 英语单词共用同一个答题页，靠 common/study-session.uts 的 mode 区分 */
+		{
+			"path": "pages/study/study",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/result/result",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 心情小课堂（儿童心理健康教育）：三个孩子端页面 + 一个家长端页面 */
+		{
+			"path": "pages/mind/mind",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/mind/play",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/mind/breath",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 心灵小剧场：央视少儿短片的外链播放入口（需联网，家长陪看） */
+		{
+			"path": "pages/mind/cinema",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/mind/watch",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 交往剧场（人际交往启蒙）：大厅 + 演一集，纯离线 emoji 分镜 */
+		{
+			"path": "pages/so/so",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		{
+			"path": "pages/so/play",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 错题库：三科共用一页（数学 / 语文 / 英语），做对自动出库 */
+		{
+			"path": "pages/wrong/wrong",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 家长课堂是全 App 唯一给成人看的文字页，允许滚动（手机上看长段更顺） */
+		{
+			"path": "pages/parent/parent",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": false,
+				"pageOrientation": "landscape"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationStyle": "custom",
+		"navigationBarBackgroundColor": "#0b1026",
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "算算小达人",
+		"backgroundColor": "#0b1026",
+		/* 全端锁定横屏：电视本就是 16:9 横屏，手机打开也不再竖屏挤成一条
+		   Android 需 HBuilderX 4.13+ 生效；Web 端由浏览器控制，pages.json 不生效 */
+		"pageOrientation": "landscape"
+	},
+	"uniIdRouter": {}
+}

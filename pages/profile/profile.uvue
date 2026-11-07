@@ -1,0 +1,144 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+			<view class="prof-wrap">
+				<text class="pg-title">{{ pageTitle }}</text>
+				<text class="pg-sub">{{ pageSub }}</text>
+
+				<view class="prof-row">
+					<view v-for="(p, i) in profiles" :key="p.id" class="pcard" :class="i == focusIdx ? 'pcard-on' : ''"
+						@click="choose(p.id)">
+						<image v-if="avatarIsImage(p.avatar)" class="pface-img" :src="p.avatar" mode="aspectFill"></image>
+						<text v-else class="pface">{{ p.avatar }}</text>
+						<text class="pname">{{ p.name }}</text>
+						<text class="pstars">⭐ {{ p.stars }}</text>
+					</view>
+
+					<view class="pcard pcard-dim" @click="onAddProfile">
+						<text class="pface">＋</text>
+						<text class="pname">新建</text>
+						<text class="pstars">请家长添加</text>
+					</view>
+				</view>
+
+				<text class="prof-tip">答对一题得一颗星，还能喂糖豆一颗糖 🍬</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { getProfiles, getCurrentId, setCurrentId, Profile, avatarIsImage } from '@/common/store.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	const profiles = ref<Array<Profile>>([])
+	/** 卡片顺序由 store 的 PROFILE_IDS 决定（豆豆在前、滔滔在后），onShow 按当前档案校准 */
+	const focusIdx = ref<number>(0)
+	/**
+	 * 文案跟着档案数量走：单档案时再问“想和谁一起玩”就是明知故问，
+	 * 等哪天加回第二个孩子，这里自动变回选择口吻。
+	 */
+	const pageTitle = ref<string>('欢迎回来')
+	const pageSub = ref<string>('按 OK 开始玩')
+
+	onShow(() => {
+		profiles.value = getProfiles()
+		// 高亮当前档案：没选过时 store 返回默认的豆豆，与卡片顺序无关
+		const cur: string = getCurrentId()
+		for (let i = 0; i < profiles.value.length; i++) {
+			if (profiles.value[i].id == cur) {
+				focusIdx.value = i
+				break
+			}
+		}
+		if (profiles.value.length <= 1) {
+			pageTitle.value = profiles.value.length == 1
+				? '欢迎回来，' + profiles.value[0].name
+				: '还没有小朋友的档案'
+			pageSub.value = '按 OK 开始玩'
+			return
+		}
+		pageTitle.value = '今天想和谁一起玩呀？'
+		pageSub.value = '用遥控器选一个小朋友，按 OK 开始'
+	})
+
+	function choose(id: string) {
+		setCurrentId(id)
+		uni.navigateTo({ url: '/pages/home/home' })
+	}
+
+	function onAddProfile() {
+		uni.showToast({ title: '请家长在设置里添加', icon: 'none' })
+	}
+</script>
+
+<style>
+	.prof-wrap {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+		padding-top: 16rpx;
+	}
+
+	.prof-row {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 31rpx;
+	}
+
+	.pcard {
+		width: 156rpx;
+		height: 195rpx;
+		margin-left: 12rpx;
+		margin-right: 12rpx;
+		border-radius: 14rpx;
+		background-color: rgba(255, 255, 255, 0.08);
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		justify-content: center;
+		align-items: center;
+	}
+
+	/* 焦点态：金色描边 + 轻微放大（3 米外可辨） */
+	.pcard-on {
+		border-color: #ffd76e;
+		background-color: rgba(255, 215, 110, 0.14);
+		transform: scale(1.04);
+	}
+
+	.pcard-dim {
+		opacity: 0.45;
+	}
+
+	.pface {
+		font-size: 59rpx;
+	}
+
+	/* 照片头像：跟 emoji 同占 59rpx 见方，圆角裁成圆形，卡片高度不变 */
+	.pface-img {
+		width: 59rpx;
+		height: 59rpx;
+		border-radius: 30rpx;
+	}
+
+	.pname {
+		color: #ffffff;
+		font-size: 17rpx;
+		margin-top: 11rpx;
+	}
+
+	.pstars {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		margin-top: 5rpx;
+	}
+
+	.prof-tip {
+		color: #7d90c9;
+		font-size: 10rpx;
+		margin-top: 27rpx;
+	}
+</style>

@@ -1,0 +1,409 @@
+/**
+ * 算算小达人 · 本地存储层（阶段一：storage JSON/标量，后续替换为 SQLite）
+ *
+ * 设计要点：
+ * - 全部走字符串键值，读写都做“可还原校验”，避免 any 类型转换在原生端出错
+ * - 键统一前缀 ssxdr.，按档案 id 分片，支持多孩子档案独立进度
+ * - 对外只暴露语义化函数，页面不直接碰 key，后续换 SQLite 只改本文件
+ */
+
+const PREFIX: string = 'ssxdr.'
+const KEY_CURRENT: string = PREFIX + 'current'
+
+/** 一个孩子档案 */
+export class Profile {
+  id: string = ''
+  name: string = ''
+  avatar: string = ''
+  stars: number = 0
+  candy: number = 0
+
+  constructor(id: string, name: string, avatar: string, stars: number, candy: number) {
+    this.id = id
+    this.name = name
+    this.avatar = avatar
+    this.stars = stars
+    this.candy = candy
+  }
+}
+
+/* ---------------- 基础读写 ---------------- */
+
+function readStr(key: string, def: string): string {
+  const v = uni.getStorageSync(key)
+  if (v == null) return def
+  if (typeof v == 'string') {
+    const s = v as string
+    return s.length == 0 ? def : s
+  }
+  return def
+}
+
+function readNum(key: string, def: number): number {
+  const s = readStr(key, '')
+  if (s.length == 0) return def
+  const n: number = parseInt(s, 10)
+  // 可还原校验：能原样还原才算合法数字，NaN/脏数据一律回落默认值
+  if (n.toString() == s) return n
+  return def
+}
+
+function writeStr(key: string, value: string): void {
+  uni.setStorageSync(key, value)
+}
+
+function writeNum(key: string, value: number): void {
+  uni.setStorageSync(key, value.toString())
+}
+
+function profileKey(id: string, field: string): string {
+  return PREFIX + id + '.' + field
+}
+
+/* ---------------- 档案 ---------------- */
+
+/**
+ * 档案 id 列表（顺序即选人页从左到右的卡片顺序）。
+ *
+ * p2 豆豆：一直在用的那个（默认档案）。
+ * p3 滔滔：2026-11-07 新增的第二个角色。**故意不复用已删的 p1（糖糖）**——
+ *   p1 名下的星星/糖果还躺在老设备的 storage 里，复用 id 会让新角色凭空继承旧进度。
+ * 老设备如果存着 `current = 'p1'`，`getCurrentId()` 的合法性校验会把它归位到豆豆。
+ */
+const PROFILE_IDS: Array<string> = ['p2', 'p3']
+
+/**
+ * 默认档案：豆豆（p2）。
+ * 没有任何存储记录（首次启动、清过数据）时落到这里，
+ * 首页问候语、读题呼叫的名字都会以它为准。
+ */
+const DEFAULT_ID: string = 'p2'
+
+function defaultName(id: string): string {
+  return id == 'p3' ? '滔滔' : '豆豆'
+}
+
+/**
+ * 头像：可以是 emoji，也可以是图片路径。
+ *
+ * 约定只有一条——**以 / 开头就当图片路径**（本站点内路径，如 /static/photo.png），
+ * 其余一律当 emoji 直接当文字画。页面用 `avatarIsImage()` 判断走哪条渲染分支，
+ * 不再为“有没有照片”另开一个字段，老数据（存的是 emoji）也不用迁移。
+ */
+function defaultAvatar(id: string): string {
+  return id == 'p3' ? '🐳' : '🐰'
+}
+
+/** 这个头像值是不是图片路径（true=用 <image>，false=用 <text> 画 emoji） */
+export function avatarIsImage(avatar: string): boolean {
+  return avatar.length > 0 && avatar.charAt(0) == '/'
+}
+
+/**
+ * 存储结构版本。
+ * v2：默认档案由「糖糖」改为「豆豆」（v3 不升：删角色靠 `getCurrentId()` 的合法性校验兜底就够了）。
+ */
+const KEY_SCHEMA: string = PREFIX + 'schema'
+const SCHEMA_VERSION: string = '2'
+
+/**
+ * 启动时调用一次。只在版本号不一致时归位一次，
+ * 之后孩子在选人页手选谁都会记住，不会被反复重置。
+ */
+export function migrateSchema(): void {
+  const v: string = readStr(KEY_SCHEMA, '')
+  if (v == SCHEMA_VERSION) return
+  if (v.length == 0) {
+    // 从无版本号（老安装 / 首次安装）升级：当前档案归位到默认豆豆
+    writeStr(KEY_CURRENT, DEFAULT_ID)
+  }
+  writeStr(KEY_SCHEMA, SCHEMA_VERSION)
+}
+
+function loadProfile(id: string): Profile {
+  const name: string = readStr(profileKey(id, 'name'), defaultName(id))
+  const avatar: string = readStr(profileKey(id, 'avatar'), defaultAvatar(id))
+  const stars: number = readNum(profileKey(id, 'stars'), 0)
+  const candy: number = readNum(profileKey(id, 'candy'), 0)
+  return new Profile(id, name, avatar, stars, candy)
+}
+
+/** 全部档案（选人页用） */
+export function getProfiles(): Array<Profile> {
+  const list: Array<Profile> = []
+  for (let i = 0; i < PROFILE_IDS.length; i++) {
+    list.push(loadProfile(PROFILE_IDS[i]))
+  }
+  return list
+}
+
+/** 当前档案 id（未选择过时默认豆豆） */
+export function getCurrentId(): string {
+  const id: string = readStr(KEY_CURRENT, DEFAULT_ID)
+  if (PROFILE_IDS.indexOf(id) < 0) return DEFAULT_ID
+  return id
+}
+
+/** 切换当前档案 */
+export function setCurrentId(id: string): void {
+  if (PROFILE_IDS.indexOf(id) < 0) return
+  writeStr(KEY_CURRENT, id)
+}
+
+/** 当前档案 */
+export function getCurrentProfile(): Profile {
+  return loadProfile(getCurrentId())
+}
+
+/** 累加星星（答对一题 +1，结算时统一入账亦可） */
+export function addStars(n: number): void {
+  const id: string = getCurrentId()
+  const cur: number = readNum(profileKey(id, 'stars'), 0)
+  writeNum(profileKey(id, 'stars'), cur + n)
+}
+
+/** 累加糖果（答对喂宠物） */
+export function addCandy(n: number): void {
+  const id: string = getCurrentId()
+  const cur: number = readNum(profileKey(id, 'candy'), 0)
+  writeNum(profileKey(id, 'candy'), cur + n)
+}
+
+/* ---------------- 关卡与统计（按科目分片） ---------------- */
+
+/** 当前关卡（从 1 开始） */
+export function getLevel(mode: string): number {
+  const id: string = getCurrentId()
+  const lv: number = readNum(profileKey(id, 'level.' + mode), 1)
+  return lv < 1 ? 1 : lv
+}
+
+/** 设置关卡 */
+export function setLevel(mode: string, level: number): void {
+  const id: string = getCurrentId()
+  writeNum(profileKey(id, 'level.' + mode), level < 1 ? 1 : level)
+}
+
+/** 累计答对题数（家长报告的原始数据） */
+export function getRightTotal(mode: string): number {
+  const id: string = getCurrentId()
+  return readNum(profileKey(id, 'right.' + mode), 0)
+}
+
+/** 累计答错题数 */
+export function getWrongTotal(mode: string): number {
+  const id: string = getCurrentId()
+  return readNum(profileKey(id, 'wrong.' + mode), 0)
+}
+
+/** 记一次作答（逐题统计，后续换 SQLite 逐题表） */
+export function recordAnswer(mode: string, correct: boolean): void {
+  const id: string = getCurrentId()
+  const key: string = profileKey(id, (correct ? 'right.' : 'wrong.') + mode)
+  const cur: number = readNum(key, 0)
+  writeNum(key, cur + 1)
+}
+
+/** 清空当前档案进度（家长设置里的“重置进度”预留） */
+export function resetProgress(): void {
+  const id: string = getCurrentId()
+  const modes: Array<string> = ['math', 'cn', 'en', 'so']
+  for (let i = 0; i < modes.length; i++) {
+    writeNum(profileKey(id, 'level.' + modes[i]), 1)
+    writeNum(profileKey(id, 'right.' + modes[i]), 0)
+    writeNum(profileKey(id, 'wrong.' + modes[i]), 0)
+  }
+  writeNum(profileKey(id, 'stars'), 0)
+  writeNum(profileKey(id, 'candy'), 0)
+  writeStr(profileKey(id, 'mind.done'), '')
+  writeStr(profileKey(id, 'so.done'), '')
+  writeStr(profileKey(id, 'mood'), '')
+  const themes: Array<string> = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6']
+  for (let i = 0; i < themes.length; i++) {
+    writeNum(profileKey(id, 'mind.lv.' + themes[i]), 1)
+  }
+}
+
+/* ---------------- 心情小课堂（心理健康教育） ---------------- */
+
+/**
+ * 一次心情记录
+ * 只存本机、只给当前孩子的家长看，不上传（设计红线 5）。
+ */
+export class MoodEntry {
+  date: string = ''
+  mood: string = ''
+
+  constructor(date: string, mood: string) {
+    this.date = date
+    this.mood = mood
+  }
+}
+
+/** 今天（YYYY-MM-DD） */
+function todayStr(): string {
+  const d = new Date()
+  const m: number = d.getMonth() + 1
+  const day: number = d.getDate()
+  return d.getFullYear().toString() + '-' + (m < 10 ? '0' : '') + m.toString() + '-' +
+    (day < 10 ? '0' : '') + day.toString()
+}
+
+/**
+ * 已看过的卡片 id
+ * 用逗号分隔的字符串存，不用 JSON：JSON.parse 在各端返回 any，UTS 强类型下转换容易出岔子，
+ * 而卡片 id 只有 'P1-1' 这种形式，不含逗号。
+ */
+export function getMindDone(): Array<string> {
+  const raw: string = readStr(profileKey(getCurrentId(), 'mind.done'), '')
+  const out: Array<string> = []
+  if (raw.length == 0) return out
+  const parts: Array<string> = raw.split(',')
+  for (let i = 0; i < parts.length; i++) {
+    const s: string = parts[i].trim()
+    if (s.length > 0) out.push(s)
+  }
+  return out
+}
+
+/** 记一张卡已看过（避免下一轮重复出同一张） */
+export function addMindDone(cardId: string): void {
+  if (cardId.length == 0) return
+  const list: Array<string> = getMindDone()
+  if (list.indexOf(cardId) >= 0) return
+  list.push(cardId)
+  let s: string = ''
+  for (let i = 0; i < list.length; i++) {
+    if (i > 0) s += ','
+    s += list[i]
+  }
+  writeStr(profileKey(getCurrentId(), 'mind.done'), s)
+}
+
+/** 已看过多少张 */
+export function getMindDoneCount(): number {
+  return getMindDone().length
+}
+
+/**
+ * 某个主题玩到第几关（1 基）
+ *
+ * 为什么单独存关卡号、不只靠 mind.done 推：
+ * 卡片有 1000 张，看完几张推不出"该玩第几关"；而且孩子想重玩第 3 关时，
+ * 进度不能被"已经看过"顶掉。所以关卡进度是独立的一个数。
+ */
+export function getMindLevel(themeId: string): number {
+  const n: number = readNum(profileKey(getCurrentId(), 'mind.lv.' + themeId), 1)
+  return n < 1 ? 1 : n
+}
+
+/** 记下某主题当前关号 */
+export function setMindLevel(themeId: string, level: number): void {
+  writeNum(profileKey(getCurrentId(), 'mind.lv.' + themeId), level < 1 ? 1 : level)
+}
+
+/** 六个主题各玩到第几关（家长报告用） */
+export class ThemeLevel {
+  theme: string = ''
+  level: number = 1
+
+  constructor(theme: string, level: number) {
+    this.theme = theme
+    this.level = level
+  }
+}
+
+export function getMindLevels(): Array<ThemeLevel> {
+  const ids: Array<string> = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6']
+  const out: Array<ThemeLevel> = []
+  for (let i = 0; i < ids.length; i++) {
+    out.push(new ThemeLevel(ids[i], getMindLevel(ids[i])))
+  }
+  return out
+}
+
+/** 最近 14 天的心情（按时间从旧到新） */
+export function getMoodLog(): Array<MoodEntry> {
+  const raw: string = readStr(profileKey(getCurrentId(), 'mood'), '')
+  const out: Array<MoodEntry> = []
+  if (raw.length == 0) return out
+  const items: Array<string> = raw.split(';')
+  for (let i = 0; i < items.length; i++) {
+    const one: string = items[i].trim()
+    if (one.length == 0) continue
+    const kv: Array<string> = one.split('|')
+    if (kv.length < 2) continue
+    out.push(new MoodEntry(kv[0], kv[1]))
+  }
+  return out
+}
+
+/** 记今天的心情：同一天只保留最后一次，最多存 14 天 */
+export function addMood(mood: string): void {
+  if (mood.length == 0) return
+  const today: string = todayStr()
+  const log: Array<MoodEntry> = getMoodLog()
+  const kept: Array<MoodEntry> = []
+  for (let i = 0; i < log.length; i++) {
+    if (log[i].date != today) kept.push(log[i])
+  }
+  kept.push(new MoodEntry(today, mood))
+  // 只保留最近 14 条：用起始下标裁剪，不依赖 shift/splice（各端数组方法有差异）
+  let start: number = 0
+  if (kept.length > 14) start = kept.length - 14
+  let s: string = ''
+  for (let i = start; i < kept.length; i++) {
+    if (s.length > 0) s += ';'
+    s += kept[i].date + '|' + kept[i].mood
+  }
+  writeStr(profileKey(getCurrentId(), 'mood'), s)
+}
+
+/** 今天记过的心情（没记过返回空串） */
+export function getTodayMood(): string {
+  const today: string = todayStr()
+  const log: Array<MoodEntry> = getMoodLog()
+  for (let i = 0; i < log.length; i++) {
+    if (log[i].date == today) return log[i].mood
+  }
+  return ''
+}
+
+/* ---------------- 交往剧场（人际交往启蒙） ---------------- */
+
+/**
+ * 已演过的剧集 id
+ *
+ * 与 mind.done 同一套存法（逗号分隔），但单独一个键：
+ * 交往剧场按"集"推进，心情课堂按"卡"推进，两边的进度不能互相顶掉。
+ */
+export function getSoDone(): Array<string> {
+  const raw: string = readStr(profileKey(getCurrentId(), 'so.done'), '')
+  const out: Array<string> = []
+  if (raw.length == 0) return out
+  const parts: Array<string> = raw.split(',')
+  for (let i = 0; i < parts.length; i++) {
+    const s: string = parts[i].trim()
+    if (s.length > 0) out.push(s)
+  }
+  return out
+}
+
+/** 记一集已演完（一颗交往之星） */
+export function addSoDone(episodeId: string): void {
+  if (episodeId.length == 0) return
+  const list: Array<string> = getSoDone()
+  if (list.indexOf(episodeId) >= 0) return
+  list.push(episodeId)
+  let s: string = ''
+  for (let i = 0; i < list.length; i++) {
+    if (i > 0) s += ','
+    s += list[i]
+  }
+  writeStr(profileKey(getCurrentId(), 'so.done'), s)
+}
+
+/** 已演过几集（= 几颗交往之星） */
+export function getSoDoneCount(): number {
+  return getSoDone().length
+}

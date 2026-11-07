@@ -1,0 +1,42 @@
+/**
+ * 算算小达人 · 屏幕安全区
+ *
+ * app-android 是「内容铺满整屏 + 系统状态栏浮在上面」的全屏模式。
+ * 也就是页面左上角那一行（← 回首页 / 档案 / 关卡号）会被状态栏的**时间、电量**压住：
+ * 视觉上被遮掉一截，点击也落不到按钮上——家长看到的就是「点了回首页没反应」。
+ *
+ * 处理方式：所有页面把根容器整体下移一个状态栏高度。
+ * uvue 默认 `box-sizing: border-box`（比 W3C 更接近各家小程序的做法），
+ * 所以 `height:100%` + `padding-top` 只会把内容区压扁，不会把底部顶出屏幕。
+ *
+ * 电视盒子/模拟器没有状态栏时该值为 0，版式与之前完全一致——不用为电视单独分支。
+ */
+
+/** 顶部系统状态栏高度（px）；拿不到或异常时返回 0 */
+export function topInsetPx(): number {
+  let h: number = 0
+  try {
+    const info = uni.getWindowInfo()
+    if (info != null) h = info.statusBarHeight
+  } catch (e) {
+    h = 0
+  }
+  // 0 之外再挡一层离谱值：有的盒子会报 -1 或几千
+  if (h > 0 && h < 200) return h
+  return 0
+}
+
+/**
+ * 给页面根容器用的内联样式
+ * 用法：`<view class="root" :style="rootStyle">`，脚本里 `const rootStyle: string = topInsetStyle()`
+ */
+export function topInsetStyle(): string {
+  const h: number = topInsetPx()
+  if (h <= 0) {
+    // 电视盒子/模拟器通常没有状态栏：版式与以前完全一致
+    console.log('[screen] 没有系统状态栏，页面不偏移')
+    return ''
+  }
+  console.log('[screen] 状态栏 ' + h.toString() + 'px，整页下移，避免顶部按钮被系统栏盖住')
+  return 'padding-top:' + h.toString() + 'px;'
+}

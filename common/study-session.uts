@@ -1,0 +1,26 @@
+/**
+ * 语文 / 英语 · 跨页面状态
+ *
+ * 为什么不用 onLoad 传参：uvue 的页面参数是 UTSJSONObject，跨端取值的写法容易踩坑，
+ * 而且语文英语共用同一个页面（pages/study/study），mode 必须在页面创建时就确定，
+ * 用模块单例最稳——和 common/mind-session.uts 是同一套做法。
+ */
+
+let studyMode: string = 'cn'
+
+/** 首页点某一科时写入：cn / en */
+export function setStudyMode(m: string): void {
+	studyMode = m == 'en' ? 'en' : 'cn'
+}
+
+/** study 页读：这次做哪一科 */
+export function getStudyMode(): string {
+	return studyMode
+}
+
+/** 科目名（顶栏与结算页用） */
+export function studyModeName(mode: string): string {
+	if (mode == 'en') return '英语单词'
+	if (mode == 'cn') return '语文识字'
+	return '数学思维'
+}

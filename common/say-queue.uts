@@ -1,0 +1,159 @@
+/**
+ * 算算小达人 · 逐条朗读队列（读题 → 读一个选项 → 停一下 → 读下一个）
+ *
+ * 为什么需要它：4~5 岁不识字，选项必须念出来；但**念到哪一个，屏幕上就得亮哪一个**，
+ * 否则孩子听到"第二个，收进箱子"时还在看第三格。所以朗读不能一次性把整段丢给 TTS，
+ * 必须一段一段放，并在"这一段开始"时回调页面去点亮对应选项。
+ *
+ * 与 tts.uts 的分工：
+ *  - 本模块只管"顺序 + 节奏 + 通知"，不关心声音从哪来（真人包 / 系统 TTS 都一样）；
+ *  - 每条之间留 `gap` 毫秒，让孩子有时间把视线挪到下一格。
+ *
+ * ⚠️ 原生 TTS 没有"读完"回调，只能按字数估时（estimateSpeakMs）。
+ *    所以这里宁可**估长一点**：估短了会提前掐断，孩子听到半句就跳下一格，比多等半秒糟得多。
+ *
+ * ⚠️ 全模块只有一份队列：页面切题、作答、离场都必须调 stopSteps()，
+ *    否则上一题的"第三个"会在下一题继续念。
+ *
+ * ⚠️ 念不出来（标准基座没有 UTS 插件、系统没装中文语音包）时**整队收掉**：
+ *    不演"亮一下又灭"的假动作。没有声音还闪高亮，孩子会以为是自己点坏了。
+ */
+
+import { speak, cleanForSpeech, estimateSpeakMs } from './tts.uts'
+
+/** 读第 i 条时回调（页面据此点亮选项） */
+export type SayIndexHandler = (i: number) => void
+/** 全部读完回调（页面据此收掉高亮 / 继续下一步） */
+export type SayDoneHandler = () => void
+
+let texts: Array<string> = []
+let langCode: string = 'zh-CN'
+let speed: number = 1.0
+let gapMs: number = 320
+/** 下一条要读的下标 */
+let at: number = 0
+/** 当前这条预计念完的时刻（毫秒时间戳），0 = 没在念 */
+let curEndAt: number = 0
+let timerId: number = -1
+let running: boolean = false
+let indexCb: SayIndexHandler | null = null
+let doneCb: SayDoneHandler | null = null
+
+function clearTimer(): void {
+	if (timerId >= 0) {
+		clearTimeout(timerId)
+		timerId = -1
+	}
+}
+
+function later(delay: number): void {
+	clearTimer()
+	timerId = setTimeout(() => {
+		timerId = -1
+		tick()
+	}, delay) as number
+}
+
+function tick(): void {
+	if (!running) return
+	if (at >= texts.length) {
+		// 读完了：先清状态再回调，避免回调里再次 saySteps 时被旧状态覆盖
+		running = false
+		texts = []
+		const done: SayDoneHandler | null = doneCb
+		indexCb = null
+		doneCb = null
+		curEndAt = 0
+		if (done != null) done()
+		return
+	}
+	const i: number = at
+	at++
+	const text: string = cleanForSpeech(texts[i])
+	// 先点亮再出声：孩子的眼睛比耳朵慢半拍，高亮要抢在声音前面
+	if (indexCb != null) indexCb(i)
+	let wait: number = gapMs
+	curEndAt = Date.now()
+	if (text.length > 0) {
+		const started: boolean = speak(text, langCode, speed)
+		if (!started) {
+			// 这台设备读不出来（标准基座缺 UTS 插件、系统没装语音包）：
+			// 不要"亮一下又灭"的假动作——收队并把高亮清掉，让页面回到静止状态。
+			const done: SayDoneHandler | null = doneCb
+			stopSteps()
+			if (done != null) done()
+			return
+		}
+		const speakMs: number = estimateSpeakMs(text, speed)
+		curEndAt = Date.now() + speakMs
+		wait = speakMs + gapMs
+	}
+	later(wait)
+}
+
+/**
+ * 开始逐条朗读
+ *
+ * @param list 要读的句子（按顺序）；空串会被跳过但**不改变下标**，页面可用同一套下标做高亮
+ * @param lang 语言：中文 zh-CN，英语选项 en-US
+ * @param leadMs 开始前的等待（留给提示音先响）
+ * @param gap 每条之间的留白
+ * @param rate 语速倍率（1.0 = 默认）
+ * @param onIndex 读完某一条前回调（第 i 条开始朗读时）
+ * @param onDone 全部读完回调（可为 null）
+ */
+export function saySteps(
+	list: Array<string>,
+	lang: string,
+	leadMs: number,
+	gap: number,
+	rate: number,
+	onIndex: SayIndexHandler | null,
+	onDone: SayDoneHandler | null
+): void {
+	stopSteps()
+	texts = list
+	langCode = lang
+	speed = rate
+	gapMs = gap
+	at = 0
+	indexCb = onIndex
+	doneCb = onDone
+	running = true
+	if (texts.length == 0) {
+		running = false
+		texts = []
+		indexCb = null
+		doneCb = null
+		return
+	}
+	later(leadMs > 0 ? leadMs : 1)
+}
+
+/** 停掉队列（切题 / 作答 / 离场都调） */
+export function stopSteps(): void {
+	clearTimer()
+	running = false
+	texts = []
+	at = 0
+	curEndAt = 0
+	indexCb = null
+	doneCb = null
+}
+
+/** 队列是否还在念（页面用来决定要不要显示"正在说"） */
+export function stepsRunning(): boolean {
+	return running
+}
+
+/**
+ * 当前这一条还剩多少毫秒念完（不在念时返回 0）
+ *
+ * 「教我一下」这类"先听完再开口"的入口要用它：孩子听到半句题干就插进讲解，
+ * 两头都不完整。按队列自己排的时间算，比页面另记一份估时准。
+ */
+export function stepsRemainMs(): number {
+	if (!running) return 0
+	const left: number = curEndAt - Date.now()
+	return left > 0 ? left : 0
+}

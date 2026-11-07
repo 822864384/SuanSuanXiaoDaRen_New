@@ -1,0 +1,437 @@
+/**
+ * 算算小达人 · 交往剧场（人际交往启蒙）数据与判定引擎
+ *
+ * 定位：不是答题，是「看一个小故事 → 停在要做决定的那一刻 → 选一个做法 → 看结果 → 跟说一句话」。
+ * 与「🌈 心情小课堂」的边界：本模块管"对外怎么和别人相处"，心情课堂管"对内怎么安顿自己"。
+ *
+ * 四条硬约束（改文案前先看）：
+ *  1. 没有"错误"这一档：选别的做法只是"另一种结果"，随后一定回到角色示范的正确做法。
+ *     代码里只有 good / other 两种判定，文案里不出现"错"字。
+ *  2. 不贴标签：不描述孩子（胆小/内向/多动…），只描述发生了什么。
+ *  3. 结果要真实但不惩罚：另一种结果可以是"没人理你""妈妈着急"，但不能是羞辱或惊吓。
+ *  4. 每集只教一句话：phrase 一集一句，跟读完就结束，不追加练习。
+ *
+ * 编号：S{类别}{集号}，如 S1-1 = 礼貌用语第 1 集。
+ * 类别：S1 礼貌用语 / S2 分享合作 / S3 情绪管理（对别人）/ S4 安全意识。
+ *
+ * 素材说明：全部 emoji 分镜，无视频、无音频文件，包体积几乎为零；
+ * emoji 限定在 Unicode 9 以内（Android 7 盒子能显示），新增条目前先查版本。
+ */
+
+/* ---------------- 判定 ---------------- */
+
+/** 好做法 */
+export const SO_GOOD: string = 'good'
+/** 另一种做法（不判错，走"另一种结果 + 示范"） */
+export const SO_OTHER: string = 'other'
+
+/** 集满几颗交往之星给一个称号（设计文档 6.3：7 颗） */
+export const SO_BADGE_STARS: number = 7
+
+/* ---------------- 数据结构 ---------------- */
+
+/** 一帧分镜：一个大图形 + 一句旁白 */
+export class SoBeat {
+	emoji: string = ''
+	text: string = ''
+
+	constructor(emoji: string, text: string) {
+		this.emoji = emoji
+		this.text = text
+	}
+}
+
+/** 一个做法（选项） */
+export class SoOption {
+	text: string = ''
+	/** 选它之后发生了什么（好结局 / 另一种结果） */
+	after: string = ''
+	good: boolean = false
+
+	constructor(text: string, good: boolean, after: string) {
+		this.text = text
+		this.good = good
+		this.after = after
+	}
+}
+
+/** 一集 */
+export class SoEpisode {
+	id: string = ''
+	/** 所属类别 S1~S4 */
+	theme: string = ''
+	title: string = ''
+	/** 场景标签，顶栏显示（幼儿园门口 / 客厅…） */
+	place: string = ''
+	beats: Array<SoBeat> = []
+	ask: string = ''
+	options: Array<SoOption> = []
+	/** 另一种结果之后，角色示范的正确做法（含动作 + 那句话） */
+	demo: string = ''
+	/** 跟读的一句话（≤ 7 字，孩子一口气能说完） */
+	phrase: string = ''
+	/** 这句话什么时候用 */
+	phraseTip: string = ''
+	/** 给家长的共聊话术（一集一句，屏幕下方小字） */
+	parentTip: string = ''
+}
+
+/** 类别 */
+export class SoTheme {
+	id: string = ''
+	emoji: string = ''
+	name: string = ''
+	sub: string = ''
+
+	constructor(id: string, emoji: string, name: string, sub: string) {
+		this.id = id
+		this.emoji = emoji
+		this.name = name
+		this.sub = sub
+	}
+}
+
+/* ---------------- 类别表 ---------------- */
+
+export const SO_THEMES: Array<SoTheme> = [
+	new SoTheme('S1', '👋', '礼貌用语', '问好 · 道谢 · 对不起'),
+	new SoTheme('S2', '🤝', '分享合作', '一起玩 · 排队 · 帮忙'),
+	new SoTheme('S3', '💬', '好好说话', '生气 · 输了 · 想要'),
+	new SoTheme('S4', '🛡️', '安全保护', '陌生人 · 走散 · 插座')
+]
+
+/* ---------------- 分镜工具 ---------------- */
+
+function beat(emoji: string, text: string): SoBeat {
+	return new SoBeat(emoji, text)
+}
+
+function good(text: string, after: string): SoOption {
+	return new SoOption(text, true, after)
+}
+
+function other(text: string, after: string): SoOption {
+	return new SoOption(text, false, after)
+}
+
+/** 一集（参数多，用工厂函数收口，避免手写类字段时漏项） */
+function ep(
+	id: string, theme: string, title: string, place: string,
+	beats: Array<SoBeat>, ask: string, options: Array<SoOption>,
+	demo: string, phrase: string, phraseTip: string, parentTip: string
+): SoEpisode {
+	const e = new SoEpisode()
+	e.id = id
+	e.theme = theme
+	e.title = title
+	e.place = place
+	e.beats = beats
+	e.ask = ask
+	e.options = options
+	e.demo = demo
+	e.phrase = phrase
+	e.phraseTip = phraseTip
+	e.parentTip = parentTip
+	return e
+}
+
+/* ---------------- 全部剧集 ---------------- */
+
+/**
+ * 12 集，每类 3 集。
+ * 主角固定是糖豆（宠物兔子），孩子看别人的故事更容易做判断，也不会觉得"在说我"。
+ */
+export const SO_EPISODES: Array<SoEpisode> = [
+
+	// ==================== S1 礼貌用语 ====================
+	ep('S1-1', 'S1', '早上问好', '幼儿园门口',
+		[
+			beat('🏫', '早上，糖豆来到幼儿园门口'),
+			beat('👩', '老师笑着朝他挥挥手'),
+			beat('🙂', '糖豆低着头，没有说话')
+		],
+		'糖豆可以说什么呀？',
+		[
+			good('👋 老师好', '老师摸摸他的头，说：早上好！糖豆心里甜甜的'),
+			other('🙈 不出声', '糖豆悄悄走进教室，老师没有看见他'),
+			other('🏃 直接跑进去', '糖豆一口气跑进教室，门口安安静静的')
+		],
+		'糖豆转过身，抬起头说：老师好！',
+		'老师好', '见到老师和小朋友的时候说',
+		'放学可以问问宝宝：今天在幼儿园跟谁问好了？'),
+
+	ep('S1-2', 'S1', '收到东西说谢谢', '家里',
+		[
+			beat('🎁', '奶奶送给糖豆一盒新彩笔'),
+			beat('👵', '奶奶笑着把彩笔递给他'),
+			beat('😮', '糖豆抱着彩笔，愣住了')
+		],
+		'糖豆要说什么呀？',
+		[
+			good('🙏 谢谢奶奶', '奶奶笑得眼睛弯弯，说：喜欢就好'),
+			other('😶 不说话', '奶奶等了一会儿，转身去做饭了'),
+			other('😤 我还想要', '奶奶把彩笔放在桌上，没有说话')
+		],
+		'糖豆跑过去抱住奶奶，说：谢谢奶奶！',
+		'谢谢奶奶', '别人给你东西的时候说',
+		'可以问问宝宝：今天谁给过你东西？你说了什么？'),
+
+	ep('S1-3', 'S1', '撞到人要道歉', '走廊里',
+		[
+			beat('🏃', '糖豆在走廊里跑得太快'),
+			beat('💥', '不小心撞到了小朋友'),
+			beat('😢', '小朋友坐在地上，揉着膝盖')
+		],
+		'糖豆要说什么呀？',
+		[
+			good('🙇 对不起', '糖豆把他扶起来，两个人一起回教室'),
+			other('😶 站着不动', '小朋友自己爬起来，慢慢走开了'),
+			other('🏃 跑开', '走廊里只剩小朋友一个人坐在地上')
+		],
+		'糖豆走回去，伸出手说：对不起，我扶你起来。',
+		'对不起', '不小心碰到别人的时候说',
+		'可以问问宝宝：今天有没有不小心碰到别人？后来怎么做的？'),
+
+	// ==================== S2 分享合作 ====================
+	ep('S2-1', 'S2', '一起玩小汽车', '客厅',
+		[
+			beat('🚗', '糖豆一个人在玩小汽车'),
+			beat('👦', '小伙伴走过来，想一起玩'),
+			beat('🤲', '糖豆把小汽车抱在怀里')
+		],
+		'糖豆可以怎么做？',
+		[
+			good('🤝 一起玩', '两个人轮流开小汽车，笑得很开心'),
+			other('🙅 不给', '小伙伴站了一会儿，去看绘本了'),
+			other('🚪 抱着车走开', '房子里安安静静的，糖豆一个人玩')
+		],
+		'糖豆把小汽车推过去，说：我们一起玩吧！',
+		'一起玩', '想和别人一起玩的时候说',
+		'可以问问宝宝：今天你和谁一起玩了？玩的什么？'),
+
+	ep('S2-2', 'S2', '滑梯要排队', '游乐场',
+		[
+			beat('🎠', '游乐场的滑梯前，大家在排队'),
+			beat('👧', '小朋友一个接一个地等着'),
+			beat('😖', '糖豆想先滑，往前挤了挤')
+		],
+		'怎么才能大家都玩到滑梯？',
+		[
+			good('🚶 排到队尾', '大家一个接一个滑下去，很快就轮到糖豆'),
+			other('🙌 继续往前挤', '前面的小朋友皱了皱眉，队伍停住了'),
+			other('😠 大声喊', '大家都看着他，谁也没有说话')
+		],
+		'糖豆走到队尾站好，等着前面的小朋友滑完。',
+		'我排队', '很多人的时候说',
+		'可以问问宝宝：在幼儿园玩滑梯，你是怎么等的？'),
+
+	ep('S2-3', 'S2', '帮忙收玩具', '教室里',
+		[
+			beat('🚂', '教室的地上，玩具散了一地'),
+			beat('👩', '老师蹲着，一块一块收积木'),
+			beat('👀', '糖豆站在旁边看着')
+		],
+		'糖豆可以做点什么？',
+		[
+			good('🤲 一起收', '两个人一起收，地板很快干干净净。老师说：有你帮忙真好'),
+			other('🚶 去喝水', '老师一个人收完，直起腰歇了歇'),
+			other('🚂 再拿一箱出来', '地上的玩具更多了')
+		],
+		'糖豆蹲下来，把积木一块一块放进筐里。',
+		'我来帮忙', '看到别人在忙的时候说',
+		'可以问问宝宝：今天你帮谁做过事？'),
+
+	// ==================== S3 好好说话 ====================
+	ep('S3-1', 'S3', '生气时不动手', '客厅',
+		[
+			beat('🏰', '糖豆快要把城堡搭好了'),
+			beat('👦', '小伙伴跑过来，把城堡碰倒了'),
+			beat('😠', '糖豆的拳头握得紧紧的')
+		],
+		'糖豆可以怎么做？',
+		[
+			good('💬 说出来', '糖豆说：我不喜欢这样。小伙伴帮他一起重新搭'),
+			other('👊 推一下', '小伙伴哭了，两个人都不开心'),
+			other('🚪 摔门出去', '房间里只剩糖豆一个人，积木还散在地上')
+		],
+		'糖豆深吸一口气，说：你碰倒了我的城堡，我有点生气。',
+		'我有点生气', '心里冒火的时候说',
+		'可以问问宝宝：今天有什么事让你生气了？你怎么说的？'),
+
+	ep('S3-2', 'S3', '输了也想再来', '小区空地',
+		[
+			beat('🏃', '糖豆和小伙伴比赛跑步'),
+			beat('🏁', '小伙伴先跑到了终点'),
+			beat('😞', '糖豆最后一个到，喘着气')
+		],
+		'糖豆可以说什么？',
+		[
+			good('💬 再来一次', '两个人又跑了一次，笑得很开心'),
+			other('😢 我不玩了', '糖豆坐在旁边看，小伙伴自己跑'),
+			other('😠 你跑得不算', '小伙伴愣住了，不明白哪里不算')
+		],
+		'糖豆喘着气说：你跑得真快，我们再来一次！',
+		'再来一次', '没赢的时候说',
+		'可以问问宝宝：今天玩什么输了？还想再来吗？'),
+
+	ep('S3-3', 'S3', '想玩先问一声', '公园里',
+		[
+			beat('🎈', '小伙伴手里拿着一个气球'),
+			beat('👀', '糖豆看着气球，很想要'),
+			beat('🤲', '糖豆伸手就去拿')
+		],
+		'糖豆可以先说什么？',
+		[
+			good('💬 借我玩一下好吗', '小伙伴把气球递给他：给你玩一会儿'),
+			other('🤲 直接拿走', '小伙伴追着他跑，气球飞走了'),
+			other('😢 站在旁边哭', '小伙伴不知道怎么了，把气球抱得更紧')
+		],
+		'糖豆问：我可以玩一下你的气球吗？',
+		'可以借我玩吗', '想玩别人的东西时先问',
+		'可以问问宝宝：你想玩别人的玩具时，会怎么说？'),
+
+	// ==================== S4 安全保护 ====================
+	ep('S4-1', 'S4', '陌生人给糖', '小区门口',
+		[
+			beat('🚪', '糖豆在小区门口等妈妈'),
+			beat('👨', '一位不认识的叔叔走过来'),
+			beat('🍬', '他拿出一颗糖，说要带糖豆去买')
+		],
+		'糖豆该怎么做？',
+		[
+			good('🏃 跑向保安叔叔', '糖豆跑到保安叔叔身边，叔叔把他送回家'),
+			other('🍬 接过糖跟他走', '走了几步，糖豆发现路不对，心里慌起来'),
+			other('🤐 站着不说话', '那个人还在等着，糖豆越站越紧张')
+		],
+		'糖豆大声说：我不要，我要找妈妈！然后跑向保安叔叔。',
+		'我不要', '不认识的人给东西时说',
+		'在家练一遍：不认识的人给东西，大声说"我不要"，然后去找大人。'),
+
+	ep('S4-2', 'S4', '走散了站原地', '商场里',
+		[
+			beat('🏬', '商场里人很多，糖豆在看玩具'),
+			beat('👀', '他一回头，妈妈不见了'),
+			beat('😨', '糖豆想往外跑')
+		],
+		'糖豆应该怎么办？',
+		[
+			good('🙋 站在原地等', '糖豆站在原地看着四周，妈妈很快跑回来抱住他'),
+			other('🏃 跑出商场', '糖豆跑得更远，人更多了'),
+			other('🙈 躲到柜台后面', '妈妈喊他的名字，他听不见')
+		],
+		'糖豆站住不动，大声喊：妈妈，我在这里！',
+		'妈妈我在这里', '找不到大人的时候喊',
+		'出门前和孩子约好：走散了就站在原地不动，等大人回来找。'),
+
+	ep('S4-3', 'S4', '插座不能碰', '家里',
+		[
+			beat('🔌', '墙上有一个插座，上面有小洞'),
+			beat('👆', '糖豆伸出手，想去摸一摸'),
+			beat('⚡', '旁边还有一根电线')
+		],
+		'糖豆可以怎么做？',
+		[
+			good('🚶 走开去玩别的', '糖豆去玩积木了。妈妈说：插座很危险，你做得对'),
+			other('👆 继续摸', '妈妈看见了，赶紧把他抱开'),
+			other('🔌 拿东西往里捅', '妈妈跑过来，把东西拿走了')
+		],
+		'糖豆把手收回来，转身去玩积木。',
+		'我不碰', '看到插座和电线时说',
+		'可以带孩子在房间里找一找：哪些地方不能碰？让他自己指出来。')
+]
+
+/* ---------------- 查询 ---------------- */
+
+/** 类别下的全部剧集 */
+export function episodesOf(themeId: string): Array<SoEpisode> {
+	const out: Array<SoEpisode> = []
+	for (let i = 0; i < SO_EPISODES.length; i++) {
+		if (SO_EPISODES[i].theme == themeId) out.push(SO_EPISODES[i])
+	}
+	return out
+}
+
+/** 按 id 找类别（找不到返回第一个） */
+export function soThemeOf(themeId: string): SoTheme {
+	for (let i = 0; i < SO_THEMES.length; i++) {
+		if (SO_THEMES[i].id == themeId) return SO_THEMES[i]
+	}
+	return SO_THEMES[0]
+}
+
+/** 按 id 找剧集（找不到返回第一集，页面不至于空白） */
+export function episodeOf(id: string): SoEpisode {
+	for (let i = 0; i < SO_EPISODES.length; i++) {
+		if (SO_EPISODES[i].id == id) return SO_EPISODES[i]
+	}
+	return SO_EPISODES[0]
+}
+
+/** 某类别已演过几集 */
+export function soProgressOf(themeId: string, doneIds: Array<string>): number {
+	const pool: Array<SoEpisode> = episodesOf(themeId)
+	let n: number = 0
+	for (let i = 0; i < pool.length; i++) {
+		if (doneIds.indexOf(pool[i].id) >= 0) n++
+	}
+	return n
+}
+
+/** 全部已演过多少集 */
+export function soDoneCount(doneIds: Array<string>): number {
+	let n: number = 0
+	for (let i = 0; i < SO_EPISODES.length; i++) {
+		if (doneIds.indexOf(SO_EPISODES[i].id) >= 0) n++
+	}
+	return n
+}
+
+/**
+ * 下一集：优先没演过的，都演过了就从头来。
+ * 不做随机组卷——交往剧集是"故事"，顺序看才连得上（同一句礼貌用语会在不同场景复现）。
+ */
+export function nextEpisode(themeId: string, doneIds: Array<string>): SoEpisode {
+	const pool: Array<SoEpisode> = episodesOf(themeId)
+	if (pool.length == 0) return SO_EPISODES[0]
+	for (let i = 0; i < pool.length; i++) {
+		if (doneIds.indexOf(pool[i].id) < 0) return pool[i]
+	}
+	return pool[0]
+}
+
+/* ---------------- 判定 ---------------- */
+
+/**
+ * 判定：只有 good / other 两种，没有"错"。
+ * 页面拿到 other 时走「另一种结果 → 角色示范 → 跟读」，不是重来。
+ */
+export function judgeSo(opt: SoOption): string {
+	return opt.good ? SO_GOOD : SO_OTHER
+}
+
+/** 好结局的一句夸奖（不夸张，社交场景要稳） */
+export function soPraise(): string {
+	return '这样做，别人心里会暖暖的'
+}
+
+/** 另一种结果的开场（不提"错"） */
+export function soOtherOpen(): string {
+	return '还有另一种样子'
+}
+
+/**
+ * 交往之星称号：按已演集数算。
+ * 设计文档 6.3：集满 7 颗给"社交小达人"。
+ */
+export function soTitleOf(stars: number): string {
+	if (stars >= SO_BADGE_STARS) return '社交小达人'
+	if (stars >= 4) return '会打招呼啦'
+	if (stars >= 1) return '小小演员'
+	return '新来的小演员'
+}
+
+/** 本集完成的一句话总结 */
+export function soSummary(ep: SoEpisode, goodPick: boolean): string {
+	if (goodPick) return '这一集你选得很好。记住这句话：' + ep.phrase + '。'
+	return '这一集你看到了另一种样子。下次可以试试说：' + ep.phrase + '。'
+}

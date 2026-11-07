@@ -1,0 +1,133 @@
+/**
+ * 算算小达人 · 音效通道
+ *
+ * 素材：`static/sfx/*.wav`，由 `tests/make-sfx.mjs` 代码合成（可改参数重跑），
+ * 不依赖外部素材、无版权问题，单个 18~32KB，四端（App-Android / Web）均支持 wav。
+ *
+ * 走 `uni.createInnerAudioContext()`（uni-app x 内置 API，标准基座即可用），
+ * 因此音效不需要自定义基座、也不需要原生插件——和 TTS 的技术前提不同。
+ *
+ * 设计规范：不用否定性音效。
+ * - 答错用柔和下行水滴音（G4→Eb4），不是"错误蜂鸣"
+ * - 超时单独用低音双响，和答错区分开
+ */
+
+/** 音效文件目录（App 端用绝对路径，不要写 ../static/） */
+const SFX_DIR: string = '/static/sfx/'
+
+class SfxSlot {
+	key: string = ''
+	src: string = ''
+	alt: string = ''
+	ctx: InnerAudioContext | null = null
+	usedAlt: boolean = false
+}
+
+const SLOTS: Array<SfxSlot> = []
+
+function slotOf(key: string, file: string): SfxSlot {
+	for (let i = 0; i < SLOTS.length; i++) {
+		if (SLOTS[i].key == key) return SLOTS[i]
+	}
+	const s = new SfxSlot()
+	s.key = key
+	s.src = SFX_DIR + file
+	// 兜底路径：部分版本 App 端需要去掉前导斜杠
+	s.alt = 'static/sfx/' + file
+	SLOTS.push(s)
+	return s
+}
+
+function ensureCtx(s: SfxSlot): InnerAudioContext | null {
+	if (s.ctx != null) return s.ctx
+	try {
+		const ctx = uni.createInnerAudioContext()
+		ctx.src = s.src
+		ctx.volume = 1.0
+		ctx.autoplay = false
+		ctx.onError((e) => {
+			if (!s.usedAlt) {
+				// 换一次路径再试，避免不同版本 static 解析差异导致整段静音
+				s.usedAlt = true
+				ctx.src = s.alt
+				try {
+					ctx.play()
+				} catch (err) {
+					console.log('[sfx] 兜底路径播放失败 ' + s.key)
+				}
+			} else {
+				console.log('[sfx] 播放失败 ' + s.key)
+			}
+		})
+		s.ctx = ctx
+		return ctx
+	} catch (e) {
+		console.log('[sfx] 创建音频上下文失败 ' + s.key)
+		return null
+	}
+}
+
+function play(key: string, file: string): void {
+	const s = slotOf(key, file)
+	const ctx = ensureCtx(s)
+	if (ctx == null) return
+	try {
+		// 同一音效连续触发时先归零，避免第二次没有声音
+		ctx.stop()
+	} catch (e) {
+		// 未播放时 stop 会抛，忽略即可
+	}
+	try {
+		ctx.play()
+	} catch (e) {
+		console.log('[sfx] play 异常 ' + key)
+	}
+}
+
+/** 出题提示音：两声叮咚，抓住注意力后再读题 */
+export function playAsk(): void {
+	play('ask', 'ding.wav')
+}
+
+/** 答对：上行琶音，明亮 */
+export function playCorrect(): void {
+	play('correct', 'correct.wav')
+}
+
+/** 答错：柔和下行水滴音（不作为否定性反馈） */
+export function playWrong(): void {
+	play('wrong', 'wrong.wav')
+}
+
+/**
+ * "再看看"：比答错更轻的一声软音
+ *
+ * 心情小课堂用这个，不用 wrong.wav——情绪模块里没有"错误"这件事，
+ * 只有"还没看见"和"换个角度看看"。
+ */
+export function playSoft(): void {
+	play('soft', 'soft.wav')
+}
+
+/** 超时：低音双响，与答错区分 */
+export function playTimeUp(): void {
+	play('timeup', 'timeup.wav')
+}
+
+/** 页面卸载时释放（文档要求必须 destroy，否则泄漏） */
+export function releaseSfx(): void {
+	while (SLOTS.length > 0) {
+		const s = SLOTS.pop()
+		if (s == null) continue
+		const c = s.ctx
+		if (c != null) {
+			try {
+				c.stop()
+				c.destroy()
+			} catch (e) {
+				console.log('[sfx] 释放失败 ' + s.key)
+			}
+			s.ctx = null
+		}
+	}
+}

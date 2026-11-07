@@ -1,0 +1,13 @@
+{
+  "id": "ssxdr-speech",
+  "displayName": "语音朗读（Android 原生 TTS）",
+  "version": "1.0.0",
+  "description": "封装 Android 系统 TextToSpeech，为算算小达人提供离线中文朗读（读题 / 报答案）",
+  "keywords": [
+    "tts",
+    "speech",
+    "朗读",
+    "语音合成"
+  ],
+  "uni_modules": {}
+}

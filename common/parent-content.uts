@@ -1,0 +1,141 @@
+/**
+ * 算算小达人 · 家长课堂内容
+ *
+ * 面向成人阅读，与儿童端内容严格分开：
+ * 这里可以出现"拖拉""磨蹭"这类描述行为（不是评价孩子）的词，
+ * 儿童端（`mind.uts` / `pages/mind/*`）绝对不允许出现——见静态检查第 7 类。
+ *
+ * 每个专题固定四段结构：
+ *   ① 先分清类型  ② 三个能马上用的做法  ③ 三句可以直接照念的话  ④ 一件千万别做的事
+ * 好处是家长三分钟能拿走一个能用的动作，不需要读完一篇长文。
+ *
+ * 内容按块（block）切分，一次显示一屏——电视端没有触摸滚动，长页会被裁掉。
+ */
+
+export class ParentRow {
+	a: string = ''
+	b: string = ''
+
+	constructor(a: string, b: string) {
+		this.a = a
+		this.b = b
+	}
+}
+
+/** 一块内容 = 一屏 */
+export class ParentBlock {
+	/** 小标题（含 ①②③ 序号） */
+	title: string = ''
+	/** text 纯段落 / rows 两列条目 / items 编号列表 */
+	kind: string = 'text'
+	text: string = ''
+	rows: Array<ParentRow> = []
+	items: Array<string> = []
+}
+
+export class ParentTopic {
+	id: string = ''
+	emoji: string = ''
+	title: string = ''
+	sub: string = ''
+	ready: boolean = false
+	blocks: Array<ParentBlock> = []
+}
+
+function textBlock(title: string, text: string): ParentBlock {
+	const b = new ParentBlock()
+	b.kind = 'text'
+	b.title = title
+	b.text = text
+	return b
+}
+
+function rowsBlock(title: string, rows: Array<ParentRow>): ParentBlock {
+	const b = new ParentBlock()
+	b.kind = 'rows'
+	b.title = title
+	b.rows = rows
+	return b
+}
+
+function itemsBlock(title: string, items: Array<string>): ParentBlock {
+	const b = new ParentBlock()
+	b.kind = 'items'
+	b.title = title
+	b.items = items
+	return b
+}
+
+/** 每个家长课堂页面底部都显示（免责声明，不可删） */
+export const PARENT_DISCLAIMER: string =
+	'本 App 提供的是家庭教育参考，不做诊断，也不能替代心理咨询或医疗。如果你担心孩子的状态，请直接找专业人员。'
+
+/* ---------------- 专题 1：写作业拖拉 ---------------- */
+
+const HW_BLOCKS: Array<ParentBlock> = [
+	textBlock('① 先分清是哪一种',
+		'拖拉不是一种毛病，是三种完全不同的状态，处理方式相反。判断方法很简单：你离开房间十分钟，他是继续写，还是也停下来了？'),
+	rowsBlock('三种类型', [
+		new ParentRow('启动困难型', '要喝水、上厕所、找橡皮，二十分钟书还没翻开。真正的原因是：任务在他脑子里是一大团，不知道从哪开始。方向是降低启动门槛，先不管过程。'),
+		new ParentRow('完美回避型', '写两笔就擦，反复问"这样对吗"。真正的原因是怕做不好，宁可不动。方向是允许出错，把纠错挪到最后。'),
+		new ParentRow('对抗型', '你越催越慢，你一走就停。真正的原因是这件事变成了你俩之间的战场。方向是把控制权还给他，你退出。')
+	]),
+	textBlock('怎么判断', '还在写，多半是启动困难型或完美回避型；也停了，是对抗型——那就不是能力问题。你越盯，他越把这件事的所有权交给你。'),
+	itemsBlock('② 三个可以马上用的做法', [
+		'三分钟启动法：不要求"写完"，只要求"先做第一题"，并且明确允许他做完这一题就停。这句话必须是真的，不能用来骗他坐下。启动成本降下来，惯性通常会接管。',
+		'固定开场动作：同一时间、同一张桌子、同一套流程——摆文具、说出今天有哪几项、自己挑最简单的先做。把每天都要打的仗变成不需要决策的仪式。决策消耗的是前额叶，而六岁孩子的前额叶是全屋最弱的部门。',
+		'家长退位：从"坐旁边盯"改成"在同一房间做自己的事"，约定一句"只有你举手，我才会过来"。这一条最难，但盯着写出来的作业，用的是你的执行功能，不是他的。'
+	]),
+	itemsBlock('③ 三句可以直接照念的话', [
+		'开始时（给有限选择）：「你想先写数学还是先写语文？」',
+		'他坐下了（夸动作，不夸聪明）：「你刚才自己坐下来翻开本子了，这一步是你做到的。」',
+		'时间管理（你只提醒，不催促）：「现在八点二十，你打算写到几点？到点我提醒你一次。」'
+	]),
+	textBlock('④ 一件千万别做的事',
+		'别把"写完才能玩"当成唯一的杠杆。对低龄孩子，放学后先给二十分钟自由活动再写，效率通常更高——写作业要用的那部分脑力，刚放学时是最空的。把它设成"玩"的对立面，换来的一次比一次长的拉锯。也别在写的过程中随时纠错，错题留到最后一起看：中途纠错打断的不是一道题，是"我可以连续完成一件事"的体验。'),
+	textBlock('时间要看得见',
+		'四到七岁的孩子没有抽象的时间概念，"再玩五分钟"等于没说。用沙漏，或者一条看得见的计时条。看得见的时间，才管得住。'),
+	textBlock('什么时候不只是习惯问题',
+		'如果同时出现这几条，并且持续六个月以上：作业以外的活动也难以持续、经常丢东西忘事情、坐不住的程度已经影响到课堂、情绪明显低落或异常易怒、睡眠食欲明显改变——建议去儿童保健科或儿童心理科做一次评估。这不是给孩子贴标签，是排除视力、听力、注意力和情绪方面真实存在的因素。评估本身不伤害孩子，长期误判才会。'),
+	rowsBlock('心理健康红绿灯', [
+		new ParentRow('🟢 正常波动', '偶尔拖拉、偶尔闹情绪、怕生。一般两周内自己缓解，不需要特别处理。'),
+		new ParentRow('🟡 需要关注', '同一问题持续一个月以上、影响吃饭睡觉、已经会的又不会了、持续拒绝上学。先调整方法并和老师沟通，一个月无改善就咨询。'),
+		new ParentRow('🔴 尽快求助', '说"我不如死了算了"这类话、有伤害自己的行为、情绪低落或兴趣丧失持续两周以上、被欺负后极度恐惧、出现查不出原因的躯体症状。请直接找儿童心理科，或拨打当地心理援助热线。')
+	])
+]
+
+/* ---------------- 专题表 ---------------- */
+
+function topic(
+	id: string, emoji: string, title: string, sub: string, ready: boolean, blocks: Array<ParentBlock>
+): ParentTopic {
+	const t = new ParentTopic()
+	t.id = id
+	t.emoji = emoji
+	t.title = title
+	t.sub = sub
+	t.ready = ready
+	t.blocks = blocks
+	return t
+}
+
+const NO_BLOCKS: Array<ParentBlock> = []
+
+export const PARENT_TOPICS: Array<ParentTopic> = [
+	topic('hw', '🌱', '写作业拖拉', '不盯着就不动，怎么建立自主习惯', true, HW_BLOCKS),
+	topic('tantrum', '🌊', '发脾气、哭闹不止', '正在整理', false, NO_BLOCKS),
+	topic('sep', '🎒', '分离焦虑与入园适应', '正在整理', false, NO_BLOCKS),
+	topic('screen', '📱', '屏幕时间与睡前拉锯', '正在整理', false, NO_BLOCKS),
+	topic('sibling', '👧', '争宠与同伴冲突', '正在整理', false, NO_BLOCKS)
+]
+
+/** 按 id 找专题（找不到返回第一个已开放的） */
+export function topicOf(id: string): ParentTopic {
+	for (let i = 0; i < PARENT_TOPICS.length; i++) {
+		if (PARENT_TOPICS[i].id == id) return PARENT_TOPICS[i]
+	}
+	for (let i = 0; i < PARENT_TOPICS.length; i++) {
+		if (PARENT_TOPICS[i].ready) return PARENT_TOPICS[i]
+	}
+	return PARENT_TOPICS[0]
+}

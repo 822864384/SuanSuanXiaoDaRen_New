@@ -1,0 +1,302 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶部：返回 / 当前孩子 / 交往之星 -->
+			<view class="so-top">
+				<view class="chip" @click="goHome">
+					<text class="chip-text">← 回首页</text>
+				</view>
+				<view class="chip">
+					<text class="chip-text">{{ name }} · 交往剧场</text>
+				</view>
+				<view class="chip">
+					<text class="chip-gold">⭐ {{ stars }} / {{ badgeStars }}</text>
+				</view>
+				<view class="so-space"></view>
+				<view class="chip">
+					<text class="chip-dim">演一集 · 学一句</text>
+				</view>
+			</view>
+
+			<view class="so-body">
+
+				<text class="so-title">🤝 交往剧场</text>
+				<text class="so-sub">看一个小故事，停一停，选一个做法，再跟说一句话</text>
+
+				<!-- 四个类别：点一下切换下面这一排剧集 -->
+				<view class="cat-row">
+					<view v-for="c in cats" :key="c.id" class="cat"
+						:class="(c.id == catId ? 'cat-on' : '') + (c.done == c.total ? ' cat-full' : '')"
+						@click="pickCat(c.id)">
+						<text class="cat-emoji">{{ c.emoji }}</text>
+						<text class="cat-name">{{ c.name }}</text>
+						<text class="cat-sub">{{ c.sub }}</text>
+						<text class="cat-num">{{ c.done }} / {{ c.total }}</text>
+					</view>
+				</view>
+
+				<!-- 当前类别的三集：演过的点亮一颗星 -->
+				<view class="ep-row">
+					<view v-for="e in eps" :key="e.id" class="ep" @click="openEp(e.id)">
+						<text class="ep-face">{{ e.face }}</text>
+						<text class="ep-title">{{ e.title }}</text>
+						<text class="ep-star">{{ e.star }}</text>
+					</view>
+				</view>
+
+				<text class="foot-hint">{{ footHint }}</text>
+
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		SO_THEMES, SO_BADGE_STARS, SoTheme, SoEpisode,
+		episodesOf, soProgressOf, soDoneCount
+	} from '@/common/so.uts'
+	import { getSoTheme, setSoTheme, setActiveEpisode } from '@/common/so-session.uts'
+	import { getSoDone, getCurrentProfile } from '@/common/store.uts'
+	import { safeBack } from '@/common/nav.uts'
+	import { playSoft, releaseSfx } from '@/common/sfx.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** 类别卡（进度在 onShow 里算好，模板只绑字段） */
+	class CatItem {
+		id: string = ''
+		emoji: string = ''
+		name: string = ''
+		sub: string = ''
+		done: number = 0
+		total: number = 0
+
+		constructor(t: SoTheme) {
+			this.id = t.id
+			this.emoji = t.emoji
+			this.name = t.name
+			this.sub = t.sub
+		}
+	}
+
+	/** 剧集卡 */
+	class EpItem {
+		id: string = ''
+		face: string = ''
+		title: string = ''
+		star: string = ''
+	}
+
+	const name = ref<string>('小朋友')
+	const stars = ref<number>(0)
+	const badgeStars: number = SO_BADGE_STARS
+	const catId = ref<string>('S1')
+	const cats = ref<Array<CatItem>>([])
+	const eps = ref<Array<EpItem>>([])
+	const footHint = ref<string>('')
+
+	onShow(() => {
+		name.value = getCurrentProfile().name
+		// 上次在大厅选的类别记着，回来还是那一类
+		catId.value = getSoTheme()
+		refresh()
+	})
+
+	onUnload(() => {
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	function refresh() {
+		const done: Array<string> = getSoDone()
+		stars.value = soDoneCount(done)
+
+		const list: Array<CatItem> = []
+		for (let i = 0; i < SO_THEMES.length; i++) {
+			const item: CatItem = new CatItem(SO_THEMES[i])
+			item.total = episodesOf(item.id).length
+			item.done = soProgressOf(item.id, done)
+			list.push(item)
+		}
+		cats.value = list
+		refreshEps(done)
+	}
+
+	function refreshEps(done: Array<string>) {
+		// 当前类别的剧集按清单顺序排（故事有先后，不随机）
+		const pool: Array<SoEpisode> = episodesOf(catId.value)
+		const list: Array<EpItem> = []
+		for (let i = 0; i < pool.length; i++) {
+			const e: SoEpisode = pool[i]
+			const item: EpItem = new EpItem()
+			item.id = e.id
+			item.face = e.beats.length > 0 ? e.beats[0].emoji : '🎬'
+			item.title = e.title
+			item.star = done.indexOf(e.id) >= 0 ? '⭐ 演过了' : '还没演'
+			list.push(item)
+		}
+		eps.value = list
+
+		let hint: string = '演完一集，点亮一颗交往之星'
+		if (stars.value >= badgeStars) {
+			hint = '你已经点亮 ' + stars.value.toString() + ' 颗星，是社交小达人啦'
+		} else if (stars.value > 0) {
+			hint = '已点亮 ' + stars.value.toString() + ' 颗交往之星，再演 ' +
+				(badgeStars - stars.value).toString() + ' 集就有小惊喜'
+		}
+		footHint.value = hint
+	}
+
+	function pickCat(id: string) {
+		if (catId.value != id) playSoft()
+		catId.value = id
+		setSoTheme(id)
+		refreshEps(getSoDone())
+	}
+
+	function openEp(id: string) {
+		setSoTheme(catId.value)
+		setActiveEpisode(id)
+		uni.navigateTo({ url: '/pages/so/play' })
+	}
+
+	function goHome() {
+		safeBack()
+	}
+</script>
+
+<style>
+	.so-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.so-space {
+		flex: 1;
+	}
+
+	/* 顶部以下的整体垂直居中：16:9 电视上不会挤在顶部，手机横屏也够放 */
+	.so-body {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.so-title {
+		color: #ffd76e;
+		font-size: 24rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.so-sub {
+		color: #9fb4ff;
+		font-size: 11rpx;
+		text-align: center;
+		margin-top: 4rpx;
+	}
+
+	.cat-row {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 12rpx;
+	}
+
+	.cat {
+		width: 148rpx;
+		height: 88rpx;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.07);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.cat-on {
+		border-color: #ffd76e;
+		background-color: rgba(255, 215, 110, 0.16);
+	}
+
+	/* 这一类全演完了：整张卡换成暖色，孩子一眼看出"这岛通关了" */
+	.cat-full {
+		background-color: rgba(62, 207, 142, 0.16);
+	}
+
+	.cat-emoji {
+		font-size: 26rpx;
+	}
+
+	.cat-name {
+		color: #ffffff;
+		font-size: 13rpx;
+		font-weight: bold;
+		margin-top: 2rpx;
+	}
+
+	.cat-sub {
+		color: #9fb4ff;
+		font-size: 8rpx;
+		margin-top: 1rpx;
+	}
+
+	.cat-num {
+		color: #3ecf8e;
+		font-size: 8.5rpx;
+		margin-top: 2rpx;
+	}
+
+	.ep-row {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 10rpx;
+	}
+
+	.ep {
+		width: 176rpx;
+		height: 96rpx;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		border-color: rgba(159, 180, 255, 0.35);
+		background-color: rgba(255, 255, 255, 0.05);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.ep-face {
+		font-size: 34rpx;
+	}
+
+	.ep-title {
+		color: #ffffff;
+		font-size: 12rpx;
+		font-weight: bold;
+		margin-top: 2rpx;
+	}
+
+	.ep-star {
+		color: #ffd76e;
+		font-size: 8.5rpx;
+		margin-top: 2rpx;
+	}
+
+	.foot-hint {
+		color: #7d90c9;
+		font-size: 10rpx;
+		text-align: center;
+		margin-top: 10rpx;
+	}
+</style>

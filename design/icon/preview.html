@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>算算小达人 · 图标方案预览</title>
+<style>
+  :root { --bg:#0b1026; --card:#161e3c; --mint:#3ecf8e; --gold:#ffd76e; --coral:#ff8a5c; --txt:#eef2ff; --dim:#9aa7d0; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; padding:34px 28px 48px; }
+  h1 { font-size:24px; margin:0 0 6px; letter-spacing:1px; }
+  .sub { color:var(--dim); font-size:13px; margin-bottom:26px; }
+  h2 { font-size:16px; margin:34px 0 14px; color:var(--mint); font-weight:600; }
+  .row { display:flex; gap:26px; flex-wrap:wrap; align-items:flex-end; }
+  .opt { display:flex; gap:26px; flex-wrap:wrap; }
+  .panel { background:var(--card); border:1px solid #253063; border-radius:16px; padding:18px; }
+  .label { font-size:12px; color:var(--dim); margin-top:10px; text-align:center; }
+  .tile { border-radius:22%; overflow:hidden; display:block; }
+  .shelf { display:flex; gap:22px; align-items:center; background:#0f1530; border:1px solid #222c58; border-radius:20px; padding:20px 24px; }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; background:#0f1530; border:1px solid #222c58; border-radius:20px; padding:18px; width:420px; }
+  .app { text-align:center; font-size:11px; color:var(--dim); }
+  .app img { width:56px; height:56px; border-radius:15px; display:block; margin:0 auto 6px; }
+  .sizes { display:flex; gap:18px; align-items:flex-end; background:#0f1530; border:1px solid #222c58; border-radius:20px; padding:20px 24px; }
+  .card-note { color:var(--dim); font-size:12px; line-height:1.85; max-width:390px; }
+  .badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:rgba(62,207,142,.16); color:var(--mint); border:1px solid rgba(62,207,142,.4); }
+</style>
+</head>
+<body>
+  <h1>算算小达人 · App 图标</h1>
+  <div class="sub">深蓝紫底（#1b2a5e）+ 薄荷绿算器 + 金黄学士帽 + 珊瑚橙加号 —— 沿用 App 内的主色，电视大屏与手机小图标都能认出来。</div>
+
+  <h2>方案 B · 算器小博士（推荐，已接入应用）</h2>
+  <div class="opt">
+    <div class="panel">
+      <img class="tile" src="../../static/appicon/icon-512.png" width="220" height="220" alt="方案B">
+      <div class="label">512 × 512 原始图标</div>
+    </div>
+    <div>
+      <div class="shelf">
+        <div>
+          <div class="grid">
+            <div class="app"><img src="../../static/appicon/icon-144.png" alt="">计算器</div>
+            <div class="app"><img src="../../static/appicon/icon-144.png" alt="">相册</div>
+            <div class="app"><img src="../../static/appicon/icon-144.png" alt="">设置</div>
+            <div class="app"><img src="../../static/appicon/icon-144.png" alt="">时钟</div>
+          </div>
+          <div class="label">桌面平铺：相邻图标不会混淆</div>
+        </div>
+        <div>
+          <div class="sizes">
+            <div><img class="tile" src="../../static/appicon/icon-192.png" width="96" height="96" alt=""><div class="label">96</div></div>
+            <div><img class="tile" src="../../static/appicon/icon-96.png" width="64" height="64" alt=""><div class="label">64</div></div>
+            <div><img class="tile" src="../../static/appicon/icon-72.png" width="40" height="40" alt=""><div class="label">40</div></div>
+            <div><img class="tile" src="../../static/appicon/icon-72.png" width="28" height="28" alt=""><div class="label">28</div></div>
+          </div>
+          <div class="label">小尺寸可读性：加号与双眼在 28px 仍成立</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>方案 A · 抱算器的小狐狸（备选，形象更亲和）</h2>
+  <div class="opt">
+    <div class="panel">
+      <img class="tile" src="appicon-a-fox-1024.png" width="220" height="220" alt="方案A">
+      <div class="label">1024 × 1024 主图</div>
+    </div>
+    <div class="panel">
+      <div class="sizes">
+        <div><img class="tile" src="appicon-a-fox-1024.png" width="96" height="96" alt=""><div class="label">96</div></div>
+        <div><img class="tile" src="appicon-a-fox-1024.png" width="64" height="64" alt=""><div class="label">64</div></div>
+        <div><img class="tile" src="appicon-a-fox-1024.png" width="40" height="40" alt=""><div class="label">40</div></div>
+        <div><img class="tile" src="appicon-a-fox-1024.png" width="28" height="28" alt=""><div class="label">28</div></div>
+      </div>
+      <div class="card-note" style="margin-top:14px">
+        形象更讨 4~5 岁喜欢，但缩小后细节（胡须、星星、数字）会糊，桌面平铺时不如方案 B 抢眼。<br>
+        适合当<b>吉祥物/启动页插画</b>，而不是图标本体。
+      </div>
+    </div>
+  </div>
+
+  <h2>设计口径</h2>
+  <div class="card-note" style="max-width:760px">
+    <span class="badge">配色</span> 底 #1b2a5e → #3a2f74 斜渐变；主体薄荷绿 #3ecf8e；点缀金黄 #ffd76e、珊瑚橙 #ff8a5c、白。<br>
+    <span class="badge">构图</span> 满幅方形、无白边无水印；主体占比约 70%，四周留 8% 安全区，被任何形状遮罩（圆形/圆角方/水滴）切掉都不伤主体。<br>
+    <span class="badge">识别</span> 只保留三个强符号：学士帽（学）、加号（算）、两只眼睛（小达人）。去掉文字与多余数字，保证 28px 仍有辨识度。<br>
+    <span class="badge">产物</span> 1024 主图 + 512/192/144/96/72 五档；已写入 manifest.json 的 Android 图标位。
+  </div>
+</body>
+</html>

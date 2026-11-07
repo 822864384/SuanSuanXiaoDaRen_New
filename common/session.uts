@@ -1,0 +1,58 @@
+/**
+ * 算算小达人 · 跨页面会话状态
+ *
+ * 为什么不用页面传参：uvue 的 onLoad 参数是 UTSJSONObject，跨端取值的写法容易踩坑；
+ * 一轮 5 题的结算数据量很小，用模块级单例最稳（同一次运行内模块缓存有效）。
+ */
+
+/** 一轮结束后的结算数据 */
+export class RoundResult {
+  /** 科目：math / cn / en / so */
+  mode: string = 'math'
+  /** 本轮关卡号 */
+  level: number = 1
+  /** 答对题数 */
+  right: number = 0
+  /** 答错与超时题数 */
+  wrong: number = 0
+  /**
+   * 语文/英语里"再看看"的题数
+   * 单独一个字段，不进 wrong：4 岁认不出字、听不懂词是正常状态，
+   * 报告里写"答错 3 题"会让家长误判孩子有问题。结算页显示成"还有 2 个再看看"。
+   */
+  retry: number = 0
+  /** 获得星星（= 答对题数，同原型） */
+  stars: number = 0
+}
+
+/** 全局共享的结算数据 */
+export const round = new RoundResult()
+
+/** 开始新一关前清空 */
+export function beginRound(mode: string, level: number): void {
+  round.mode = mode
+  round.level = level
+  round.right = 0
+  round.wrong = 0
+  round.retry = 0
+  round.stars = 0
+}
+
+/** 一轮结束写入（数学：对错都计） */
+export function endRound(right: number, wrong: number): void {
+  round.right = right
+  round.wrong = wrong
+  round.retry = 0
+  round.stars = right
+}
+
+/**
+ * 一轮结束写入（语文 / 英语）
+ * 这两科只有"认出来了"和"再看看"，没有"答错"。
+ */
+export function endRoundStudy(right: number, retry: number): void {
+  round.right = right
+  round.wrong = 0
+  round.retry = retry
+  round.stars = right
+}

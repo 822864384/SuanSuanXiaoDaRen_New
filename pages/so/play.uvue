@@ -1,0 +1,737 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<view class="play-top">
+				<view class="chip" @click="goBack">
+					<text class="chip-text">← 交往剧场</text>
+				</view>
+				<view class="chip">
+					<text class="chip-text">{{ theme.emoji }} {{ theme.name }}</text>
+				</view>
+				<view class="chip">
+					<text class="chip-dim">{{ ep.place }}</text>
+				</view>
+				<view v-if="speaking" class="chip">
+					<text class="say-on">🔊 正在说</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip" @click="repeat">
+					<text class="chip-text">🔊 再听一遍</text>
+				</view>
+			</view>
+
+			<!-- ========== 一、分镜：一帧一屏，自动往下走，也能点「下一句」 ========== -->
+			<view v-if="stage == 'beat'" class="beat-wrap">
+				<text class="beat-emoji">{{ curBeat.emoji }}</text>
+				<text class="beat-text">{{ curBeat.text }}</text>
+				<view class="dots">
+					<view v-for="d in dots" :key="d.i" class="dot"
+						:class="d.on ? 'dot-on' : ''">
+					</view>
+				</view>
+				<view class="btn" @click="nextBeat">
+					<text class="btn-text">下一句 →</text>
+				</view>
+			</view>
+
+			<!-- ========== 二、定格提问：故事停在要做决定的那一刻 ========== -->
+			<view v-else-if="stage == 'ask'" class="ask-wrap">
+				<text class="ask-emoji">{{ freeze.emoji }}</text>
+				<text class="ask-text">{{ ep.ask }}</text>
+				<view class="opt-row">
+					<view v-for="(o, i) in ep.options" :key="o.text" class="opt"
+						:class="readIdx == i ? 'opt-read' : ''" @click="pick(o)">
+						<text class="opt-text" :class="readIdx == i ? 'opt-text-read' : ''">{{ o.text }}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- ========== 三、结局：好结局 / 另一种样子（随后给示范） ========== -->
+			<view v-else-if="stage == 'after'" class="after-wrap">
+				<text class="after-face">{{ afterFace }}</text>
+				<text class="after-title">{{ afterTitle }}</text>
+				<text class="after-text">{{ afterText }}</text>
+				<text v-if="!goodPick" class="after-demo">糖豆试了试：{{ ep.demo }}</text>
+			</view>
+
+			<!-- ========== 四、跟读：一集只教一句话 ========== -->
+			<view v-else-if="stage == 'phrase'" class="phrase-wrap">
+				<text class="phrase-kicker">跟着说一遍</text>
+				<text class="phrase-big">{{ ep.phrase }}</text>
+				<text class="phrase-tip">{{ ep.phraseTip }}</text>
+				<view class="phrase-btns">
+					<view class="btn" @click="hearPhrase">
+						<text class="btn-text">🔊 再听一遍</text>
+					</view>
+					<view class="btn btn-gold" @click="finish">
+						<text class="btn-gold-text">👍 我说了</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- ========== 五、完成：交往之星 + 家长共聊一句话 ========== -->
+			<view v-else class="done-wrap">
+				<text class="done-star">⭐</text>
+				<text class="done-title">{{ starLine }}</text>
+				<text class="done-text">{{ summary }}</text>
+				<view class="tip-box">
+					<text class="tip-label">和爸爸妈妈聊一句</text>
+					<text class="tip-text">{{ ep.parentTip }}</text>
+				</view>
+				<view class="done-btns">
+					<view class="btn done-btn btn-gold" @click="nextEp">
+						<text class="btn-gold-text">再演一集 →</text>
+					</view>
+					<view class="btn done-btn" @click="goBack">
+						<text class="btn-text">回交往剧场</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		episodeOf, soThemeOf, judgeSo, soPraise, soOtherOpen, soSummary,
+		nextEpisode, SO_GOOD, SoEpisode, SoOption, SoTheme, SoBeat
+	} from '@/common/so.uts'
+	import { getActiveEpisode, setActiveEpisode, setSoTheme } from '@/common/so-session.uts'
+	import { getSoDone, addSoDone, addCandy, getCurrentProfile } from '@/common/store.uts'
+	import {
+		speak, stopSpeak, cleanForSpeech, soOpenSpeech, soAskSpeech,
+		optionSpeech, pickAskSpeech, estimateSpeakMs, isTtsAvailable, unlockTts,
+		releaseSpeech
+	} from '@/common/tts.uts'
+	import { saySteps, stopSteps } from '@/common/say-queue.uts'
+	import { playAsk, playCorrect, playSoft, releaseSfx } from '@/common/sfx.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** H5 能真朗读；Android 需自定义基座（标准基座不含 UTS 插件） */
+	const ttsReady: boolean = isTtsAvailable()
+
+	/** 分镜点（进度指示） */
+	class DotItem {
+		i: number = 0
+		on: boolean = false
+
+		constructor(i: number, on: boolean) {
+			this.i = i
+			this.on = on
+		}
+	}
+
+	const name = ref<string>('小朋友')
+	const ep = ref<SoEpisode>(episodeOf('S1-1'))
+	const theme = ref<SoTheme>(soThemeOf('S1'))
+
+	/** beat / ask / after / phrase / done */
+	const stage = ref<string>('beat')
+	const beatIdx = ref<number>(0)
+	const curBeat = ref<SoBeat>(new SoBeat('', ''))
+	const freeze = ref<SoBeat>(new SoBeat('', ''))
+	const dots = ref<Array<DotItem>>([])
+
+	const goodPick = ref<boolean>(false)
+	const afterFace = ref<string>('🎉')
+	const afterTitle = ref<string>('')
+	const afterText = ref<string>('')
+	const summary = ref<string>('')
+	const starLine = ref<string>('⭐ 交往之星 +1')
+
+	const speaking = ref<boolean>(false)
+	/**
+	 * 正在朗读的选项下标（-1 = 没在读选项）
+	 *
+	 * 定格提问这一步孩子要"选做法"，选项是自己读不出来的字，
+	 * 所以念到哪一格，哪一格就得亮起来。
+	 */
+	const readIdx = ref<number>(-1)
+
+	/** 选项之间的留白：够把视线挪到下一格 */
+	const OPTION_GAP_MS: number = 320
+
+	/**
+	 * 选完之后"结局旁白"的语速倍率
+	 *
+	 * 提问和选项要慢（孩子在找那一格），结局是"我做完了会怎样"，
+	 * 再用读题的慢速会让人觉得拖——1.1 倍，仍是陪伴语气，只是利索一档。
+	 */
+	const AFTER_SPEED: number = 1.1
+
+	let beatTimer: number = -1
+	let afterTimer: number = -1
+	let sayId: number = -1
+	let sayEndId: number = -1
+
+	onLoad(() => {
+		name.value = getCurrentProfile().name
+		ep.value = episodeOf(getActiveEpisode())
+		theme.value = soThemeOf(ep.value.theme)
+		startEpisode()
+	})
+
+	onUnload(() => {
+		clearBeatTimer()
+		clearAfterTimer()
+		clearSay()
+		stopSpeak()
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	/* ---------------- 朗读调度（与数学/心情页同一套） ---------------- */
+
+	function clearSay() {
+		stopSteps()
+		readIdx.value = -1
+		if (sayId >= 0) {
+			clearTimeout(sayId)
+			sayId = -1
+		}
+		if (sayEndId >= 0) {
+			clearTimeout(sayEndId)
+			sayEndId = -1
+		}
+		speaking.value = false
+	}
+
+	/** delay 毫秒后朗读；返回估算时长（用于安排下一步） */
+	function say(text: string, delay: number, speed: number = 1.0) {
+		if (!ttsReady) return
+		const clean: string = cleanForSpeech(text)
+		if (clean.length == 0) return
+		if (sayId >= 0) clearTimeout(sayId)
+		sayId = setTimeout(() => {
+			sayId = -1
+			const started: boolean = speak(clean, 'zh-CN', speed)
+			speaking.value = started
+			if (!started) return
+			if (sayEndId >= 0) clearTimeout(sayEndId)
+			sayEndId = setTimeout(() => {
+				speaking.value = false
+				sayEndId = -1
+			}, estimateSpeakMs(clean, speed))
+		}, delay)
+	}
+
+	/**
+	 * 读定格提问：问句 → 选项逐条（同步高亮）→ 把选择交回孩子
+	 *
+	 * 和心情小课堂同一套节奏：问句念完才亮第一格，选项之间留一点空白，
+	 * 最后一句"你想选哪一个呀"是留给孩子开口的时间，不是催他。
+	 */
+	function readAsk(lead: number) {
+		if (!ttsReady) return
+		const opts: Array<SoOption> = ep.value.options
+		const list: Array<string> = []
+		list.push(soAskSpeech(name.value, ep.value.ask))
+		for (let i = 0; i < opts.length; i++) {
+			list.push(optionSpeech(i, opts[i].text))
+		}
+		list.push(pickAskSpeech())
+		const n: number = opts.length
+		saySteps(list, 'zh-CN', lead, OPTION_GAP_MS, 1.0, (i: number): void => {
+			readIdx.value = (i >= 1 && i <= n) ? i - 1 : -1
+			speaking.value = true
+		}, (): void => {
+			readIdx.value = -1
+			speaking.value = false
+		})
+	}
+
+	/** 说完一句话需要等多久：按字数估，夹在 3~9 秒之间（念得快就等得短） */
+	function waitMs(text: string, speed: number = 1.0): number {
+		const clean: string = cleanForSpeech(text)
+		let ms: number = estimateSpeakMs(clean, speed) + 900
+		if (ms < 3000) ms = 3000
+		if (ms > 9000) ms = 9000
+		return ms
+	}
+
+	function clearBeatTimer() {
+		if (beatTimer >= 0) {
+			clearTimeout(beatTimer)
+			beatTimer = -1
+		}
+	}
+
+	function clearAfterTimer() {
+		if (afterTimer >= 0) {
+			clearTimeout(afterTimer)
+			afterTimer = -1
+		}
+	}
+
+	/* ---------------- 一集流程 ---------------- */
+
+	function startEpisode() {
+		stage.value = 'beat'
+		beatIdx.value = 0
+		goodPick.value = false
+		clearBeatTimer()
+		clearAfterTimer()
+		clearSay()
+		stopSpeak()
+		showBeat(0)
+	}
+
+	function showBeat(i: number) {
+		clearBeatTimer()
+		clearSay()
+		stopSpeak()
+		beatIdx.value = i
+		curBeat.value = ep.value.beats[i]
+
+		const list: Array<DotItem> = []
+		for (let k = 0; k < ep.value.beats.length; k++) {
+			list.push(new DotItem(k, k <= i))
+		}
+		dots.value = list
+
+		// 第一帧先报"我们来看一个小故事"，后面几帧直接念旁白
+		const line: string = i == 0
+			? soOpenSpeech(name.value, curBeat.value.text)
+			: curBeat.value.text
+		playAsk()
+		say(line, 380)
+
+		// 读完自动往下走；孩子也可以点「下一句」提前走
+		beatTimer = setTimeout(() => {
+			beatTimer = -1
+			nextBeat()
+		}, waitMs(line) + 400)
+	}
+
+	function nextBeat() {
+		clearBeatTimer()
+		if (beatIdx.value + 1 < ep.value.beats.length) {
+			showBeat(beatIdx.value + 1)
+			return
+		}
+		askStage()
+	}
+
+	function askStage() {
+		clearBeatTimer()
+		clearSay()
+		stopSpeak()
+		const last: SoBeat = ep.value.beats[ep.value.beats.length - 1]
+		freeze.value = last
+		stage.value = 'ask'
+		// 问句 + 三个做法逐条读，读哪一格亮哪一格
+		readAsk(300)
+	}
+
+	/* ---------------- 选择与结局 ---------------- */
+
+	function pick(o: SoOption) {
+		if (stage.value != 'ask') return
+		unlockTts()
+		// 孩子不等选项读完就点了：停掉还没念的，否则会和结局旁白叠在一起
+		stopSteps()
+		stopSpeak()
+		readIdx.value = -1
+		speaking.value = false
+		const v: string = judgeSo(o)
+		goodPick.value = (v == SO_GOOD)
+
+		// 看过就算演过：下一集优先排没演过的
+		addSoDone(ep.value.id)
+		// 好做法给一颗糖（喂宠物），另一种做法不给——不给也不扣，孩子没有损失感
+		if (goodPick.value) addCandy(1)
+
+		if (goodPick.value) {
+			playCorrect()
+			afterFace.value = '🎉'
+			afterTitle.value = soPraise()
+			afterText.value = o.after
+		} else {
+			playSoft()
+			afterFace.value = '🌤️'
+			afterTitle.value = soOtherOpen()
+			afterText.value = o.after
+		}
+		stage.value = 'after'
+
+		const spoken: string = goodPick.value
+			? o.after
+			: soOtherOpen() + '。' + o.after + '。' + ep.value.demo
+		// 选完之后的结局稍微念快一点：孩子已经做完决定，只想听"后来怎么了"
+		say(spoken, 620, AFTER_SPEED)
+
+		// 结局看完自动进入跟读；另一种样子多停一会儿，因为多了一句示范
+		clearAfterTimer()
+		afterTimer = setTimeout(() => {
+			afterTimer = -1
+			phraseStage()
+		}, waitMs(spoken, AFTER_SPEED) + 300)
+	}
+
+	/* ---------------- 跟读 ---------------- */
+
+	function phraseStage() {
+		clearAfterTimer()
+		clearSay()
+		stopSpeak()
+		stage.value = 'phrase'
+		say('跟着我说。' + ep.value.phrase, 260)
+	}
+
+	function hearPhrase() {
+		clearSay()
+		stopSpeak()
+		const text: string = cleanForSpeech(ep.value.phrase)
+		const started: boolean = speak(text)
+		if (!started) {
+			uni.showToast({ title: '这台设备暂时读不出声音', icon: 'none' })
+			return
+		}
+		speaking.value = true
+		sayEndId = setTimeout(() => {
+			speaking.value = false
+			sayEndId = -1
+		}, estimateSpeakMs(text))
+	}
+
+	/* ---------------- 完成 ---------------- */
+
+	function finish() {
+		clearAfterTimer()
+		clearSay()
+		stopSpeak()
+		const doneBefore: number = getSoDone().length
+		addSoDone(ep.value.id)
+		const doneAfter: number = getSoDone().length
+
+		starLine.value = doneAfter > doneBefore ? '交往之星 +1' : '这颗星已经点亮过'
+		summary.value = soSummary(ep.value, goodPick.value)
+		stage.value = 'done'
+		// 只念给孩子听的那部分；家长共聊留在屏幕上，不念
+		say(summary.value, 260)
+	}
+
+	/** 同一类里优先下一集没演过的；全演完就回到第一集 */
+	function nextEp() {
+		const next: SoEpisode = nextEpisode(ep.value.theme, getSoDone())
+		setSoTheme(ep.value.theme)
+		setActiveEpisode(next.id)
+		ep.value = next
+		theme.value = soThemeOf(next.theme)
+		startEpisode()
+	}
+
+	/* ---------------- 重听与离场 ---------------- */
+
+	function repeat() {
+		clearSay()
+		stopSpeak()
+		// 定格提问这一步重听要把选项一起念——孩子多半是没听清某个做法
+		if (stage.value == 'ask') {
+			readAsk(120)
+			return
+		}
+		let text: string = ''
+		if (stage.value == 'beat') text = curBeat.value.text
+		else if (stage.value == 'after') text = afterText.value
+		else if (stage.value == 'phrase') text = ep.value.phrase
+		else text = summary.value
+		const clean: string = cleanForSpeech(text)
+		if (clean.length == 0) return
+		const started: boolean = speak(clean)
+		if (!started) {
+			uni.showToast({ title: '这台设备暂时读不出声音', icon: 'none' })
+			return
+		}
+		speaking.value = true
+		if (sayEndId >= 0) clearTimeout(sayEndId)
+		sayEndId = setTimeout(() => {
+			speaking.value = false
+			sayEndId = -1
+		}, estimateSpeakMs(clean))
+	}
+
+	function goBack() {
+		// 清理包起来：任一处抛异常都会让返回不执行，用户看到的就是"点了没反应"
+		try {
+			clearBeatTimer()
+			clearAfterTimer()
+			clearSay()
+			stopSpeak()
+			releaseSfx()
+			releaseSpeech()
+		} catch (e) {
+			console.log('[so] 离场清理异常')
+		}
+		safeBack()
+	}
+</script>
+
+<style>
+	.play-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.say-on {
+		color: #ffd76e;
+		font-size: 11rpx;
+	}
+
+	/* ---------- 分镜 ---------- */
+	.beat-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		padding-left: 31rpx;
+		padding-right: 31rpx;
+	}
+
+	.beat-emoji {
+		font-size: 92rpx;
+		line-height: 112rpx;
+	}
+
+	.beat-text {
+		color: #ffffff;
+		font-size: 20rpx;
+		line-height: 30rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-top: 8rpx;
+	}
+
+	.dots {
+		flex-direction: row;
+		margin-top: 12rpx;
+		margin-bottom: 10rpx;
+	}
+
+	.dot {
+		width: 8rpx;
+		height: 8rpx;
+		border-radius: 4rpx;
+		margin-left: 4rpx;
+		margin-right: 4rpx;
+		background-color: rgba(255, 255, 255, 0.22);
+	}
+
+	.dot-on {
+		background-color: #ffd76e;
+	}
+
+	/* ---------- 定格提问 ---------- */
+	.ask-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		padding-left: 25rpx;
+		padding-right: 25rpx;
+	}
+
+	.ask-emoji {
+		font-size: 54rpx;
+		line-height: 66rpx;
+	}
+
+	.ask-text {
+		color: #ffd76e;
+		font-size: 22rpx;
+		line-height: 32rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-top: 8rpx;
+		margin-bottom: 14rpx;
+	}
+
+	.opt-row {
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	.opt {
+		width: 200rpx;
+		min-height: 56rpx;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		padding-left: 8rpx;
+		padding-right: 8rpx;
+		padding-top: 6rpx;
+		padding-bottom: 6rpx;
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.1);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.opt-text {
+		color: #ffffff;
+		font-size: 15rpx;
+		line-height: 21rpx;
+		text-align: center;
+	}
+
+	/* 正在朗读的那一格：读到哪儿亮到哪儿（孩子不识字，靠这块亮光对上号） */
+	.opt-read {
+		border-color: #3ecf8e;
+		background-color: rgba(62, 207, 142, 0.26);
+		transform: scale(1.05);
+	}
+
+	.opt-text-read {
+		color: #eafff4;
+		font-weight: bold;
+	}
+
+	/* ---------- 结局 ---------- */
+	.after-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		padding-left: 40rpx;
+		padding-right: 40rpx;
+	}
+
+	.after-face {
+		font-size: 64rpx;
+		line-height: 78rpx;
+	}
+
+	.after-title {
+		color: #ffd76e;
+		font-size: 20rpx;
+		font-weight: bold;
+		margin-top: 8rpx;
+	}
+
+	.after-text {
+		color: #dbe4ff;
+		font-size: 16rpx;
+		line-height: 24rpx;
+		text-align: center;
+		margin-top: 8rpx;
+	}
+
+	.after-demo {
+		color: #3ecf8e;
+		font-size: 15rpx;
+		line-height: 23rpx;
+		text-align: center;
+		margin-top: 10rpx;
+	}
+
+	/* ---------- 跟读 ---------- */
+	.phrase-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.phrase-kicker {
+		color: #9fb4ff;
+		font-size: 13rpx;
+	}
+
+	.phrase-big {
+		color: #ffd76e;
+		font-size: 56rpx;
+		line-height: 70rpx;
+		font-weight: bold;
+		margin-top: 6rpx;
+	}
+
+	.phrase-tip {
+		color: #dbe4ff;
+		font-size: 12rpx;
+		text-align: center;
+		margin-top: 8rpx;
+	}
+
+	.phrase-btns {
+		flex-direction: row;
+		margin-top: 18rpx;
+	}
+
+	/* ---------- 完成 ---------- */
+	.done-wrap {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.done-star {
+		font-size: 54rpx;
+		line-height: 64rpx;
+	}
+
+	.done-title {
+		color: #ffd76e;
+		font-size: 20rpx;
+		font-weight: bold;
+		margin-top: 4rpx;
+	}
+
+	.done-text {
+		color: #dbe4ff;
+		font-size: 14rpx;
+		line-height: 22rpx;
+		text-align: center;
+		width: 560rpx;
+		margin-top: 6rpx;
+	}
+
+	.tip-box {
+		width: 560rpx;
+		margin-top: 10rpx;
+		padding-top: 6rpx;
+		padding-bottom: 6rpx;
+		padding-left: 12rpx;
+		padding-right: 12rpx;
+		border-radius: 12rpx;
+		background-color: rgba(255, 215, 110, 0.10);
+		align-items: center;
+	}
+
+	.tip-label {
+		color: #ffd76e;
+		font-size: 9rpx;
+	}
+
+	.tip-text {
+		color: #dbe4ff;
+		font-size: 12rpx;
+		line-height: 18rpx;
+		text-align: center;
+		margin-top: 2rpx;
+	}
+
+	.done-btns {
+		flex-direction: row;
+		margin-top: 12rpx;
+	}
+
+	.done-btn {
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+	}
+</style>

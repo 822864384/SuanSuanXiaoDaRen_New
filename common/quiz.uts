@@ -1,0 +1,189 @@
+/**
+ * 语文识字 / 英语单词 · 通用题目模型与工具
+ *
+ * 为什么另起一个类，而不是复用 `math-engine.uts` 的 `Question`：
+ * 数学的 Question 带 leftClass/rightClass/groupClasses/groupSep 这些为"比长短、数量守恒、加法分组"
+ * 服务的字段，语文英语一个都用不上；反过来这里要 ch/word/ipa/color/optionColors。
+ * 塞进一个类会变成"谁也不敢删字段"的泥球。这里独立定义，代价是几十行重复，换来两边都能痛快改。
+ *
+ * 两科的差异只体现在数据字段上，题目形态完全同构——都是"给一个刺激（图/字/词/句），认出来"，
+ * 所以共用同一个页面 pages/study/study.uvue，用 mode 区分。
+ */
+
+import { rngNext } from './rng.uts'
+
+/** 一轮题量（与数学一致：一关 5 题） */
+export const STUDY_ROUND_SIZE: number = 5
+/**
+ * 单题计时（秒）
+ *
+ * 数学是 120 秒（要数、要比、要想），语文英语是"看一眼就认得"的任务，
+ * 60 秒足够，也正好让"一课 5 分钟"成立（5 × 60 = 5 分钟，对齐斑马/叽里呱啦的单课时长）。
+ * 超时不罚：语文英语的超时走 soft 分支，只报答案、不计分。
+ */
+export const STUDY_SECONDS: number = 60
+/** 最后几秒转红 */
+export const STUDY_URGENT: number = 10
+
+/** 一科的总课数：6 单元 × 5 课 */
+export const TOTAL_LESSONS: number = 30
+/** 一单元几课 */
+export const LESSONS_PER_UNIT: number = 5
+
+/** 一道语文/英语题 */
+export class StudyQuestion {
+	/** 科目：cn / en */
+	mode: string = 'cn'
+	/** 题型标识：cn1~cn6 / en1~en5 */
+	kind: string = ''
+
+	/**
+	 * 题面布局
+	 * bigchar=一个大字 / bigemoji=一张大图 / items=一行中等图形（数数字用）
+	 * colors=一个色点 / sentence=一句字卡 / none=只有题干
+	 */
+	layout: string = 'bigchar'
+	/** 题面主文字（大字 / 句子） */
+	mainText: string = ''
+	/** 题面主图 */
+	mainEmoji: string = ''
+	/** 题面色值（颜色主题） */
+	mainColor: string = ''
+	/**
+	 * 字卡句子的逐字拆分（layout=sentence 用）
+	 * 一句话要按字单独渲染，才能把"大人念"的字画成灰色。
+	 */
+	storyParts: Array<string> = []
+	/** 与 storyParts 等长：true=这个字由大人念（灰字） */
+	storyGreys: Array<boolean> = []
+	/** 副标题：屏幕上给孩子的提示（**不能含答案本身**） */
+	subText: string = ''
+	/** 读题文本（TTS，不含 emoji） */
+	prompt: string = ''
+	/** 底部提示条 */
+	hint: string = ''
+	/** 朗读语言：cn 一律 zh-CN，en 的跟读题用 en-US */
+	speakLang: string = 'zh-CN'
+
+	/** 选项 */
+	options: Array<string> = []
+	/**
+	 * 选项形态：char=字卡 / emoji=图卡 / word=单词卡 / color=色点 / num=数字卡 / self=自评按钮
+	 */
+	optionType: string = 'char'
+	/** 与 options 等长的色值（optionType=color 时用） */
+	optionColors: Array<string> = []
+	/** 与 options 等长的副标注（单词卡用来显示中文，字卡不用） */
+	optionSubs: Array<string> = []
+
+	/** 正确答案（与 options 里某一项严格相等） */
+	answer: string = ''
+	/** 答对后的补充语，如「这是猫，小猫的猫」 */
+	explain: string = ''
+	/**
+	 * 免罚：答不出不计分、不断连击、不写进 wrong。
+	 * 语文英语一律 true —— 4 岁认不出字/听不懂词是正常状态，不是错误。
+	 */
+	soft: boolean = true
+
+	/* ---- 错题库用于"原样重建这道题"的三件套 ---- */
+
+	/** 生成前的随机状态（种子）：setRngState(seed) 后再调同一个 genXxx 得到同一道题 */
+	seed: number = 0
+	/** 题源：语文=汉字，英语=单词（重建时必需） */
+	src: string = ''
+	/** 单元号（干扰项从同单元取，重建时必需） */
+	unitNo: number = 0
+}
+
+/* ---------------- 工具 ---------------- */
+
+export function studyRandInt(min: number, max: number): number {
+	return min + Math.floor(rngNext() * (max - min + 1))
+}
+
+export function studyRandIndex(len: number): number {
+	if (len <= 0) return 0
+	return Math.floor(rngNext() * len)
+}
+
+/** 洗牌（返回新数组，不改原数组） */
+export function studyShuffle(src: Array<string>): Array<string> {
+	const arr: Array<string> = []
+	for (let i = 0; i < src.length; i++) arr.push(src[i])
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j: number = studyRandInt(0, i)
+		const t: string = arr[i]
+		arr[i] = arr[j]
+		arr[j] = t
+	}
+	return arr
+}
+
+/** 洗牌并保证结果与原顺序不同（避免"答案总在第一个"） */
+export function studyShuffleDifferent(src: Array<string>): Array<string> {
+	if (src.length < 2) return studyShuffle(src)
+	let out: Array<string> = studyShuffle(src)
+	let guard: number = 0
+	while (guard < 30 && studySameOrder(src, out)) {
+		guard++
+		out = studyShuffle(src)
+	}
+	return out
+}
+
+function studySameOrder(a: Array<string>, b: Array<string>): boolean {
+	if (a.length != b.length) return false
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] != b[i]) return false
+	}
+	return true
+}
+
+/**
+ * 从池里取 n 个互不相同的项（排除 exclude 里的）
+ * 池不够时返回实际取到的数量（调用方需自己兜底到 n）
+ */
+export function studyPick(pool: Array<string>, exclude: Array<string>, n: number): Array<string> {
+	const out: Array<string> = []
+	const rest: Array<string> = []
+	for (let i = 0; i < pool.length; i++) {
+		const v: string = pool[i]
+		if (exclude.indexOf(v) >= 0) continue
+		if (rest.indexOf(v) >= 0) continue
+		rest.push(v)
+	}
+	const shuffled: Array<string> = studyShuffle(rest)
+	for (let i = 0; i < shuffled.length && out.length < n; i++) out.push(shuffled[i])
+	return out
+}
+
+/** 判定：严格相等（选项就是答案本身，不存在宽匹配的余地） */
+export function isCorrectStudy(q: StudyQuestion, picked: string): boolean {
+	if (q.answer.length == 0) return false
+	return picked == q.answer
+}
+
+/* ---------------- 课序号 ↔ 单元/课 ---------------- */
+
+/**
+ * 关卡号（1 起）→ 课序号（1~30，超过就循环回第 1 课）
+ *
+ * 为什么循环而不是停在第 30 课：学完 30 课不等于记住了，循环回来是"复习轮"，
+ * 孩子会发现自己认识了很多字，比"这科已经学完"更有成就感。
+ */
+export function lessonIndex(level: number): number {
+	let lv: number = level
+	if (lv < 1) lv = 1
+	return (lv - 1) % TOTAL_LESSONS + 1
+}
+
+/** 课序号 → 单元号（1~6） */
+export function unitOfLesson(lessonNo: number): number {
+	return Math.floor((lessonNo - 1) / LESSONS_PER_UNIT) + 1
+}
+
+/** 课序号 → 单元内第几课（1~5） */
+export function lessonOfUnit(lessonNo: number): number {
+	return (lessonNo - 1) % LESSONS_PER_UNIT + 1
+}

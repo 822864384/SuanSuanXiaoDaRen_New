@@ -1,0 +1,31 @@
+/**
+ * 语音朗读插件 · 对外 API 声明
+ *
+ * 只做一件事：把一段文字念出来。
+ * 不提供情感、音色选择 —— 4~5 岁场景只需要「清楚、慢一点」，
+ * 参数由调用侧传（当前语速 0.62 / 音调 1.22，见 common/tts.uts）。
+ *
+ * 语言：中文题库 zh-CN、英语跟读 en-US。切换语言由调用侧每次传入，
+ * 插件内部按需 setLanguage，盒子缺语音包时降级系统默认。
+ */
+
+/** 朗读参数 */
+export type TtsSpeakOptions = {
+  /** 要朗读的文本（emoji 需调用侧先清理） */
+  text: string
+  /** 语速，1.0 为正常；当前取 0.62 */
+  rate?: number
+  /** 音调，1.0 为正常；当前取 1.22（略高，更像女声/童声） */
+  pitch?: number
+  /** BCP-47 语言标签：zh-CN / en-US */
+  lang?: string
+}
+
+/** 朗读失败原因 */
+export type TtsFailReason =
+  /** 设备没有可用的语音引擎 */
+  'NO_ENGINE'
+  /** 引擎初始化超时或失败 */
+  'INIT_FAILED'
+  /** 系统拒绝了这次合成请求 */
+  'SPEAK_FAILED'

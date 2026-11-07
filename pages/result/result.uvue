@@ -1,0 +1,259 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+			<view class="rs-wrap">
+				<text class="rs-title">{{ title }}</text>
+
+				<text class="rs-stars">{{ starText }}</text>
+
+				<view class="rs-rows">
+					<text class="rs-line">{{ lineText }}</text>
+					<text class="rs-line">获得 ⭐ ×{{ round.stars }}</text>
+					<text class="rs-praise">{{ praise }}</text>
+				</view>
+
+				<text class="rs-voice">🎙️ 说「继续」可以往下走（语音接入前请点按钮）</text>
+
+				<view class="rs-btns">
+					<view class="btn btn-gold btn-focus" @click="primaryTap">
+						<text class="btn-gold-text">{{ primaryLabel }}</text>
+					</view>
+					<view class="btn" @click="secondaryTap">
+						<text class="btn-text">{{ secondaryLabel }}</text>
+					</view>
+					<view class="btn" @click="goHome">
+						<text class="btn-text">🏠 回首页</text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { round } from '@/common/session.uts'
+	import { starsOf, resultPraise } from '@/common/math-engine.uts'
+	import { getLevel, setLevel, getCurrentProfile } from '@/common/store.uts'
+	import { setStudyMode, studyModeName } from '@/common/study-session.uts'
+	import { inDrill, stopDrill } from '@/common/wrong-session.uts'
+	import { wrongCount } from '@/common/wrongbook.uts'
+	import { speak, stopSpeak, cleanForSpeech, isTtsAvailable,
+		releaseSpeech
+	} from '@/common/tts.uts'
+	import { playCorrect, releaseSfx } from '@/common/sfx.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** H5 可朗读；App 真机需自定义基座（见 common/tts.uts 的说明） */
+	const ttsReady: boolean = isTtsAvailable()
+
+	const title = ref<string>('')
+	const starText = ref<string>('')
+	const praise = ref<string>('')
+	const lineText = ref<string>('')
+	/** "下一关 / 下一课"——语文英语没有关卡概念，用"课" */
+	const nextLabel = ref<string>('下一关')
+
+	/** 这次是不是错题重练 */
+	const drilling = ref<boolean>(false)
+	/** 主按钮（重练：回错题库；闯关：下一关） */
+	const primaryLabel = ref<string>('🚀 下一关')
+	/** 次按钮（重练：再练一轮；闯关：再玩一次） */
+	const secondaryLabel = ref<string>('🔁 再玩一次')
+
+	/** 语文英语是"课"，数学是"关"——量词错了孩子会听不懂 */
+	function unitWord(): string {
+		return round.mode == 'math' ? '关' : '课'
+	}
+
+	/** 语文英语的结算表扬：不说"进步飞快"（这两科没有成绩比较） */
+	function studyPraise(stars: number): string {
+		if (stars >= 5) return '全都认出来了，太厉害了！'
+		if (stars >= 3) return '认出了好多，明天再来认几个！'
+		return '今天认识新朋友啦，明天再见面！'
+	}
+
+	onLoad(() => {
+		const stars: number = starsOf(round.right)
+		const modeName: string = studyModeName(round.mode)
+		const w: string = unitWord()
+		drilling.value = inDrill()
+
+		// 错题重练：不提"第几关"，只报"又练会几道、库里还剩几道"
+		if (drilling.value) {
+			const left: number = wrongCount(round.mode)
+			title.value = '📕 再练一次 · 完成！'
+			starText.value = repeatStr('⭐', stars) + repeatStr('☆', 3 - stars)
+			praise.value = left == 0 ? '这一科的小尾巴都清干净啦，厉害！' : '练过的就记住了，慢慢来！'
+			lineText.value = left == 0
+				? '又练会 ' + round.right.toString() + ' 道 · 错题库已经空了'
+				: '又练会 ' + round.right.toString() + ' 道 · 还有 ' + left.toString() + ' 道没练'
+			primaryLabel.value = '📕 回错题库'
+			secondaryLabel.value = '🔁 再练一轮'
+			const who: string = getCurrentProfile().name
+			const body: string = '又练会' + round.right.toString() + '道。'
+			const tail: string = left == 0 ? '这一科都会啦！' : '还有' + left.toString() + '道，我们再练一次。'
+			setTimeout(() => {
+				playCorrect()
+			}, 300)
+			setTimeout(() => {
+				if (ttsReady) speak(cleanForSpeech(who + '，' + body + tail))
+			}, 1100)
+			return
+		}
+
+		nextLabel.value = '下一' + w
+		primaryLabel.value = '🚀 下一' + w
+		title.value = '🎉 ' + modeName + ' · 第 ' + round.level.toString() + ' ' + w + ' 完成！'
+		starText.value = repeatStr('⭐', stars) + repeatStr('☆', 3 - stars)
+		praise.value = round.mode == 'math' ? resultPraise(stars) : studyPraise(stars)
+		lineText.value = round.mode == 'math'
+			? '答对 ' + round.right.toString() + ' 题 · 答错 ' + round.wrong.toString() + ' 题'
+			: (round.retry > 0
+				? '认出 ' + round.right.toString() + ' 个 · 还有 ' + round.retry.toString() + ' 个再看看'
+				: '全都认出来啦，一共 ' + round.right.toString() + ' 个')
+
+		// 结算播报：先报成绩，再引导下一课（4~5 岁不看字也能听懂）
+		const who: string = getCurrentProfile().name
+		const body: string = round.mode == 'math'
+			? '答对' + round.right.toString() + '题，获得' + round.stars.toString() + '颗星星。'
+			: '认出了' + round.right.toString() + '个，获得' + round.stars.toString() + '颗星星。'
+		const text: string = who + '，第' + round.level.toString() + w + '完成！' + body +
+			praise.value + '想继续的话，说下一' + w
+		setTimeout(() => {
+			playCorrect()
+		}, 300)
+		setTimeout(() => {
+			if (ttsReady) speak(cleanForSpeech(text))
+		}, 1100)
+	})
+
+	onUnload(() => {
+		stopSpeak()
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	function repeatStr(s: string, n: number): string {
+		let out: string = ''
+		for (let i = 0; i < n; i++) out += s
+		return out
+	}
+
+	function nextLevel() {
+		const cur: number = getLevel(round.mode)
+		setLevel(round.mode, cur + 1)
+		gotoRound()
+	}
+
+	/** 主按钮：重练时是"回错题库"，闯关时是"下一关" */
+	function primaryTap() {
+		if (drilling.value) {
+			backToWrongBook()
+			return
+		}
+		nextLevel()
+	}
+
+	/** 次按钮：重练时是"再练一轮"（库里的下一批），闯关时是"再玩一次" */
+	function secondaryTap() {
+		if (drilling.value) {
+			gotoRound()
+			return
+		}
+		replay()
+	}
+
+	function backToWrongBook() {
+		stopDrill()
+		uni.reLaunch({ url: '/pages/wrong/wrong' })
+	}
+
+	function replay() {
+		gotoRound()
+	}
+
+	/**
+	 * 回答题页
+	 * 语文英语共用 pages/study/study，必须先写回 mode 单例，否则会跳去数学或上一科。
+	 */
+	function gotoRound() {
+		if (round.mode == 'cn' || round.mode == 'en') {
+			setStudyMode(round.mode)
+			uni.redirectTo({ url: '/pages/study/study' })
+			return
+		}
+		uni.redirectTo({ url: '/pages/math/math' })
+	}
+
+	function goHome() {
+		stopDrill()
+		uni.reLaunch({ url: '/pages/home/home' })
+	}
+</script>
+
+<style>
+	.rs-wrap {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+		padding-left: 35rpx;
+		padding-right: 35rpx;
+	}
+
+	.rs-title {
+		color: #ffd76e;
+		font-size: 22rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.rs-stars {
+		color: #ffd76e;
+		font-size: 43rpx;
+		margin-top: 10rpx;
+	}
+
+	.rs-rows {
+		align-items: center;
+		margin-top: 9rpx;
+	}
+
+	.rs-line {
+		color: #ffffff;
+		font-size: 15rpx;
+		line-height: 24rpx;
+	}
+
+	.rs-praise {
+		color: #3ecf8e;
+		font-size: 16rpx;
+		margin-top: 6rpx;
+	}
+
+	.rs-voice {
+		color: #7d90c9;
+		font-size: 10rpx;
+		margin-top: 13rpx;
+	}
+
+	.rs-btns {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 18rpx;
+	}
+
+	.btn {
+		margin-left: 6rpx;
+		margin-right: 6rpx;
+	}
+
+	/* 焦点默认落在「下一关」，与原型一致 */
+	.btn-focus {
+		border-width: 2rpx;
+		border-color: #fff3c4;
+		transform: scale(1.04);
+	}
+</style>

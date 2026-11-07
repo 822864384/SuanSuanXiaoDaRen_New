@@ -1,0 +1,56 @@
+/**
+ * 算算小达人 · 可复现随机数
+ *
+ * 为什么不用 Math.random：
+ * 题目全是**现场生成**的（没有固定题库），错题库要"把这道题再拿出来做一遍"，
+ * 就得能把这题**一模一样**地重建出来。做法是生成前记下随机数状态（种子），
+ * 重练时把状态倒回去再跑同一个生成函数——题面、选项、答案全部一致。
+ *
+ * 只换随机源，不改生成逻辑：把 math-engine / quiz 里的 Math.random 换成 rngNext()，
+ * 正常出题仍然是随机的（模块加载时用时间戳做初始种子）。
+ *
+ * 算法用最朴素的 LCG（数值乘法 + 取模）。不用梅森旋转是因为：
+ * UTS 各端对位运算的语义有差异，纯算术（+ * %）在三端结果稳定。
+ */
+
+/** 状态（32 位无符号范围）；所有中间值 < 2^53，double 能精确表示 */
+let state: number = 0
+
+/** 模数（2^32） */
+const MOD: number = 4294967296
+
+function seedFromClock(): number {
+	const t: number = Date.now()
+	let s: number = t % MOD
+	if (s <= 0) s = 20261107
+	return s
+}
+
+// 模块加载时用时间戳初始化：每次启动的出题顺序都不同
+state = seedFromClock()
+
+/** 取一个 [0,1) 的随机数（替代 Math.random） */
+export function rngNext(): number {
+	state = (state * 1664525 + 1013904223) % MOD
+	return state / MOD
+}
+
+/** 当前随机状态：生成一道题**之前**取一次，就是这道题的种子 */
+export function rngState(): number {
+	return state
+}
+
+/** 把随机状态倒回某个种子（重练错题时用） */
+export function setRngState(s: number): void {
+	if (!(s > 0) || s >= MOD) {
+		// 脏数据（旧版本/被手改过的存储）不能把随机源卡死，重置成时间种子
+		state = seedFromClock()
+		return
+	}
+	state = s
+}
+
+/** 重置为时间种子（家长"重置进度"后调用，避免老种子继续沿用） */
+export function resetRng(): void {
+	state = seedFromClock()
+}

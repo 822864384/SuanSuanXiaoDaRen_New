@@ -1,0 +1,381 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶部：返回 / 当前孩子 / 深呼吸入口（心情不好时随时能用，不必先答完卡） -->
+			<view class="mind-top">
+				<view class="chip" @click="goHome">
+					<text class="chip-text">← 回首页</text>
+				</view>
+				<view class="chip">
+					<text class="chip-text">{{ name }} · 心情小课堂</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip" @click="openBreath">
+					<text class="chip-text">🌬️ 深呼吸</text>
+				</view>
+			</view>
+
+			<!-- 今日心情：五档天气。选完不评价、不追问（设计红线 6） -->
+			<text class="mood-q">今天心里是什么天气？</text>
+
+			<view class="mood-row">
+				<view v-for="(m, i) in moods" :key="m.key" class="mood"
+					:class="(moodPick == m.key ? 'mood-on' : '') + ' ' + (readIdx == i ? 'mood-read' : '')" @click="pickMood(m.key)">
+					<text class="mood-emoji">{{ m.emoji }}</text>
+					<text class="mood-label" :class="readIdx == i ? 'mood-label-read' : ''">{{ m.label }}</text>
+				</view>
+			</view>
+
+			<text class="mood-said">{{ moodSaid }}</text>
+
+			<!-- 六个主题岛：全部开放，每岛按"第 N 关 / 共 M 关"推进 -->
+			<view class="island-row">
+				<view v-for="it in islands" :key="it.id" class="island"
+					:class="it.ready ? 'island-live' : 'island-off'" @click="openTheme(it.id, it.ready)">
+					<text class="island-emoji">{{ it.emoji }}</text>
+					<text class="island-title">{{ it.title }}</text>
+					<text class="island-sub">{{ it.sub }}</text>
+				</view>
+			</view>
+
+			<!-- 心灵小剧场：唯一需要联网的入口，单独一条横栏，和卡片区区分开 -->
+			<view class="cinema" @click="openCinema">
+				<text class="cinema-emoji">🎬</text>
+				<view class="cinema-body">
+					<text class="cinema-title">心灵小剧场</text>
+					<text class="cinema-sub">{{ cinemaSub }}</text>
+				</view>
+				<text class="cinema-go">去 →</text>
+			</view>
+
+			<text class="foot-hint">心情没有标准答案 · 说出来就好</text>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		MIND_THEMES, MOODS, mindLevelCount, moodLabelOf,
+		MindTheme, MoodOption
+	} from '@/common/mind.uts'
+	import { setActiveTheme, setActiveLevel } from '@/common/mind-session.uts'
+	import { videoCount } from '@/common/mind-video.uts'
+	import { safeBack } from '@/common/nav.uts'
+	import { getTodayMood, addMood, getCurrentProfile, getMindLevel } from '@/common/store.uts'
+	import { playSoft, releaseSfx } from '@/common/sfx.uts'
+	import {
+		speak, cleanForSpeech, optionSpeech,
+		isTtsAvailable, releaseSpeech
+	} from '@/common/tts.uts'
+	import { saySteps, stopSteps } from '@/common/say-queue.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** 主题岛（把"x/y"这类展示文案在进页面时算好，模板里只绑字段） */
+	class Island {
+		id: string = ''
+		emoji: string = ''
+		title: string = ''
+		ready: boolean = false
+		sub: string = ''
+
+		constructor(id: string, emoji: string, title: string, ready: boolean, sub: string) {
+			this.id = id
+			this.emoji = emoji
+			this.title = title
+			this.ready = ready
+			this.sub = sub
+		}
+	}
+
+	const moods: Array<MoodOption> = MOODS
+	const islands = ref<Array<Island>>([])
+	const name = ref<string>('小朋友')
+	const moodPick = ref<string>('')
+	const moodSaid = ref<string>('')
+	/** 小剧场副标题：数量从清单里取，避免改清单后文案不同步 */
+	const cinemaSub = ref<string>('')
+	/** 平台能不能念（不能念就不排队、不亮高亮，避免"亮了却没声音"） */
+	const ttsReady: boolean = isTtsAvailable()
+	/**
+	 * 正在朗读的心情下标（-1 = 没在读）
+	 *
+	 * 五档天气的"很开心/还行/有点难过"孩子都还认不得，必须念到哪一格亮哪一格。
+	 */
+	const readIdx = ref<number>(-1)
+
+	onShow(() => {
+		name.value = getCurrentProfile().name
+		// 今天已经记过心情就直接高亮，不重复问
+		const today: string = getTodayMood()
+		moodPick.value = today
+		moodSaid.value = today.length > 0 ? '今天记过了，我记着呢' : ''
+		cinemaSub.value = videoCount().toString() + ' 个央视少儿小短片 · 和爸爸妈妈一起看'
+		refreshIslands()
+		// 今天还没记过：把五档天气念一遍（记过了就不再自动念，避免每次回大厅都被灌一遍）
+		if (today.length == 0) readMoods(520)
+	})
+
+	onUnload(() => {
+		stopSteps()
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	/**
+	 * 念心情天气：问句 → 五档逐条（同步高亮）→ 一句"选一个就好"
+	 *
+	 * 不发"你选哪一个？"那种收尾：这一页只是记录心情，不是答题，
+	 * 孩子想点哪个就点哪个，问句越短越好。
+	 */
+	function readMoods(lead: number) {
+		if (!ttsReady) return
+		const list: Array<string> = []
+		list.push('今天心里是什么天气？')
+		for (let i = 0; i < moods.length; i++) {
+			list.push(optionSpeech(i, moods[i].label))
+		}
+		list.push('选一个就好。')
+		const n: number = moods.length
+		saySteps(list, 'zh-CN', lead, 280, 1.0, (i: number): void => {
+			readIdx.value = (i >= 1 && i <= n) ? i - 1 : -1
+		}, (): void => {
+			readIdx.value = -1
+		})
+	}
+
+	function refreshIslands() {
+		const list: Array<Island> = []
+		for (let i = 0; i < MIND_THEMES.length; i++) {
+			const t: MindTheme = MIND_THEMES[i]
+			let sub: string = '正在做'
+			if (t.ready) {
+				// 关卡比"看过几张"更适合展示：孩子记的是"我玩到第 3 关"。
+				// 岛宽只有 112rpx，写成「第 3/56 关」才放得下一行。
+				const lv: number = getMindLevel(t.id)
+				sub = '第 ' + lv.toString() + '/' + mindLevelCount(t.id).toString() + ' 关'
+			}
+			list.push(new Island(t.id, t.emoji, t.title, t.ready, sub))
+		}
+		islands.value = list
+	}
+
+	/** 选心情：只记录，不评价、不追问；念一遍"记下了"，让孩子确认自己被听见 */
+	function pickMood(key: string) {
+		stopSteps()
+		readIdx.value = -1
+		moodPick.value = key
+		addMood(key)
+		moodSaid.value = '我记下了'
+		playSoft()
+		sayOne(moodLabelOf(key) + '，记下了。')
+	}
+
+	/** 只说一句（不需要"正在说"指示的页面用这个） */
+	function sayOne(text: string) {
+		if (!ttsReady) return
+		const clean: string = cleanForSpeech(text)
+		if (clean.length == 0) return
+		speak(clean)
+	}
+
+	function openTheme(id: string, ready: boolean) {
+		if (!ready) {
+			uni.showToast({ title: '这个岛还在做，先玩认识情绪吧', icon: 'none' })
+			return
+		}
+		setActiveTheme(id)
+		// 从本机进度接着玩：大厅显示第几关，进去就玩第几关
+		setActiveLevel(getMindLevel(id))
+		uni.navigateTo({ url: '/pages/mind/play' })
+	}
+
+	function openBreath() {
+		uni.navigateTo({ url: '/pages/mind/breath' })
+	}
+
+	/** 心灵小剧场：唯一需要联网的入口，进门先过家长门 */
+	function openCinema() {
+		uni.navigateTo({ url: '/pages/mind/cinema' })
+	}
+
+	function goHome() {
+		safeBack()
+	}
+</script>
+
+<style>
+	.mind-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.mood-q {
+		color: #ffd76e;
+		font-size: 20rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-top: 10rpx;
+	}
+
+	.mood-row {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 10rpx;
+	}
+
+	.mood {
+		width: 88rpx;
+		height: 56rpx;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		border-radius: 12rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.07);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.mood-on {
+		border-color: #ffd76e;
+		background-color: rgba(255, 215, 110, 0.16);
+	}
+
+	/* 正在朗读的那一档：读到哪儿亮到哪儿（金色是"你选了这个"，绿色是"我在读它"） */
+	.mood-read {
+		border-color: #3ecf8e;
+		background-color: rgba(62, 207, 142, 0.24);
+	}
+
+	.mood-emoji {
+		font-size: 26rpx;
+	}
+
+	.mood-label {
+		color: #9fb4ff;
+		font-size: 9rpx;
+		margin-top: 2rpx;
+	}
+
+	.mood-label-read {
+		color: #eafff4;
+		font-weight: bold;
+	}
+
+	.mood-said {
+		color: #3ecf8e;
+		font-size: 10rpx;
+		text-align: center;
+		height: 16rpx;
+		margin-top: 5rpx;
+	}
+
+	.island-row {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 8rpx;
+	}
+
+	.island {
+		width: 112rpx;
+		height: 86rpx;
+		margin-left: 3rpx;
+		margin-right: 3rpx;
+		border-radius: 12rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.07);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.island-live {
+		border-color: rgba(255, 215, 110, 0.55);
+	}
+
+	.island-off {
+		opacity: 0.42;
+	}
+
+	.island-emoji {
+		font-size: 24rpx;
+	}
+
+	.island-title {
+		color: #ffffff;
+		font-size: 11rpx;
+		font-weight: bold;
+		margin-top: 3rpx;
+	}
+
+	.island-sub {
+		color: #3ecf8e;
+		font-size: 9rpx;
+		margin-top: 2rpx;
+	}
+
+	.foot-hint {
+		color: #7d90c9;
+		font-size: 10rpx;
+		text-align: center;
+		margin-top: 4rpx;
+	}
+
+	/* ---------- 心灵小剧场入口 ---------- */
+
+	.cinema {
+		flex-direction: row;
+		align-items: center;
+		height: 40rpx;
+		margin-top: 8rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+		padding-left: 12rpx;
+		padding-right: 12rpx;
+		border-radius: 12rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 215, 110, 0.45);
+		background-color: rgba(255, 215, 110, 0.10);
+	}
+
+	.cinema-emoji {
+		font-size: 20rpx;
+	}
+
+	.cinema-body {
+		flex: 1;
+		flex-direction: column;
+		align-items: flex-start;
+		margin-left: 9rpx;
+	}
+
+	.cinema-title {
+		color: #ffffff;
+		font-size: 12rpx;
+		font-weight: bold;
+	}
+
+	.cinema-sub {
+		color: #ffd76e;
+		font-size: 8.5rpx;
+		margin-top: 2rpx;
+	}
+
+	.cinema-go {
+		color: #ffd76e;
+		font-size: 10rpx;
+		font-weight: bold;
+	}
+</style>

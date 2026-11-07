@@ -1,0 +1,1122 @@
+/**
+ * 算算小达人 · 数学思维题库引擎 v3
+ *
+ * 口径：4~5 岁（依据《3-6 岁儿童学习与发展指南》4~5 岁「数学认知」三条目标）
+ * 设计文档：题库设计-4-5岁数理逻辑-v3.md
+ *
+ * 首版 12 个题型（P0）+ 情境加减 2 个：
+ *   A1 count    点数（两行、4~8 个）
+ *   A2 take     按数取物（三堆里挑正好的一堆）
+ *   A3 conserve 数量守恒（同数量不同排列，答"一样多"）—— 答错免责
+ *   A4 neighbor  相邻数（前后）
+ *   A5 split    数的分合
+ *   A6 ordinal  序数（从左边数第几个）
+ *   B1 more3    比多少（三组）
+ *   B2 longer   比长短
+ *   B3 taller   比高矮
+ *   B4 weight   比轻重
+ *   C1 odd      找不同（否定分类）
+ *   D1 pattern  找规律 ABAB
+ *   add / sub   情境加减（和 ≤8，权重低）
+ *
+ * 本文件同时是 UTS 模块，语法与 TypeScript 兼容，可被 tests/ 下的脚本直接跑。
+ */
+
+import { Thing, THINGS, thingsOfCat, catName, WEIGHT_PAIRS, WeightPair } from './words.uts'
+import { Explain, ExplainLine, el, makeExplain, countSeq } from './explain.uts'
+import { rngNext, rngState } from './rng.uts'
+
+/** 答对表扬语 */
+export const PRAISE: Array<string> = ['太棒了！', '真厉害！', '口算小神童！', '完全正确！', '你真聪明！']
+/** 答错鼓励语——原则：只鼓励 + 告知正确答案，不否定 */
+export const ENCOURAGE: Array<string> = ['没关系，再来一次！', '差一点点哦！', '继续加油！']
+
+/** 一轮题量 */
+export const ROUND_SIZE: number = 5
+/** 单题计时（秒）——2 分钟：低龄孩子需要充分观察图形、组织语言 */
+export const SECONDS_PER_QUESTION: number = 120
+/** 最后几秒进入红色告警 */
+export const URGENT_SECONDS: number = 10
+
+/* ---------------- 题型标识 ---------------- */
+export const KIND_COUNT: string = 'count'
+export const KIND_TAKE: string = 'take'
+export const KIND_CONSERVE: string = 'conserve'
+export const KIND_NEIGHBOR: string = 'neighbor'
+export const KIND_SPLIT: string = 'split'
+export const KIND_ORDINAL: string = 'ordinal'
+export const KIND_MORE3: string = 'more3'
+export const KIND_LONGER: string = 'longer'
+export const KIND_TALLER: string = 'taller'
+export const KIND_WEIGHT: string = 'weight'
+export const KIND_ODD: string = 'odd'
+export const KIND_PATTERN: string = 'pattern'
+export const KIND_ADD: string = 'add'
+export const KIND_SUB: string = 'sub'
+/* 第二批扩充（2026-11-07）：把题库从 14 型扩到 21 型，见需求文档第十九节 */
+export const KIND_NEXTNUM: string = 'nextnum'
+export const KIND_PATTERN2: string = 'pattern2'
+export const KIND_HALF: string = 'half'
+export const KIND_ANALOGY: string = 'analogy'
+export const KIND_CAUSE: string = 'cause'
+export const KIND_DAYTIME: string = 'daytime'
+export const KIND_NOTCAT: string = 'notcat'
+
+/** 一道题 */
+export class Question {
+	/** 题型标识 */
+	kind: string = ''
+	/** true=数字题（数字垫），false=选择类题（选项按钮） */
+	numeric: boolean = true
+	/** 数字题答案 */
+	ans: number = 0
+	/** 选择类题答案文本 */
+	ansText: string = ''
+	/** 读题文本（TTS，不含 emoji/符号） */
+	prompt: string = ''
+	/** 底部提示条文案 */
+	hint: string = ''
+	/** 题面主文字（算式或问题） */
+	expr: string = ''
+
+	/**
+	 * 题面布局：
+	 * expr=大字算式 / items=单行图形 / items2=两行图形 / groups=多组并排
+	 * bars=横条比长短 / towers=竖条比高矮 / pattern=序列+❓ / plain=只有文字
+	 */
+	layout: string = 'expr'
+
+	/** 单组图形（items / items2 第一行） */
+	emojis: string = ''
+	/** items2 第二行 */
+	emojis2: string = ''
+	/** 多组并排的每组内容（2~3 组） */
+	groups: Array<string> = []
+	/** 多组并排的组标签（与 groups 等长，可为空串） */
+	groupLabels: Array<string> = []
+	/** 多组各自的图形字号 class（与 groups 等长，可为空串）；数量守恒靠它制造"大小不同、数量相同" */
+	groupClasses: Array<string> = []
+	/** 多组之间的分隔符，如 '+'；空串表示不显示 */
+	groupSep: string = ''
+	/** 找规律已出现的序列 */
+	seq: string = ''
+	/** 选择类题的选项 */
+	options: Array<string> = []
+	/** 数字垫候选值（已升序、含正确答案） */
+	numberOptions: Array<number> = []
+	/** 选项布局：row=一行 / grid2x2=2×2 网格 / row5=5 个小格 */
+	optionsLayout: string = 'row'
+	/** true=选项必须严格相等（emoji 串用），false=可宽匹配（"左边的"算"左边"） */
+	exact: boolean = false
+	/** true=答错免责（数量守恒题：不扣分、不计错、不断连击） */
+	exempt: boolean = false
+	/** bars / towers 的左右档位 class（如 bar-w5 / bar-h2） */
+	leftClass: string = ''
+	rightClass: string = ''
+
+	/**
+	 * 这道题的随机种子（生成前的随机状态）
+	 *
+	 * 错题库靠它把题目"原样重建"：setRngState(seed) → genByKind(kind) 得到同一道题。
+	 * 由 genByKind 统一写入，各 genXxx 不需要关心。
+	 */
+	seed: number = 0
+
+	/**
+	 * 答错后的小黑板讲解（每题型 3~4 步）
+	 *
+	 * 在 genXxx 里就地生成：那一刻手里有 n1/n2/a/b/目标堆，反推容易算错。
+	 * lines 为空时，页面回退到"正确答案是 X"的老逻辑（不会出现空黑板）。
+	 */
+	explain: Explain = new Explain()
+}
+
+/* ---------------- 基础工具 ---------------- */
+
+function repeatStr(s: string, n: number): string {
+	let out: string = ''
+	for (let i = 0; i < n; i++) out += s
+	return out
+}
+
+/** 重复 emoji 并用空格隔开（视觉上更"散"，用于数量守恒的对照排列） */
+function repeatLoose(s: string, n: number): string {
+	let out: string = ''
+	for (let i = 0; i < n; i++) {
+		if (i > 0) out += ' '
+		out += s
+	}
+	return out
+}
+
+function randInt(min: number, max: number): number {
+	return min + Math.floor(rngNext() * (max - min + 1))
+}
+
+function randIndex(len: number): number {
+	return Math.floor(rngNext() * len)
+}
+
+function pickThing(): Thing {
+	return THINGS[randIndex(THINGS.length)]
+}
+
+function shuffleText(src: Array<string>): Array<string> {
+	const arr: Array<string> = []
+	for (let i = 0; i < src.length; i++) arr.push(src[i])
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j: number = randInt(0, i)
+		const t: string = arr[i]
+		arr[i] = arr[j]
+		arr[j] = t
+	}
+	return arr
+}
+
+function sameOrder(a: Array<string>, b: Array<string>): boolean {
+	if (a.length != b.length) return false
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] != b[i]) return false
+	}
+	return true
+}
+
+/** 洗牌并保证顺序与原数组不同（避免"正确答案总在第一个"） */
+function shuffleDifferent(src: Array<string>): Array<string> {
+	if (src.length < 2) return shuffleText(src)
+	let out: Array<string> = shuffleText(src)
+	let guard: number = 0
+	while (guard < 30 && sameOrder(src, out)) {
+		guard++
+		out = shuffleText(src)
+	}
+	return out
+}
+
+/**
+ * 数字垫候选值：正确答案 + 5 个干扰项，升序，值域 0~10。
+ * 干扰项优先取 ±1（能分辨孩子是否真的会），不够再用 ±2/±3，最后随机补。
+ */
+export function buildNumberOptions(ans: number): Array<number> {
+	const vals: Array<number> = [ans]
+	const deltas: Array<number> = [1, -1, 2, -2, 3, -3]
+	for (let i = 0; i < deltas.length; i++) {
+		if (vals.length >= 6) break
+		const v: number = ans + deltas[i]
+		if (v >= 0 && v <= 10 && vals.indexOf(v) < 0) vals.push(v)
+	}
+	let guard: number = 0
+	while (vals.length < 6 && guard < 500) {
+		guard++
+		const v: number = randInt(0, 10)
+		if (vals.indexOf(v) < 0) vals.push(v)
+	}
+	vals.sort((a: number, b: number): number => a - b)
+	return vals
+}
+
+/* ---------------- A 组 · 数概念 ---------------- */
+
+/** A1 点数：两行错位摆放，4~8 个 */
+function genCount(): Question {
+	const q = new Question()
+	const n: number = randInt(4, 8)
+	const t: Thing = pickThing()
+	const half: number = Math.floor(n / 2)
+	let n1: number = half + randInt(-1, 1)
+	if (n1 < 1) n1 = 1
+	if (n1 > n - 1) n1 = n - 1
+	const n2: number = n - n1
+
+	q.kind = KIND_COUNT
+	q.numeric = true
+	q.ans = n
+	q.layout = 'items2'
+	q.emojis = repeatStr(t.emoji, n1)
+	q.emojis2 = repeatStr(t.emoji, n2)
+	q.expr = '一共有几个' + t.name + '？'
+	q.prompt = '数一数，一共有几个' + t.name + '呀？'
+	q.hint = '👆 一个一个点着数'
+	q.numberOptions = buildNumberOptions(q.ans)
+
+	// 讲解：把"数"这个动作演一遍——不能直接报数，要让孩子看见从 1 数到 n 的过程
+	const lines: Array<ExplainLine> = []
+	lines.push(el('先看上面这一行', q.emojis, '我们先看上面这一行。伸出小手指，点一个，数一个。', '🤔'))
+	lines.push(el('数到 ' + countSeq(n1) + '，一共 ' + n1.toString() + ' 个', '', '跟着老师一起数：' + countSeq(n1) + '。上面这一行有 ' + n1.toString() + ' 个。', '🙂'))
+	lines.push(el('下面这一行 ' + n2.toString() + ' 个', q.emojis2, '下面这一行也数一遍，一共 ' + n2.toString() + ' 个。', '🙂'))
+	lines.push(el(n1.toString() + ' 和 ' + n2.toString() + ' 合起来是 ' + n.toString() + ' 个', '', '上面 ' + n1.toString() + ' 个，下面 ' + n2.toString() + ' 个，加起来一共有 ' + n.toString() + ' 个。', '😊'))
+	q.explain = makeExplain('数一数', lines)
+	return q
+}
+
+/** A2 按数取物：三堆里挑出正好 n 个的那堆 */
+function genTake(): Question {
+	const q = new Question()
+	const n: number = randInt(3, 7)
+	const t: Thing = pickThing()
+	const right: string = repeatStr(t.emoji, n)
+	q.kind = KIND_TAKE
+	q.numeric = false
+	q.ans = n
+	q.layout = 'plain'
+	q.expr = '拿 ' + n.toString() + ' 个' + t.name + '给我'
+	q.prompt = '拿' + n.toString() + '个' + t.name + '给我'
+	q.hint = '👆 数一数，哪一堆正好'
+	q.options = [repeatStr(t.emoji, n - 2), right, repeatStr(t.emoji, n + 2)]
+	q.ansText = right
+	q.exact = true
+	q.optionsLayout = 'row'
+
+	// 讲解：按数取物考的是"数到几就停"，所以板书要把目标数写在最上面
+	const lines: Array<ExplainLine> = []
+	lines.push(el('题目要拿 ' + n.toString() + ' 个', '', '题目说，要拿 ' + n.toString() + ' 个' + t.name + '。', '🤔'))
+	lines.push(el('数到 ' + n.toString() + ' 就停手', '', '一堆一堆地数，数到 ' + n.toString() + ' 就停手，不要再往下数。', '🙂'))
+	lines.push(el('这一堆正好 ' + n.toString() + ' 个', right, '你看这一堆，正好 ' + n.toString() + ' 个，不多也不少。', '😊'))
+	q.explain = makeExplain('按数取物', lines)
+	return q
+}
+
+/** A3 数量守恒：数量相同、排列不同，答"一样多"；答错免责 */
+function genConserve(): Question {
+	const q = new Question()
+	const candidates: Array<number> = [3, 5, 6]
+	const n: number = candidates[randIndex(candidates.length)]
+	const t: Thing = pickThing()
+	q.kind = KIND_CONSERVE
+	q.numeric = false
+	q.layout = 'groups'
+	q.groups = [repeatStr(t.emoji, n), repeatLoose(t.emoji, n)]
+	q.groupLabels = ['左边', '右边']
+	// 关键：两组数量完全相同，但一组画大、一组画小（4 岁会误判大的那堆更多）
+	q.groupClasses = ['g-emoji-lg', 'g-emoji-sm']
+	q.expr = '哪边更多？还是一样多？'
+	q.prompt = '左边一堆，右边一堆，哪边' + t.name + '更多呀？还是一样多？'
+	q.hint = '🤔 数一数两边，再比一比'
+	q.options = ['左边', '右边', '一样多']
+	q.ansText = '一样多'
+	q.exempt = true
+	q.optionsLayout = 'row'
+
+	// 讲解：守恒题答错的根源是"大的那堆看着多"，所以两步都要落在"数"上，
+	// 一句都不能提"大/小看起来"，否则等于强化错觉
+	const lines: Array<ExplainLine> = []
+	lines.push(el('先数左边这一堆', q.groups[0], '左边这一堆，一个一个数清楚，别着急。', '🤔'))
+	lines.push(el('左边 ' + n.toString() + ' 个', '', '左边数完了，是 ' + n.toString() + ' 个。', '🙂'))
+	lines.push(el('右边也是 ' + n.toString() + ' 个', q.groups[1], '右边也数一遍，也是 ' + n.toString() + ' 个。它只是画得小一点。', '🙂'))
+	lines.push(el('两边一样多', '', '数出来的个数一样，两边就是一样多。', '😊'))
+	q.explain = makeExplain('数一数再比', lines)
+	return q
+}
+
+/** A4 相邻数：前面 / 后面 */
+function genNeighbor(): Question {
+	const q = new Question()
+	q.kind = KIND_NEIGHBOR
+	q.numeric = true
+	q.layout = 'expr'
+	let base: number = 0
+	let isAfter: boolean = false
+	if (randInt(0, 1) == 0) {
+		const n: number = randInt(1, 9)
+		base = n
+		isAfter = true
+		q.ans = n + 1
+		q.expr = n.toString() + ' 后面是几？'
+		q.prompt = n.toString() + '后面跟着的是几呀？'
+	} else {
+		const n: number = randInt(2, 10)
+		base = n
+		isAfter = false
+		q.ans = n - 1
+		q.expr = n.toString() + ' 前面是几？'
+		q.prompt = n.toString() + '前面一个是几呀？'
+	}
+	q.hint = '🔢 顺着数一数'
+	q.numberOptions = buildNumberOptions(q.ans)
+
+	// 讲解：相邻数的抓手是数字队——先看见整队，再看见"紧挨着"
+	const lines: Array<ExplainLine> = []
+	lines.push(el('1 2 3 4 5 6 7 8 9 10', '', '数字宝宝是排好队站着的，一个挨着一个，一个都不会插队。', '🤔'))
+	lines.push(el('先找到 ' + base.toString(), '', '我们先在这个队伍里找到 ' + base.toString() + '。', '🙂'))
+	lines.push(el(base.toString() + (isAfter ? ' 后面是 ' : ' 前面是 ') + q.ans.toString(), '', (isAfter ? base.toString() + ' 后面紧挨着的，就是 ' : base.toString() + ' 前面紧挨着的，就是 ') + q.ans.toString() + '。', '😊'))
+	q.explain = makeExplain('顺着数', lines)
+	return q
+}
+
+/** A5 数的分合 */
+function genSplit(): Question {
+	const q = new Question()
+	const n: number = randInt(4, 7)
+	const a: number = randInt(1, n - 1)
+	q.kind = KIND_SPLIT
+	q.numeric = true
+	q.layout = 'expr'
+	q.ans = n - a
+	q.expr = n.toString() + ' 可以分成 ' + a.toString() + ' 和几？'
+	q.prompt = n.toString() + '可以分成' + a.toString() + '和几呀？'
+	q.hint = '💡 两个数合起来要是 ' + n.toString()
+	q.numberOptions = buildNumberOptions(q.ans)
+
+	// 讲解：分合题不讲减法符号（4~5 岁还没到抽象符号），只讲"一共 → 放一堆 → 剩下进另一堆"
+	const t: Thing = pickThing()
+	const lines: Array<ExplainLine> = []
+	lines.push(el('一共 ' + n.toString() + ' 个', repeatStr(t.emoji, n), '一共有 ' + n.toString() + ' 个' + t.name + '，要把它们分成两堆。', '🤔'))
+	lines.push(el('这一堆先放 ' + a.toString() + ' 个', repeatStr(t.emoji, a), '这一堆先放进去 ' + a.toString() + ' 个。', '🙂'))
+	lines.push(el('另一堆是 ' + q.ans.toString() + ' 个', repeatStr(t.emoji, n - a), '剩下这些全部放到另一堆，数一数，是 ' + q.ans.toString() + ' 个。', '😊'))
+	q.explain = makeExplain('分两堆', lines)
+	return q
+}
+
+/** A6 序数：从左边 / 右边数第 k 个 */
+function genOrdinal(): Question {
+	const q = new Question()
+	const pool: Array<Thing> = thingsOfCat('animal')
+	const picked: Array<Thing> = []
+	const used: Array<number> = []
+	let guard: number = 0
+	while (picked.length < 5 && guard < 200) {
+		guard++
+		const i: number = randIndex(pool.length)
+		if (used.indexOf(i) >= 0) continue
+		used.push(i)
+		picked.push(pool[i])
+	}
+	const k: number = randInt(1, 5)
+	const fromLeft: boolean = randInt(0, 1) == 0
+	let line: string = ''
+	for (let i = 0; i < picked.length; i++) {
+		if (i > 0) line += ' '
+		line += picked[i].emoji
+	}
+	const options: Array<string> = []
+	for (let i = 0; i < picked.length; i++) options.push(picked[i].emoji)
+
+	q.kind = KIND_ORDINAL
+	q.numeric = false
+	q.layout = 'items'
+	q.emojis = line
+	q.expr = (fromLeft ? '从左边数' : '从右边数') + '，第 ' + k.toString() + ' 个是谁？'
+	q.prompt = (fromLeft ? '从左边数' : '从右边数') + '，第' + k.toString() + '个是谁呀？'
+	q.hint = '👉 一个一个有顺序地数'
+	q.options = options
+	q.ansText = picked[k - 1].emoji
+	q.exact = true
+	q.optionsLayout = 'row5'
+
+	// 讲解：序数错的多半是"方向反了"，所以第一步只讲从哪边开始，不讲数
+	const dirText: string = fromLeft ? '从左边数' : '从右边数'
+	const lines: Array<ExplainLine> = []
+	lines.push(el('看清方向：' + dirText, '', '先看清楚，题目要从哪一边开始数。' + dirText + '，就从那一边开始。', '🤔'))
+	lines.push(el('1 2 3 4 5 一个一个数', line, '一边数，一边在心里记住数到第几个了。', '🙂'))
+	lines.push(el('第 ' + k.toString() + ' 个是 ' + picked[k - 1].emoji, picked[k - 1].emoji, '数到第 ' + k.toString() + ' 个，就是它。', '😊'))
+	q.explain = makeExplain('数第几个', lines)
+	return q
+}
+
+/* ---------------- B 组 · 量的比较 ---------------- */
+
+/** B1 比多少（三组） */
+function genMore3(): Question {
+	const q = new Question()
+	const t: Thing = pickThing()
+	const labels: Array<string> = ['左边', '中间', '右边']
+	const vals: Array<number> = []
+	let guard: number = 0
+	while (vals.length < 3 && guard < 200) {
+		guard++
+		const v: number = randInt(1, 6)
+		if (vals.indexOf(v) < 0) vals.push(v)
+	}
+	const askMost: boolean = randInt(0, 1) == 0
+	let target: number = 0
+	for (let i = 1; i < 3; i++) {
+		if (askMost) {
+			if (vals[i] > vals[target]) target = i
+		} else {
+			if (vals[i] < vals[target]) target = i
+		}
+	}
+	q.kind = KIND_MORE3
+	q.numeric = false
+	q.layout = 'groups'
+	q.groups = [repeatStr(t.emoji, vals[0]), repeatStr(t.emoji, vals[1]), repeatStr(t.emoji, vals[2])]
+	q.groupLabels = labels
+	q.expr = '哪一堆' + t.name + (askMost ? '最多？' : '最少？')
+	q.prompt = '哪一堆' + t.name + (askMost ? '最多呀？' : '最少呀？')
+	q.hint = '⚖️ 一堆一堆比一比'
+	q.options = labels
+	q.ansText = labels[target]
+	q.optionsLayout = 'row'
+
+	// 讲解：比多少的关键是"先把三堆变成三个数"，数字一列出来就一目了然
+	const lines: Array<ExplainLine> = []
+	lines.push(el('一堆一堆分开数', '', '三堆分开数，一堆一堆来，不要混在一起。', '🤔'))
+	lines.push(el('左 ' + vals[0].toString() + ' 中 ' + vals[1].toString() + ' 右 ' + vals[2].toString(), '', '左边 ' + vals[0].toString() + ' 个，中间 ' + vals[1].toString() + ' 个，右边 ' + vals[2].toString() + ' 个。', '🙂'))
+	lines.push(el((askMost ? '最多' : '最少') + '的是' + labels[target], '', (askMost ? '三个数里最大的' : '三个数里最小的') + '那一堆，就是' + labels[target] + '。', '😊'))
+	q.explain = makeExplain('比多少', lines)
+	return q
+}
+
+/** 左右档位随机：返回 [左边 class, 右边 class] */
+function makeBarPair(bigClass: string, smallClass: string, bigFirst: boolean): Array<string> {
+	if (bigFirst) return [bigClass, smallClass]
+	return [smallClass, bigClass]
+}
+
+/** B2 比长短 */
+function genLonger(): Question {
+	const q = new Question()
+	const bigLevel: number = randInt(5, 6)
+	const smallLevel: number = randInt(1, 2)
+	const bigFirst: boolean = randInt(0, 1) == 0
+	const pair: Array<string> = makeBarPair('bar-w' + bigLevel.toString(), 'bar-w' + smallLevel.toString(), bigFirst)
+	q.kind = KIND_LONGER
+	q.numeric = false
+	q.layout = 'bars'
+	q.leftClass = pair[0]
+	q.rightClass = pair[1]
+	q.expr = '哪一根更长？'
+	q.prompt = '两根面条，哪一根更长呀？'
+	q.hint = '📏 从头到尾比一比'
+	q.options = ['左边', '右边']
+	q.ansText = bigFirst ? '左边' : '右边'
+	q.optionsLayout = 'row'
+
+	// 讲解：比长短只教一个动作——一头对齐，看另一头
+	const longLines: Array<ExplainLine> = []
+	longLines.push(el('一头对齐', '', '把两根的一头放在同一条线上，对齐。', '🤔'))
+	longLines.push(el('再看另一头伸到哪里', '', '对齐以后，再看另一头伸到哪里。', '🙂'))
+	longLines.push(el(q.ansText + '更长', '', '另一头伸出去更远的那一根，就更长。所以' + q.ansText + '更长。', '😊'))
+	q.explain = makeExplain('比长短', longLines)
+	return q
+}
+
+/** B3 比高矮 */
+function genTaller(): Question {
+	const q = new Question()
+	const bigLevel: number = randInt(4, 5)
+	const smallLevel: number = randInt(1, 2)
+	const bigFirst: boolean = randInt(0, 1) == 0
+	const pair: Array<string> = makeBarPair('bar-h' + bigLevel.toString(), 'bar-h' + smallLevel.toString(), bigFirst)
+	q.kind = KIND_TALLER
+	q.numeric = false
+	q.layout = 'towers'
+	q.leftClass = pair[0]
+	q.rightClass = pair[1]
+	q.expr = '哪一座更高？'
+	q.prompt = '两座积木塔，哪一座更高呀？'
+	q.hint = '⬆️ 从底下往上看谁更高'
+	q.options = ['左边', '右边']
+	q.ansText = bigFirst ? '左边' : '右边'
+	q.optionsLayout = 'row'
+
+	// 讲解：比高矮的关键是"从同一个地面开始"，否则高的可能只是"站得高"
+	const tallLines: Array<ExplainLine> = []
+	tallLines.push(el('都从最下面开始看', '', '两座塔都从地板上开始搭，都站在同一个地面上。', '🤔'))
+	tallLines.push(el('谁的头顶更高', '', '从底下往上看，谁的头顶更高，谁就更高。', '🙂'))
+	tallLines.push(el(q.ansText + '更高', '', '所以，' + q.ansText + '那一座更高。', '😊'))
+	q.explain = makeExplain('比高矮', tallLines)
+	return q
+}
+
+/** B4 比轻重（生活常识可判） */
+function genWeight(): Question {
+	const q = new Question()
+	const p: WeightPair = WEIGHT_PAIRS[randIndex(WEIGHT_PAIRS.length)]
+	const heavyFirst: boolean = randInt(0, 1) == 0
+	const left: Thing = heavyFirst ? p.heavy : p.light
+	const right: Thing = heavyFirst ? p.light : p.heavy
+	q.kind = KIND_WEIGHT
+	q.numeric = false
+	q.layout = 'groups'
+	q.groups = [left.emoji, right.emoji]
+	q.groupLabels = [left.name, right.name]
+	q.expr = '哪个更重？'
+	q.prompt = left.name + '和' + right.name + '，哪个更重呀？'
+	q.hint = '💪 想一想谁更重'
+	q.options = [left.name, right.name]
+	q.ansText = p.heavy.name
+	q.optionsLayout = 'row'
+
+	// 讲解：轻重靠"抱起来费不费劲"这个身体经验，不讲质量/密度
+	const wLines: Array<ExplainLine> = []
+	wLines.push(el(left.name + ' 和 ' + right.name, left.emoji + ' ' + right.emoji, '我们想一想，这两个东西，哪个抱起来更费劲。', '🤔'))
+	wLines.push(el('抱起来更费劲的更重', '', '抱起来更费劲、更沉的那个，就是更重的。', '🙂'))
+	wLines.push(el(p.heavy.name + '更重', p.heavy.emoji, '所以，' + p.heavy.name + '更重。', '😊'))
+	q.explain = makeExplain('比轻重', wLines)
+	return q
+}
+
+/* ---------------- C 组 · 分类 ---------------- */
+
+/** C1 找不同：3 个同类 + 1 个异类 */
+function genOdd(): Question {
+	const q = new Question()
+	const cats: Array<string> = ['fruit', 'animal', 'vehicle', 'toy']
+	const ci: number = randIndex(cats.length)
+	let oi: number = randIndex(cats.length)
+	let guard: number = 0
+	while (oi == ci && guard < 50) {
+		guard++
+		oi = randIndex(cats.length)
+	}
+	const main: Array<Thing> = thingsOfCat(cats[ci])
+	const other: Array<Thing> = thingsOfCat(cats[oi])
+
+	const picked: Array<Thing> = []
+	const used: Array<number> = []
+	guard = 0
+	while (picked.length < 3 && guard < 200) {
+		guard++
+		const i: number = randIndex(main.length)
+		if (used.indexOf(i) >= 0) continue
+		used.push(i)
+		picked.push(main[i])
+	}
+	const oddOne: Thing = other[randIndex(other.length)]
+
+	q.kind = KIND_ODD
+	q.numeric = false
+	q.layout = 'plain'
+	q.expr = '哪一个不是' + catName(cats[ci]) + '？'
+	q.prompt = '哪一个不是' + catName(cats[ci]) + '呀？'
+	q.hint = '🔍 三个是一伙的，只有一个不是'
+	q.options = [picked[0].emoji, picked[1].emoji, picked[2].emoji, oddOne.emoji]
+	q.ansText = oddOne.emoji
+	q.exact = true
+	q.optionsLayout = 'grid2x2'
+
+	// 讲解：找不同靠"先归堆、再找落单的"——直接说哪个不一样，孩子学不到方法
+	const oLines: Array<ExplainLine> = []
+	oLines.push(el('一个一个看过去', '', '我们一个一个看过去，看看它们都是什么。', '🤔'))
+	oLines.push(el('这三个都是' + catName(cats[ci]), picked[0].emoji + picked[1].emoji + picked[2].emoji, '这三个都是' + catName(cats[ci]) + '，它们是一家人。', '🙂'))
+	oLines.push(el('这个是' + catName(cats[oi]), oddOne.emoji, '这一个不是' + catName(cats[ci]) + '，它是' + catName(cats[oi]) + '，所以它和大家不一样。', '😊'))
+	q.explain = makeExplain('找不同', oLines)
+	return q
+}
+
+/* ---------------- D 组 · 模式 ---------------- */
+
+/** D1 找规律 ABAB */
+function genPattern(): Question {
+	const q = new Question()
+	const t1: Thing = pickThing()
+	let t2: Thing = pickThing()
+	let guard: number = 0
+	while (t2.emoji == t1.emoji && guard < 50) {
+		guard++
+		t2 = pickThing()
+	}
+	q.kind = KIND_PATTERN
+	q.numeric = false
+	q.layout = 'pattern'
+	q.seq = t1.emoji + t2.emoji + t1.emoji + t2.emoji + t1.emoji
+	q.expr = '接下来是哪一个？'
+	q.prompt = '看一看，找一找规律，接下来应该出现哪一个呀？'
+	q.hint = '🔍 规律藏在前面的排列里'
+	q.options = [t1.emoji, t2.emoji]
+	q.ansText = t2.emoji
+	q.exact = true
+	q.optionsLayout = 'row'
+
+	// 讲解：规律题要教"分组"——把长队切成一组一组，孩子才看得见重复
+	const pLines: Array<ExplainLine> = []
+	pLines.push(el(q.seq, '', '我们先看看它们排队的顺序。', '🤔'))
+	pLines.push(el(t1.emoji + t2.emoji + ' 一组，再来一组', '', '原来是一个隔一个，' + t1.emoji + t2.emoji + ' 两个一组，一组一组重复。', '🙂'))
+	pLines.push(el('接下来是 ' + t2.emoji, t2.emoji, '这一组的第一个已经出来了，接下来就轮到 ' + t2.emoji + '。', '😊'))
+	q.explain = makeExplain('找规律', pLines)
+	return q
+}
+
+/* ---------------- 情境加减（低权重保留） ---------------- */
+
+/** 加法：和 ≤8，用"又放进来"的情境 */
+function genAdd(): Question {
+	const q = new Question()
+	const a: number = randInt(1, 4)
+	const b: number = randInt(1, 8 - a)
+	const t: Thing = pickThing()
+	q.kind = KIND_ADD
+	q.numeric = true
+	q.layout = 'groups'
+	q.ans = a + b
+	q.groups = [repeatStr(t.emoji, a), repeatStr(t.emoji, b)]
+	q.groupLabels = ['', '']
+	q.groupSep = '+'
+	q.expr = a.toString() + ' + ' + b.toString() + ' = ?'
+	q.prompt = '盘子里有' + a.toString() + '个' + t.name + '，又放进来' + b.toString() + '个，一共有几个呀？'
+	q.hint = '🔊 听题，说出答案或按数字键'
+	q.numberOptions = buildNumberOptions(q.ans)
+
+	// 加法讲解：两组图形分开画，最后合到一起数
+	const aLines: Array<ExplainLine> = []
+	aLines.push(el('原来有 ' + a.toString() + ' 个', repeatStr(t.emoji, a), '盘子原来有 ' + a.toString() + ' 个' + t.name + '。', '🤔'))
+	aLines.push(el('又放进 ' + b.toString() + ' 个', repeatStr(t.emoji, b), '又放进来 ' + b.toString() + ' 个。', '🙂'))
+	aLines.push(el(a.toString() + ' 加 ' + b.toString() + ' 是 ' + q.ans.toString() + ' 个', '', '合起来一起数：' + a.toString() + ' 加 ' + b.toString() + '，一共 ' + q.ans.toString() + ' 个。', '😊'))
+	q.explain = makeExplain('合起来数', aLines)
+	return q
+}
+
+/** 减法：被减数 ≤8，用"拿走"的情境 */
+function genSub(): Question {
+	const q = new Question()
+	const a: number = randInt(3, 8)
+	const b: number = randInt(1, a - 1)
+	const t: Thing = pickThing()
+	q.kind = KIND_SUB
+	q.numeric = true
+	q.layout = 'items'
+	q.ans = a - b
+	q.emojis = repeatStr(t.emoji, a)
+	q.expr = a.toString() + ' − ' + b.toString() + ' = ?'
+	q.prompt = '有' + a.toString() + '个' + t.name + '，拿走' + b.toString() + '个，还剩几个呀？'
+	q.hint = '🔊 听题，说出答案或按数字键'
+	q.numberOptions = buildNumberOptions(q.ans)
+
+	// 减法讲解：先看见"原来多少"，再看见"拿走几个"，最后"数剩下的"
+	const sLines: Array<ExplainLine> = []
+	sLines.push(el('原来有 ' + a.toString() + ' 个', repeatStr(t.emoji, a), '原来有 ' + a.toString() + ' 个' + t.name + '。', '🤔'))
+	sLines.push(el('拿走 ' + b.toString() + ' 个', repeatStr(t.emoji, b), '拿走 ' + b.toString() + ' 个，把它们放到一边。', '🙂'))
+	sLines.push(el('还剩 ' + q.ans.toString() + ' 个', '', '数一数剩下的，还有 ' + q.ans.toString() + ' 个。', '😊'))
+	q.explain = makeExplain('拿走一些', sLines)
+	return q
+}
+
+/* ---------------- 第二批：数序 / 双规律 / 等分 / 类比 / 常识 / 早晚 / 否定分类 ---------------- */
+
+/** A7 数序接龙：顺数到 8 以内，填下一个 */
+function genNextNum(): Question {
+	const q = new Question()
+	const a: number = randInt(1, 5)
+	q.kind = KIND_NEXTNUM
+	q.numeric = true
+	q.layout = 'expr'
+	q.ans = a + 3
+	q.numberOptions = buildNumberOptions(q.ans)
+	q.expr = a.toString() + '   ' + (a + 1).toString() + '   ' + (a + 2).toString() + '   ?'
+	q.prompt = '顺着数，' + a.toString() + '，' + (a + 1).toString() + '，' + (a + 2).toString() + '，接下来是几呀？'
+	q.hint = '➡️ 顺着数，一个比一个大'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el(a.toString() + ' ' + (a + 1).toString() + ' ' + (a + 2).toString(), '', '我们顺着数一遍，看看每次多几个。', '🤔'))
+	lines.push(el('每次都多 1', '', '一个比一个多 1，像上楼梯一样，一格一格往上走。', '🙂'))
+	lines.push(el('接下来是 ' + q.ans.toString(), '', (a + 2).toString() + ' 再往上走一格，就是 ' + q.ans.toString() + '。', '😊'))
+	q.explain = makeExplain('顺着数', lines)
+	return q
+}
+
+/** D2 双规律：ABB / AAB（比 ABAB 多拐一个弯） */
+function genPattern2(): Question {
+	const q = new Question()
+	const t1: Thing = pickThing()
+	let t2: Thing = pickThing()
+	let guard: number = 0
+	while (t2.emoji == t1.emoji && guard < 50) {
+		guard++
+		t2 = pickThing()
+	}
+	const aab: boolean = randInt(0, 1) == 0
+	const a: string = t1.emoji
+	const b: string = t2.emoji
+	q.kind = KIND_PATTERN2
+	q.numeric = false
+	q.layout = 'pattern'
+	// AAB：a a b | a a → 下一个是 b；ABB：a b b | a b → 下一个是 b
+	q.seq = aab ? a + a + b + a + a : a + b + b + a + b
+	q.expr = '接下来是哪一个？'
+	q.prompt = '排队的规律变了一点点，仔细看，接下来该是哪一个呀？'
+	q.hint = '🔍 三个一组，一组一组看'
+	q.options = [a, b]
+	q.ansText = b
+	q.exact = true
+	q.optionsLayout = 'row'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el(q.seq, '', '这次不是两个一组了，我们重新分分组。', '🤔'))
+	lines.push(el(aab ? a + a + b + '  三个一组' : a + b + b + '  三个一组', '', '三个一组，' + (aab ? '两个' + a + '一个' + b : '一个' + a + '两个' + b) + '，一组一组重复。', '🙂'))
+	lines.push(el('接下来是 ' + b, b, '这一组的最后一个是 ' + b + '，所以接下来是 ' + b + '。', '😊'))
+	q.explain = makeExplain('找规律', lines)
+	return q
+}
+
+/** H1 等分：把糖果平均分给 2 个人（答案 ≤4） */
+function genHalf(): Question {
+	const q = new Question()
+	const per: number = randInt(1, 4)
+	const total: number = per * 2
+	q.kind = KIND_HALF
+	q.numeric = true
+	q.layout = 'items'
+	q.emojis = repeatStr('🍬', total)
+	q.ans = per
+	q.numberOptions = buildNumberOptions(q.ans)
+	q.expr = total.toString() + ' 颗糖，平均分给 2 个人，每人几颗？'
+	q.prompt = '一共有' + total.toString() + '颗糖，平均分给2个人，每人分几颗呀？'
+	q.hint = '🍬 你一颗，我一颗，轮着分'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el(total.toString() + ' 颗 分给 2 人', repeatStr('🍬', total), '一共有 ' + total.toString() + ' 颗糖，要分给两个人，两个人要一样多。', '🤔'))
+	lines.push(el('你一颗 我一颗', '', '先给你一颗，再给他一颗，轮着来，谁也不少。', '🙂'))
+	lines.push(el('每人 ' + per.toString() + ' 颗', repeatStr('🍬', per) + ' ' + repeatStr('🍬', per), '分完一看，每人 ' + per.toString() + ' 颗，一样多。', '😊'))
+	q.explain = makeExplain('分一分', lines)
+	return q
+}
+
+/** 类比用的"谁爱吃什么"（只用 Unicode 9 以内的 emoji） */
+const ANALOGY_ROLE: Array<string> = ['🐱', '🐶', '🐰', '🐼', '🐵', '🐑']
+const ANALOGY_ROLE_NAME: Array<string> = ['小猫', '小狗', '小兔', '熊猫', '小猴', '小羊']
+const ANALOGY_FOOD: Array<string> = ['🐟', '🍖', '🥕', '🎋', '🍌', '🌿']
+const ANALOGY_FOOD_NAME: Array<string> = ['小鱼', '骨头', '胡萝卜', '竹子', '香蕉', '青草']
+
+/** G1 类比：小猫爱吃鱼，小兔爱吃什么 */
+function genAnalogy(): Question {
+	const q = new Question()
+	const i: number = randInt(0, ANALOGY_ROLE.length - 1)
+	let j: number = randInt(0, ANALOGY_ROLE.length - 1)
+	let guard: number = 0
+	while ((j == i || ANALOGY_FOOD[j] == ANALOGY_FOOD[i]) && guard < 50) {
+		guard++
+		j = randInt(0, ANALOGY_ROLE.length - 1)
+	}
+	q.kind = KIND_ANALOGY
+	q.numeric = false
+	q.layout = 'plain'
+	q.expr = ANALOGY_ROLE[i] + ' 爱吃 ' + ANALOGY_FOOD[i] + '      ' + ANALOGY_ROLE[j] + ' 爱吃什么？'
+	q.prompt = ANALOGY_ROLE_NAME[i] + '爱吃' + ANALOGY_FOOD_NAME[i] + '，' + ANALOGY_ROLE_NAME[j] + '爱吃什么呀？'
+	q.hint = '🍽️ 想想它平时吃什么'
+	// 答案必须是"被问到的那个动物"自己的食物，不是示例动物的
+	const right: string = ANALOGY_FOOD[j]
+	const opts: Array<string> = [right]
+	let g2: number = 0
+	while (opts.length < 4 && g2 < 80) {
+		g2++
+		const k: number = randInt(0, ANALOGY_FOOD.length - 1)
+		if (opts.indexOf(ANALOGY_FOOD[k]) < 0) opts.push(ANALOGY_FOOD[k])
+	}
+	q.options = shuffleDifferent(opts)
+	q.ansText = right
+	q.exact = true
+	q.optionsLayout = 'row'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el(ANALOGY_ROLE[i] + ' → ' + ANALOGY_FOOD[i], '', '先看看前面这一对：' + ANALOGY_ROLE_NAME[i] + '爱吃' + ANALOGY_FOOD_NAME[i] + '。', '🤔'))
+	lines.push(el('它平时吃什么', '', '想一想' + ANALOGY_ROLE_NAME[j] + '平时吃的，不是我们随便挑一个。', '🙂'))
+	lines.push(el(ANALOGY_ROLE_NAME[j] + ' → ' + right, right, ANALOGY_ROLE_NAME[j] + '爱吃' + ANALOGY_FOOD_NAME[j] + '。', '😊'))
+	q.explain = makeExplain('想一想', lines)
+	return q
+}
+
+/** 生活常识：场景 → 该用什么 */
+const CAUSE_ASK: Array<string> = ['下雨了，要带什么？', '太阳好大，出门要戴什么？', '肚子饿了，要吃什么？', '口渴了，要喝什么？']
+const CAUSE_SAY: Array<string> = ['下雨了要打伞', '太阳大要戴墨镜', '肚子饿了要吃饭', '口渴了要喝水']
+const CAUSE_ANSWER: Array<string> = ['🌂', '🕶️', '🍚', '🥤']
+const CAUSE_OTHER: Array<Array<string>> = [
+	['🍬', '🎈', '⚽'],
+	['🍚', '🎈', '🚗'],
+	['🕶️', '🎈', '⚽'],
+	['🍬', '🎨', '🚗']
+]
+
+/** G3 因果/生活常识：哪个东西用得上 */
+function genCause(): Question {
+	const q = new Question()
+	const i: number = randInt(0, CAUSE_ASK.length - 1)
+	q.kind = KIND_CAUSE
+	q.numeric = false
+	q.layout = 'plain'
+	q.expr = CAUSE_ASK[i]
+	q.prompt = CAUSE_ASK[i]
+	q.hint = '🧠 想一想，这个时候用得上什么'
+	const opts: Array<string> = [CAUSE_ANSWER[i]]
+	for (let k = 0; k < CAUSE_OTHER[i].length; k++) opts.push(CAUSE_OTHER[i][k])
+	q.options = shuffleDifferent(opts)
+	q.ansText = CAUSE_ANSWER[i]
+	q.exact = true
+	q.optionsLayout = 'grid2x2'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el('先听清楚是什么事', '', CAUSE_ASK[i], '🤔'))
+	lines.push(el(CAUSE_SAY[i], '', '先想这件事需要什么，再看哪一个真的用得上。', '🙂'))
+	lines.push(el('选 ' + CAUSE_ANSWER[i], CAUSE_ANSWER[i], '所以选 ' + CAUSE_ANSWER[i] + '，' + CAUSE_SAY[i] + '。', '😊'))
+	q.explain = makeExplain('想一想', lines)
+	return q
+}
+
+/** F1 早中晚：看天上是什么，判断什么时候 */
+const DAY_SCENE: Array<string> = ['🌅', '☀️', '🌙']
+const DAY_EXPR: Array<string> = ['太阳刚升起来', '太阳在头顶上', '月亮出来了']
+const DAY_ANSWER: Array<string> = ['早上', '中午', '晚上']
+
+/** F1 时段判断 */
+function genDaytime(): Question {
+	const q = new Question()
+	const i: number = randInt(0, DAY_EXPR.length - 1)
+	q.kind = KIND_DAYTIME
+	q.numeric = false
+	q.layout = 'plain'
+	q.expr = DAY_SCENE[i] + '  ' + DAY_EXPR[i] + '，是什么时候？'
+	q.prompt = DAY_EXPR[i] + '，是早上、中午，还是晚上呀？'
+	q.hint = '🕗 想想这个时候你在做什么'
+	q.options = [DAY_ANSWER[0], DAY_ANSWER[1], DAY_ANSWER[2]]
+	q.ansText = DAY_ANSWER[i]
+	q.optionsLayout = 'row'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el(DAY_SCENE[i] + ' ' + DAY_EXPR[i], '', '先看看天上是什么，再想这个时候我们在做什么。', '🤔'))
+	lines.push(el('早上 中午 晚上', '', '一天有三个时候：早上起床，中午吃饭睡觉，晚上天黑。', '🙂'))
+	lines.push(el('这时候是' + DAY_ANSWER[i], '', DAY_EXPR[i] + '，是' + DAY_ANSWER[i] + '。', '😊'))
+	q.explain = makeExplain('什么时候', lines)
+	return q
+}
+
+/** C3 否定分类：三个同类 + 一个不同类（练"哪个不是"） */
+function genNotCat(): Question {
+	const q = new Question()
+	const cats: Array<string> = ['fruit', 'animal', 'vehicle', 'toy']
+	const ci: number = randInt(0, cats.length - 1)
+	const cat: string = cats[ci]
+	const same: Array<Thing> = thingsOfCat(cat)
+	const otherCats: Array<string> = []
+	for (let i = 0; i < cats.length; i++) {
+		if (cats[i] != cat) otherCats.push(cats[i])
+	}
+	const oc: string = otherCats[randInt(0, otherCats.length - 1)]
+	const diffPool: Array<Thing> = thingsOfCat(oc)
+
+	const picked: Array<string> = []
+	let guard: number = 0
+	while (picked.length < 3 && guard < 120) {
+		guard++
+		const t: Thing = same[randInt(0, same.length - 1)]
+		if (picked.indexOf(t.emoji) < 0) picked.push(t.emoji)
+	}
+	const odd: Thing = diffPool[randInt(0, diffPool.length - 1)]
+
+	q.kind = KIND_NOTCAT
+	q.numeric = false
+	q.layout = 'plain'
+	q.expr = '哪一个不是' + catName(cat) + '？'
+	q.prompt = '仔细看看，哪一个不是' + catName(cat) + '呀？'
+	q.hint = '🔍 三个是一家的，一个不是'
+	const opts: Array<string> = [odd.emoji]
+	for (let i = 0; i < picked.length; i++) opts.push(picked[i])
+	q.options = shuffleDifferent(opts)
+	q.ansText = odd.emoji
+	q.exact = true
+	q.optionsLayout = 'grid2x2'
+
+	const lines: Array<ExplainLine> = []
+	lines.push(el('三 个 一 家', '', '先看它们都是什么，找出三个一家的。', '🤔'))
+	lines.push(el('三个' + catName(cat), '', '有三个都是' + catName(cat) + '，它们是一家的。', '🙂'))
+	lines.push(el(odd.emoji + ' 不是' + catName(cat), odd.emoji, odd.name + '不是' + catName(cat) + '，所以选它。', '😊'))
+	q.explain = makeExplain('分一分', lines)
+	return q
+}
+
+/* ---------------- 组卷 ---------------- */
+
+/** 关卡 → 难度档（L1: 1~3 关，L2: 4~6，L3: 7~9，L4: 10 关起） */
+export function tierOf(level: number): number {
+	if (level <= 3) return 1
+	if (level <= 6) return 2
+	if (level <= 9) return 3
+	return 4
+}
+
+/** 题型 → 能力大类（组卷时"同大类 ≤2 题"用） */
+function groupOf(kind: string): string {
+	if (kind == KIND_ADD || kind == KIND_SUB) return 'op'
+	if (kind == KIND_MORE3 || kind == KIND_LONGER || kind == KIND_TALLER || kind == KIND_WEIGHT) return 'measure'
+	if (kind == KIND_ODD || kind == KIND_NOTCAT) return 'class'
+	if (kind == KIND_PATTERN || kind == KIND_PATTERN2) return 'pattern'
+	// 类比 / 常识 / 时段：都不是算数，归到"想一想"一类，避免一关连出三道同类
+	if (kind == KIND_ANALOGY || kind == KIND_CAUSE || kind == KIND_DAYTIME) return 'reason'
+	return 'num'
+}
+
+/** 按难度返回题型池（逐档累积） */
+function poolOf(tier: number): Array<string> {
+	const base: Array<string> = [
+		KIND_COUNT, KIND_NEIGHBOR, KIND_LONGER, KIND_TALLER, KIND_ODD, KIND_PATTERN, KIND_ADD,
+		KIND_NEXTNUM, KIND_CAUSE, KIND_DAYTIME
+	]
+	if (tier <= 1) return base
+	const t2: Array<string> = []
+	for (let i = 0; i < base.length; i++) t2.push(base[i])
+	const add2: Array<string> = [
+		KIND_TAKE, KIND_CONSERVE, KIND_MORE3, KIND_WEIGHT, KIND_SPLIT, KIND_SUB,
+		KIND_PATTERN2, KIND_ANALOGY, KIND_NOTCAT, KIND_HALF
+	]
+	for (let i = 0; i < add2.length; i++) t2.push(add2[i])
+	if (tier == 2) return t2
+	t2.push(KIND_ORDINAL)
+	return t2
+}
+
+/** 按题型生成一题（同时写入 seed：错题库靠它原样重建这道题） */
+export function genByKind(kind: string): Question {
+	// 必须在生成**之前**取种子：seed 就是"这道题开始生成时的随机状态"
+	const seed: number = rngState()
+	// 先给个默认值（不消耗随机数），再按题型覆盖
+	let q: Question = new Question()
+	if (kind == KIND_COUNT) q = genCount()
+	else if (kind == KIND_TAKE) q = genTake()
+	else if (kind == KIND_CONSERVE) q = genConserve()
+	else if (kind == KIND_NEIGHBOR) q = genNeighbor()
+	else if (kind == KIND_SPLIT) q = genSplit()
+	else if (kind == KIND_ORDINAL) q = genOrdinal()
+	else if (kind == KIND_MORE3) q = genMore3()
+	else if (kind == KIND_LONGER) q = genLonger()
+	else if (kind == KIND_TALLER) q = genTaller()
+	else if (kind == KIND_WEIGHT) q = genWeight()
+	else if (kind == KIND_ODD) q = genOdd()
+	else if (kind == KIND_PATTERN) q = genPattern()
+	else if (kind == KIND_ADD) q = genAdd()
+	else if (kind == KIND_SUB) q = genSub()
+	else if (kind == KIND_NEXTNUM) q = genNextNum()
+	else if (kind == KIND_PATTERN2) q = genPattern2()
+	else if (kind == KIND_HALF) q = genHalf()
+	else if (kind == KIND_ANALOGY) q = genAnalogy()
+	else if (kind == KIND_CAUSE) q = genCause()
+	else if (kind == KIND_DAYTIME) q = genDaytime()
+	else if (kind == KIND_NOTCAT) q = genNotCat()
+	q.seed = seed
+	return q
+}
+
+/** 一组题是否满足组卷约束 */
+function roundOk(kinds: Array<string>): boolean {
+	// 1. 同大类 ≤2
+	for (let i = 0; i < kinds.length; i++) {
+		const g: string = groupOf(kinds[i])
+		let c: number = 0
+		for (let j = 0; j < kinds.length; j++) {
+			if (groupOf(kinds[j]) == g) c++
+		}
+		if (c > 2) return false
+	}
+	// 2. 同题型不连续
+	for (let i = 1; i < kinds.length; i++) {
+		if (kinds[i] == kinds[i - 1]) return false
+	}
+	// 3. 至少 1 个送分题（点数 / 规律 / 找不同）
+	let easy: number = 0
+	for (let i = 0; i < kinds.length; i++) {
+		if (kinds[i] == KIND_COUNT || kinds[i] == KIND_PATTERN || kinds[i] == KIND_ODD) easy++
+	}
+	return easy >= 1
+}
+
+/**
+ * 组一关的题（5 题）：同大类 ≤2、同题型不连续、至少 1 个送分题；
+ * 组不出来时退化为只保证不连着重复。
+ */
+export function buildRound(level: number): Array<Question> {
+	const pool: Array<string> = poolOf(tierOf(level))
+	let bestKinds: Array<string> = []
+	let guard: number = 0
+	while (guard < 120) {
+		guard++
+		const shuffled: Array<string> = shuffleText(pool)
+		const kinds: Array<string> = []
+		for (let i = 0; i < shuffled.length && kinds.length < ROUND_SIZE; i++) {
+			kinds.push(shuffled[i])
+		}
+		if (kinds.length < ROUND_SIZE) continue
+		if (roundOk(kinds)) {
+			bestKinds = kinds
+			break
+		}
+	}
+
+	if (bestKinds.length == 0) {
+		const shuffled: Array<string> = shuffleText(pool)
+		for (let i = 0; i < ROUND_SIZE && i < shuffled.length; i++) bestKinds.push(shuffled[i])
+		while (bestKinds.length < ROUND_SIZE) bestKinds.push(KIND_COUNT)
+	}
+
+	const out: Array<Question> = []
+	for (let i = 0; i < bestKinds.length; i++) out.push(genByKind(bestKinds[i]))
+	return out
+}
+
+/** 单题生成（兼容旧调用：等价于 L2 池随机一题） */
+export function genQuestion(): Question {
+	const pool: Array<string> = poolOf(2)
+	return genByKind(pool[randIndex(pool.length)])
+}
+
+/* ---------------- 判定 ---------------- */
+
+/** 选择类题的选项（洗牌后展示，保证顺序与生成时不同） */
+export function shuffleOptions(q: Question): Array<string> {
+	return shuffleDifferent(q.options)
+}
+
+/** 数字题判定 */
+export function isCorrectNumber(q: Question, value: number): boolean {
+	return q.numeric && value == q.ans
+}
+
+/** 选择类题判定：exact 走严格相等，否则去掉空格后包含即算对 */
+export function isCorrectText(q: Question, value: string): boolean {
+	if (q.numeric) return false
+	const a: string = value.replace(/\s/g, '')
+	const b: string = q.ansText.replace(/\s/g, '')
+	if (q.exact) return a == b
+	return a == b || a.indexOf(b) >= 0
+}
+
+/** 随机表扬语 */
+export function randomPraise(): string {
+	return PRAISE[randIndex(PRAISE.length)]
+}
+
+/** 随机鼓励语 */
+export function randomEncourage(): string {
+	return ENCOURAGE[randIndex(ENCOURAGE.length)]
+}
+
+/**
+ * 语音答案 → 数字：数字白名单 + 同音映射（"俩"=2、"仨"=3）
+ * 未命中返回 -1（调用方提示"再说一遍"）
+ */
+export function parseNumberText(text: string): number {
+	let got: number = -1
+	for (let i = 0; i < text.length; i++) {
+		const ch: string = text.substring(i, i + 1)
+		const v: number = numberCharToValue(ch)
+		if (v >= 0) got = v
+	}
+	return got
+}
+
+function numberCharToValue(ch: string): number {
+	if (ch == '零' || ch == '〇' || ch == '0') return 0
+	if (ch == '一' || ch == '幺' || ch == '1') return 1
+	if (ch == '二' || ch == '两' || ch == '俩' || ch == '2') return 2
+	if (ch == '三' || ch == '仨' || ch == '3') return 3
+	if (ch == '四' || ch == '4') return 4
+	if (ch == '五' || ch == '5') return 5
+	if (ch == '六' || ch == '6') return 6
+	if (ch == '七' || ch == '7') return 7
+	if (ch == '八' || ch == '8') return 8
+	if (ch == '九' || ch == '9') return 9
+	if (ch == '十' || ch == '10') return 10
+	return -1
+}
+
+/** 星级：right>=5→3，>=3→2，>=1→1，否则 0 */
+export function starsOf(right: number): number {
+	if (right >= 5) return 3
+	if (right >= 3) return 2
+	if (right >= 1) return 1
+	return 0
+}
+
+/** 结算页表扬语 */
+export function resultPraise(stars: number): string {
+	if (stars >= 3) return '你就是传说中的小神童！'
+	if (stars == 2) return '进步飞快，继续保持！'
+	return '今天也很棒，明天再来！'
+}

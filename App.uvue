@@ -1,0 +1,163 @@
+<script setup>
+	import { warmupTts } from '@/common/tts.uts'
+	import { migrateSchema } from '@/common/store.uts'
+
+	// #ifdef APP-ANDROID || APP-HARMONY
+	let firstBackTime = 0
+	// #endif
+
+	onLaunch(() => {
+		console.log('算算小达人 launch')
+		// 存储结构迁移：老版本残留的档案选择归位到默认豆豆（只做一次）
+		migrateSchema()
+		// App 端提前创建 TTS 引擎（初始化约 100~300ms），首题开口不用等
+		warmupTts()
+	})
+
+	onAppShow(() => {
+		console.log('App Show')
+	})
+
+	onAppHide(() => {
+		console.log('App Hide')
+	})
+
+	// #ifdef APP-ANDROID || APP-HARMONY
+	onLastPageBackPress(() => {
+		// 电视端：末页连按两次返回才退出，避免孩子误触
+		if (firstBackTime == 0) {
+			uni.showToast({
+				title: '再按一次退出',
+				position: 'bottom',
+			})
+			firstBackTime = Date.now()
+			setTimeout(() => {
+				firstBackTime = 0
+			}, 2000)
+		} else if (Date.now() - firstBackTime < 2000) {
+			firstBackTime = Date.now()
+			uni.exit()
+		}
+	})
+
+	onExit(() => {
+		console.log('App Exit')
+	})
+	// #endif
+</script>
+
+<style>
+	/* ===== 全局公共样式（uni-app x 样式不继承，文字样式必须写在 text 上） ===== */
+
+	.uni-row {
+		flex-direction: row;
+	}
+
+	.uni-column {
+		flex-direction: column;
+	}
+
+	/* 根容器：铺满窗口的深色底。
+	   适配策略：不做 transform 整体缩放（手机端会裁切），改为「设计稿 1920 → 750rpx」的
+	   等比单位换算：rpx 由框架按屏宽换算，宽度方向天然铺满；
+	   高度方向用 100% + flex 分配，窄高比设备（手机 19.5:9）由弹性区吸收，不裁切。 */
+	.root {
+		flex: 1;
+		width: 100%;
+		height: 100%;
+		flex-direction: column;
+		background-color: #0b1026;
+	}
+
+	/* 设计舞台：宽 = 屏宽（750rpx），高 = 剩余可用高度（flex + 百分比双保险） */
+	.stage {
+		position: relative;
+		flex: 1;
+		width: 100%;
+		height: 100%;
+		flex-direction: column;
+		border-radius: 11rpx;
+		overflow: hidden;
+		/* App 平台 linear-gradient 只接受「方向, 起色, 止色」三个参数：
+		   不能用 160deg，也不能写三个以上色标（实测编译报错） */
+		background-image: linear-gradient(to bottom, #141b3d, #233a7d);
+	}
+
+	/* 顶部信息条 */
+	.topbar {
+		flex-direction: row;
+		align-items: center;
+		height: 34rpx;
+	}
+
+	.chip {
+		flex-direction: row;
+		align-items: center;
+		height: 27rpx;
+		padding-left: 12rpx;
+		padding-right: 12rpx;
+		border-radius: 13rpx;
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.chip-text {
+		color: #ffffff;
+		font-size: 12rpx;
+	}
+
+	.chip-gold {
+		color: #ffd76e;
+		font-size: 12rpx;
+	}
+
+	.chip-dim {
+		color: #9fb4ff;
+		font-size: 11rpx;
+	}
+
+	/* 通用按钮（用 view 实现，避免原生 button 默认样式干扰焦点一致性） */
+	.btn {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		height: 38rpx;
+		padding-left: 17rpx;
+		padding-right: 17rpx;
+		border-radius: 19rpx;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.btn-text {
+		color: #ffffff;
+		font-size: 13rpx;
+		font-weight: bold;
+	}
+
+	.btn-gold {
+		background-color: #ffd76e;
+	}
+
+	.btn-gold-text {
+		color: #17204a;
+		font-size: 13rpx;
+		font-weight: bold;
+	}
+
+	.btn-green {
+		background-color: #3ecf8e;
+	}
+
+	/* 大标题 / 副标题 */
+	.pg-title {
+		color: #ffd76e;
+		font-size: 22rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.pg-sub {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		text-align: center;
+	}
+</style>

@@ -1,0 +1,534 @@
+<!--
+  心灵小剧场：央视少儿短片的外链播放入口
+
+  为什么要有家长门：短视频平台一打开就是推荐流，4~5 岁的孩子在里面三分钟就会跑偏。
+  这里用「12+7」把孩子挡在外面、把家长拉进来——短片本身不教什么，
+  家长看完那两句话才是这个模块的价值。所以流程是「点卡 → 家长门 → 陪看卡 → 播放」。
+
+  为什么视频不入包：App 是纯离线产品，央视片源不能下载也不能二次剪辑（版权）。
+  只做外链跳转，等于「在应用里开一个央视的窗口」。
+-->
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶部 -->
+			<view class="ctop">
+				<view class="chip" @click="goBack">
+					<text class="chip-text">← 回心情岛</text>
+				</view>
+				<view class="chip">
+					<text class="chip-gold">🎬 心灵小剧场</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip">
+					<text class="chip-dim">需联网 · 请爸爸妈妈陪</text>
+				</view>
+			</view>
+
+			<text class="ctitle">和爸爸妈妈一起看一个</text>
+			<text class="csub">一次只放一个，看完说两句话就关掉</text>
+
+			<!-- 六张卡：3 列 × 2 行 -->
+			<view class="grid">
+				<view v-for="c in cards" :key="c.id" class="card" @click="pick(c.id)">
+					<view class="cov" :class="c.coverClass">
+						<text class="cov-emoji">{{ c.emoji }}</text>
+						<view class="cov-badge">
+							<text class="cov-dur">{{ c.duration }}</text>
+						</view>
+					</view>
+					<view class="cinfo">
+						<text class="ci-title">{{ c.title }}</text>
+						<text class="ci-src">{{ c.source }}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 栏目兜底：单条失效时家长还能自己去找 -->
+			<view class="cfoot">
+				<text class="cfoot-label">去央视看更多：</text>
+				<view v-for="ch in channels" :key="ch.id" class="chlink" @click="openChannel(ch.id)">
+					<text class="chlink-text">{{ ch.name }}</text>
+				</view>
+			</view>
+
+			<text class="note">视频来自央视网，本应用只做页面跳转，不保存、不改动</text>
+
+			<!-- 家长门：与首页同一口径 12+7 -->
+			<view v-if="gateOpen" class="mask">
+				<view class="panel">
+					<text class="panel-title">请爸爸妈妈来按一下</text>
+					<text class="panel-q">12 + 7 = ?</text>
+					<text v-if="gateInput.length > 0" class="panel-ans">{{ gateInput }}</text>
+					<text v-else class="panel-ans-empty">请按数字</text>
+					<view class="keypad">
+						<view v-for="k in gateKeys" :key="k" class="key" @click="pressKey(k)">
+							<text class="key-text">{{ k }}</text>
+						</view>
+						<view class="key key-fn" @click="backspace">
+							<text class="key-text">⌫</text>
+						</view>
+					</view>
+					<text v-if="gateError" class="panel-err">不对哦，再算一次</text>
+					<view class="panel-btns">
+						<view class="btn gap" @click="closeGate">
+							<text class="btn-text">取消</text>
+						</view>
+						<view class="btn btn-gold gap" @click="submitGate">
+							<text class="btn-gold-text">确定</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<!-- 陪看卡：先把"看完聊什么"给家长看，再播 -->
+			<view v-if="briefOpen" class="mask">
+				<view class="panel panel-wide">
+					<text class="panel-title">{{ briefEmoji }} {{ briefTitle }}</text>
+					<text class="brief-meta">{{ briefSource }} · {{ briefDuration }}</text>
+					<text class="brief-label">看完可以聊</text>
+					<text class="brief-talk">{{ briefTalk }}</text>
+					<view class="brief-warn">短片是引子，聊那两句才是重点</view>
+					<view class="panel-btns">
+						<view class="btn gap" @click="closeBrief">
+							<text class="btn-text">再看看别的</text>
+						</view>
+						<view class="btn btn-green gap" @click="startPlay">
+							<text class="btn-gold-text">开始播放</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		MIND_VIDEOS, VIDEO_CHANNELS, MindVideo, VideoChannel,
+		talkOf, fallbackOf
+	} from '@/common/mind-video.uts'
+	import { setVideoPlay } from '@/common/mind-session.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/**
+	 * 模板只绑字段、不做运算：
+	 * uvue 的模板表达式能力有限，配色档位（cov-k1~cov-k6）在 setup 里就算成类名字符串。
+	 */
+	class VideoCard {
+		id: string = ''
+		emoji: string = ''
+		title: string = ''
+		source: string = ''
+		duration: string = ''
+		coverClass: string = ''
+
+		constructor(id: string, emoji: string, title: string, source: string, duration: string, coverClass: string) {
+			this.id = id
+			this.emoji = emoji
+			this.title = title
+			this.source = source
+			this.duration = duration
+			this.coverClass = coverClass
+		}
+	}
+
+	function buildCards(): Array<VideoCard> {
+		const list: Array<VideoCard> = []
+		for (let i = 0; i < MIND_VIDEOS.length; i++) {
+			const v: MindVideo = MIND_VIDEOS[i]
+			list.push(new VideoCard(v.id, v.emoji, v.title, v.source, v.duration, 'cov-k' + v.skin.toString()))
+		}
+		return list
+	}
+
+	const cards: Array<VideoCard> = buildCards()
+	const channels: Array<VideoChannel> = VIDEO_CHANNELS
+	const gateKeys: Array<string> = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+	const gateOpen = ref<boolean>(false)
+	const gateInput = ref<string>('')
+	const gateError = ref<boolean>(false)
+
+	const briefOpen = ref<boolean>(false)
+	const briefEmoji = ref<string>('')
+	const briefTitle = ref<string>('')
+	const briefSource = ref<string>('')
+	const briefDuration = ref<string>('')
+	const briefTalk = ref<string>('')
+
+	/** 家长门通过后要放的那条（门外不留痕，取消即清空） */
+	let pendingId: string = ''
+
+	function goBack() {
+		safeBack()
+	}
+
+	/* ---------- 家长门 ---------- */
+
+	function pick(id: string) {
+		pendingId = id
+		gateInput.value = ''
+		gateError.value = false
+		gateOpen.value = true
+	}
+
+	function closeGate() {
+		gateOpen.value = false
+		gateInput.value = ''
+		gateError.value = false
+		pendingId = ''
+	}
+
+	function pressKey(k: string) {
+		if (gateInput.value.length >= 3) return
+		gateInput.value = gateInput.value + k
+		gateError.value = false
+	}
+
+	function backspace() {
+		const s: string = gateInput.value
+		if (s.length == 0) return
+		gateInput.value = s.substring(0, s.length - 1)
+		gateError.value = false
+	}
+
+	function submitGate() {
+		if (gateInput.value != '19') {
+			gateError.value = true
+			gateInput.value = ''
+			return
+		}
+		gateOpen.value = false
+		gateInput.value = ''
+		showBrief(pendingId)
+	}
+
+	/* ---------- 陪看卡 ---------- */
+
+	function findVideo(id: string): MindVideo {
+		for (let i = 0; i < MIND_VIDEOS.length; i++) {
+			if (MIND_VIDEOS[i].id == id) return MIND_VIDEOS[i]
+		}
+		return MIND_VIDEOS[0]
+	}
+
+	function showBrief(id: string) {
+		const v: MindVideo = findVideo(id)
+		pendingId = v.id
+		briefEmoji.value = v.emoji
+		briefTitle.value = v.title
+		briefSource.value = v.source
+		briefDuration.value = v.duration
+		briefTalk.value = talkOf(v)
+		briefOpen.value = true
+	}
+
+	function closeBrief() {
+		briefOpen.value = false
+		pendingId = ''
+	}
+
+	function startPlay() {
+		const v: MindVideo = findVideo(pendingId)
+		briefOpen.value = false
+		setVideoPlay(v.id, v.url, v.title, fallbackOf(v))
+		uni.navigateTo({ url: '/pages/mind/watch' })
+	}
+
+	/* ---------- 栏目兜底 ---------- */
+
+	function openChannel(id: string) {
+		for (let i = 0; i < VIDEO_CHANNELS.length; i++) {
+			if (VIDEO_CHANNELS[i].id == id) {
+				const ch: VideoChannel = VIDEO_CHANNELS[i]
+				setVideoPlay('', ch.url, ch.name, ch.url)
+				uni.navigateTo({ url: '/pages/mind/watch' })
+				return
+			}
+		}
+	}
+</script>
+
+<style>
+	.ctop {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 8rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.ctitle {
+		color: #ffd76e;
+		font-size: 16rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-top: 6rpx;
+	}
+
+	.csub {
+		color: #9fb4ff;
+		font-size: 10rpx;
+		text-align: center;
+		margin-top: 2rpx;
+	}
+
+	.grid {
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: 4rpx;
+	}
+
+	.card {
+		width: 210rpx;
+		height: 100rpx;
+		margin: 3rpx;
+		border-radius: 10rpx;
+		overflow: hidden;
+		background-color: rgba(255, 255, 255, 0.06);
+		flex-direction: column;
+	}
+
+	/* 封面：六档配色。uvue 不能用动态渐变，只能一档一个 class */
+	.cov {
+		position: relative;
+		width: 100%;
+		height: 60rpx;
+		justify-content: center;
+		align-items: center;
+		border-radius: 10rpx;
+	}
+
+	.cov-k1 {
+		background-image: linear-gradient(to bottom, #2f5fbf, #1f3d8a);
+	}
+
+	.cov-k2 {
+		background-image: linear-gradient(to bottom, #6a3fbf, #3f2277);
+	}
+
+	.cov-k3 {
+		background-image: linear-gradient(to bottom, #2f8f6b, #1b5b45);
+	}
+
+	.cov-k4 {
+		background-image: linear-gradient(to bottom, #bf7f2f, #7a4d17);
+	}
+
+	.cov-k5 {
+		background-image: linear-gradient(to bottom, #2f7f9f, #17505f);
+	}
+
+	.cov-k6 {
+		background-image: linear-gradient(to bottom, #9f3f5f, #661f38);
+	}
+
+	.cov-emoji {
+		font-size: 26rpx;
+	}
+
+	.cov-badge {
+		position: absolute;
+		right: 5rpx;
+		bottom: 5rpx;
+		padding-left: 5rpx;
+		padding-right: 5rpx;
+		padding-top: 1rpx;
+		padding-bottom: 1rpx;
+		border-radius: 4rpx;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	.cov-dur {
+		color: #ffffff;
+		font-size: 8rpx;
+	}
+
+	.cinfo {
+		flex: 1;
+		width: 100%;
+		padding-left: 8rpx;
+		padding-top: 4rpx;
+		align-items: flex-start;
+	}
+
+	.ci-title {
+		color: #ffffff;
+		font-size: 11.5rpx;
+		font-weight: bold;
+	}
+
+	.ci-src {
+		color: #8fa6e6;
+		font-size: 8rpx;
+		margin-top: 2rpx;
+	}
+
+	.cfoot {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		margin-top: 6rpx;
+	}
+
+	.cfoot-label {
+		color: #7d90c9;
+		font-size: 9rpx;
+	}
+
+	.chlink {
+		margin-left: 4rpx;
+		margin-right: 4rpx;
+		padding-left: 8rpx;
+		padding-right: 8rpx;
+		padding-top: 2rpx;
+		padding-bottom: 2rpx;
+		border-radius: 8rpx;
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.chlink-text {
+		color: #9fb4ff;
+		font-size: 9rpx;
+	}
+
+	.note {
+		color: #6d80b6;
+		font-size: 8rpx;
+		text-align: center;
+		margin-top: 4rpx;
+	}
+
+	/* ---------- 浮层 ---------- */
+
+	.mask {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(5, 7, 15, 0.86);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.panel {
+		width: 300rpx;
+		padding: 16rpx;
+		border-radius: 14rpx;
+		background-color: #1b2a5e;
+		align-items: center;
+	}
+
+	.panel-wide {
+		width: 360rpx;
+	}
+
+	.panel-title {
+		color: #ffd76e;
+		font-size: 15rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.panel-q {
+		color: #ffffff;
+		font-size: 26rpx;
+		font-weight: bold;
+		margin-top: 8rpx;
+	}
+
+	.panel-ans {
+		color: #3ecf8e;
+		font-size: 21rpx;
+		margin-top: 4rpx;
+	}
+
+	.panel-ans-empty {
+		color: #7d90c9;
+		font-size: 11rpx;
+		margin-top: 8rpx;
+	}
+
+	.panel-err {
+		color: #ff5c5c;
+		font-size: 10rpx;
+		margin-top: 3rpx;
+	}
+
+	.keypad {
+		flex-direction: row;
+		flex-wrap: wrap;
+		width: 240rpx;
+		justify-content: center;
+		margin-top: 8rpx;
+	}
+
+	.key {
+		width: 50rpx;
+		height: 34rpx;
+		margin: 3rpx;
+		border-radius: 8rpx;
+		background-color: rgba(255, 255, 255, 0.12);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.key-fn {
+		background-color: rgba(255, 138, 92, 0.25);
+	}
+
+	.key-text {
+		color: #ffffff;
+		font-size: 15rpx;
+	}
+
+	.panel-btns {
+		flex-direction: row;
+		margin-top: 11rpx;
+	}
+
+	.gap {
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+	}
+
+	.brief-meta {
+		color: #8fa6e6;
+		font-size: 9rpx;
+		margin-top: 4rpx;
+	}
+
+	.brief-label {
+		color: #3ecf8e;
+		font-size: 10rpx;
+		font-weight: bold;
+		margin-top: 9rpx;
+	}
+
+	.brief-talk {
+		color: #ffffff;
+		font-size: 11.5rpx;
+		margin-top: 3rpx;
+		text-align: center;
+		line-height: 17rpx;
+	}
+
+	.brief-warn {
+		color: #ffd76e;
+		font-size: 9rpx;
+		margin-top: 8rpx;
+	}
+</style>

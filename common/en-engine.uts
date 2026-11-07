@@ -1,0 +1,361 @@
+/**
+ * 英语单词 · 出题引擎
+ *
+ * 题型（对应 `三科课程内容方案-v1.md` 第六节）：
+ *   EN1 listen2pic  听词选图 —— **主力，占一半**（听 → 义）
+ *   EN2 pic2word    看图选词 —— 整体认形（不是拼读！apple 对 4 岁是一整块图形，不是 a-p-p-l-e）
+ *   EN3 firstSound  首音感知 —— 只做"开头一样"，不做 CVC 拼读
+ *   EN4 countEn     数词联动 —— 与数学同场景（three apples）
+ *   EN5 sayIt       跟读    —— P0 自评，P1 接 Vosk 后改真判定
+ *
+ * 两件必须守住的事：
+ * 1. **EN2 不是拼读**。4 岁认 `apple` 和认"苹果"一样，是整块形状记忆。
+ *    以后有人想在这里加"a-p-p-l-e 拼一拼"，请先看方案第六节的分龄依据。
+ * 2. **读题必须给英文读音**。不给读音，孩子没法把"听到的音"和"看到的词"对上，
+ *    EN2 就退化成了猜。
+ *
+ * 免罚口径：英语所有题 soft=true —— 听不懂不计分、不断连击。
+ */
+
+import {
+	EnWord, enWordOf, enWordsOfUnit, enThemeOfUnit, enThemeName, enSameSound, EN_WORDS
+} from './en-words.uts'
+import {
+	StudyQuestion, studyShuffle, studyShuffleDifferent, studyPick, studyRandInt, studyRandIndex,
+	lessonIndex, unitOfLesson, lessonOfUnit, STUDY_ROUND_SIZE
+} from './quiz.uts'
+import { rngState } from './rng.uts'
+
+/** 英文数字（数词联动题的读题用） */
+const NUM_EN: Array<string> = ['zero', 'one', 'two', 'three', 'four', 'five']
+
+function cut(arr: Array<string>, from: number, to: number): Array<string> {
+	const out: Array<string> = []
+	const end: number = to > arr.length ? arr.length : to
+	for (let i = from; i < end; i++) out.push(arr[i])
+	return out
+}
+
+/** 颜色单元（T3）没有 emoji，题面与选项都要改成色点 */
+function isColorUnit(unit: number): boolean {
+	return enThemeOfUnit(unit) == 'T3'
+}
+
+/** 某单元全部图（非颜色单元） */
+function emojisOfUnit(unit: number): Array<string> {
+	const words: Array<string> = enWordsOfUnit(unit)
+	const out: Array<string> = []
+	for (let i = 0; i < words.length; i++) {
+		const w: EnWord = enWordOf(words[i])
+		if (w.emoji.length > 0) out.push(w.emoji)
+	}
+	return out
+}
+
+/** 某单元全部色值（颜色单元） */
+function colorsOfUnit(unit: number): Array<string> {
+	const words: Array<string> = enWordsOfUnit(unit)
+	const out: Array<string> = []
+	for (let i = 0; i < words.length; i++) {
+		const w: EnWord = enWordOf(words[i])
+		if (w.color.length > 0) out.push(w.color)
+	}
+	return out
+}
+
+function allEmojis(): Array<string> {
+	const out: Array<string> = []
+	for (let i = 0; i < EN_WORDS.length; i++) {
+		if (EN_WORDS[i].emoji.length > 0) out.push(EN_WORDS[i].emoji)
+	}
+	return out
+}
+
+/** 单词干扰项：同单元优先，其余用全表 */
+function distractorWords(en: string, unit: number, need: number): Array<string> {
+	const unitWords: Array<string> = enWordsOfUnit(unit)
+	const out: Array<string> = []
+	const same: Array<string> = studyPick(unitWords, [en], need)
+	for (let i = 0; i < same.length; i++) out.push(same[i])
+	if (out.length < need) {
+		const all: Array<string> = []
+		for (let i = 0; i < EN_WORDS.length; i++) all.push(EN_WORDS[i].en)
+		const exclude: Array<string> = [en]
+		for (let i = 0; i < out.length; i++) exclude.push(out[i])
+		const rest: Array<string> = studyPick(all, exclude, need - out.length)
+		for (let i = 0; i < rest.length; i++) out.push(rest[i])
+	}
+	return out
+}
+
+/* ---------------- EN1 听词选图（主力） ---------------- */
+
+function genListen2Pic(en: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: EnWord = enWordOf(en)
+	const q = new StudyQuestion()
+	q.mode = 'en'
+	q.kind = 'en1'
+	q.subText = '听一听，选出这张图'
+	// 中文 + 英文混排，一次朗读：中文 TTS 念英文单词通常可懂（"艾剖"），
+	// 分两次读会互相 cancel（Android 端 speak 里先 stop），听感更差。
+	q.prompt = en + '，' + w.zh + '，哪个是' + en + '？'
+	q.hint = '👂 先听单词，再看图'
+	q.answer = w.emoji
+	q.explain = '对啦，' + en + ' 就是' + w.zh
+
+	if (isColorUnit(unit)) {
+		q.layout = 'none'
+		q.optionType = 'color'
+		q.answer = w.color
+		const others: Array<string> = studyPick(colorsOfUnit(unit), [w.color], 3)
+		q.options = studyShuffleDifferent([w.color].concat(others))
+		q.seed = seed
+		q.src = en
+		q.unitNo = unit
+		return q
+	}
+
+	q.layout = 'none'
+	q.optionType = 'emoji'
+	let others: Array<string> = studyPick(emojisOfUnit(unit), [w.emoji], 3)
+	if (others.length < 3) {
+		const exclude: Array<string> = [w.emoji]
+		for (let i = 0; i < others.length; i++) exclude.push(others[i])
+		others = others.concat(studyPick(allEmojis(), exclude, 3 - others.length))
+	}
+	q.options = studyShuffleDifferent([w.emoji].concat(others))
+	q.seed = seed
+	q.src = en
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- EN2 看图选词 ---------------- */
+
+function genPic2Word(en: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: EnWord = enWordOf(en)
+	const q = new StudyQuestion()
+	q.mode = 'en'
+	q.kind = 'en2'
+	q.subText = '图上是什么？选出它的英语'
+	// 必须把英文词念出来，否则孩子在四个陌生词里没有判断依据
+	q.prompt = '图上是' + w.zh + '，' + en + '，哪个词是' + en + '？'
+	q.hint = '🔤 听读音，找出这个词'
+	q.optionType = 'word'
+	q.answer = en
+	q.options = studyShuffleDifferent([en].concat(distractorWords(en, unit, 3)))
+	q.explain = '这是 ' + en + '，' + w.zh
+
+	if (w.color.length > 0) {
+		q.layout = 'colors'
+		q.mainColor = w.color
+	} else {
+		q.layout = 'bigemoji'
+		q.mainEmoji = w.emoji
+	}
+	q.seed = seed
+	q.src = en
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- EN3 首音感知 ---------------- */
+
+/**
+ * 只做"开头一样"，不做 c-a-t 拼读。
+ * 同首字母的词少于 1 个时无法出题，退化回 EN1。
+ */
+function genFirstSound(en: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const same: Array<string> = enSameSound(en)
+	if (same.length == 0) return genListen2Pic(en, unit)
+
+	const w: EnWord = enWordOf(en)
+	const target: string = same[studyRandIndex(same.length)]
+	const letter: string = en.substring(0, 1).toLowerCase()
+
+	const q = new StudyQuestion()
+	q.mode = 'en'
+	q.kind = 'en3'
+	q.layout = 'bigchar'
+	q.mainText = en
+	q.subText = '哪个词和它开头一样？'
+	q.prompt = en + ' 第一个音是 ' + letter + '，哪个词第一个音也是 ' + letter + '？'
+	q.hint = '👂 只听开头第一个音'
+	q.optionType = 'word'
+	q.answer = target
+	q.options = studyShuffleDifferent([target].concat(distractorWords(target, unit, 3)))
+	q.explain = target + ' 和 ' + en + ' 开头一样，都是 ' + letter
+	q.seed = seed
+	q.src = en
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- EN4 数词联动 ---------------- */
+
+function genCountEn(en: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: EnWord = enWordOf(en)
+	// 颜色词不适合"三个红色"，这里只用可数物品词
+	const n: number = studyRandInt(1, 5)
+	let line: string = ''
+	for (let i = 0; i < n; i++) {
+		if (i > 0) line += ' '
+		line += w.emoji
+	}
+
+	const q = new StudyQuestion()
+	q.mode = 'en'
+	q.kind = 'en4'
+	q.layout = 'items'
+	q.mainEmoji = line
+	q.subText = '数一数，有几个？'
+	q.prompt = NUM_EN[n] + ' ' + en + '，几个呀？'
+	q.hint = '🔢 用英语数字说说看'
+	q.optionType = 'num'
+	q.answer = n.toString()
+	const opts: Array<string> = []
+	for (let i = 1; i <= 5; i++) opts.push(i.toString())
+	q.options = opts
+	q.explain = '对啦，' + NUM_EN[n] + ' ' + en
+	q.seed = seed
+	q.src = en
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- EN5 跟读 ---------------- */
+
+function genSayIt(en: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: EnWord = enWordOf(en)
+	const q = new StudyQuestion()
+	q.mode = 'en'
+	q.kind = 'en5'
+	q.layout = 'bigchar'
+	q.mainText = en
+	q.mainEmoji = w.emoji
+	q.subText = '跟我一起说 · ' + w.zh + '  ' + w.ipa
+	// 跟读是全 App 唯一"真的用英文音念"的地方：只放英文词，交给 en-US 引擎念。
+	// 中文引导语放到 subText，不塞进朗读文本——混排会让英文音被中文音素带偏。
+	q.prompt = en
+	q.speakLang = 'en-US'
+	q.hint = '🗣️ 大声说出来，说给自己听'
+	q.optionType = 'self'
+	q.answer = '我说好了'
+	q.options = ['我说好了']
+	q.explain = '说得真好'
+	q.seed = seed
+	q.src = en
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- 课内词池 ---------------- */
+
+function wordsOfLesson(unit: number, lesson: number): Array<string> {
+	const all: Array<string> = enWordsOfUnit(unit)
+	if (lesson <= 1) return cut(all, 0, 4)
+	if (lesson == 2) return cut(all, 4, 7)
+	if (lesson == 3) return cut(all, 7, 10)
+	return all
+}
+
+function learnedWords(unit: number, lesson: number): Array<string> {
+	const all: Array<string> = enWordsOfUnit(unit)
+	if (lesson <= 1) return []
+	if (lesson == 2) return cut(all, 0, 4)
+	if (lesson == 3) return cut(all, 0, 7)
+	return all
+}
+
+/* ---------------- 组卷 ---------------- */
+
+/**
+ * 组一关（5 题）
+ *
+ * 分布口径：EN1 听词选图占一半（听说启蒙的核心就是"听到词能反应出东西"），
+ * 其余给看图选词、首音、数词、跟读各一到两次。
+ */
+export function buildEnRound(level: number): Array<StudyQuestion> {
+	const lessonNo: number = lessonIndex(level)
+	const unit: number = unitOfLesson(lessonNo)
+	const lesson: number = lessonOfUnit(lessonNo)
+	const all: Array<string> = enWordsOfUnit(unit)
+	const color: boolean = isColorUnit(unit)
+	const out: Array<StudyQuestion> = []
+
+	// 第 5 课：整单元综合（题型最全，不出新词）
+	if (lesson == 5) {
+		const order: Array<string> = studyShuffle(all)
+		out.push(genListen2Pic(order[0], unit))
+		out.push(genPic2Word(order[1], unit))
+		out.push(genListen2Pic(order[2], unit))
+		out.push(genFirstSound(order[3], unit))
+		// 颜色单元没有可数物品，"三个红色"不成立 → 换成跟读
+		out.push(color ? genSayIt(order[4], unit) : genCountEn(order[4], unit))
+		return out
+	}
+
+	// 第 4 课：整单元复习
+	if (lesson == 4) {
+		const order: Array<string> = studyShuffle(all)
+		out.push(genListen2Pic(order[0], unit))
+		out.push(genPic2Word(order[1], unit))
+		out.push(genListen2Pic(order[2], unit))
+		out.push(genFirstSound(order[3], unit))
+		out.push(genPic2Word(order[4], unit))
+		return out
+	}
+
+	// 第 1~3 课：新词逐个出，听词选图与看图选词交替（听→义、义→形 两条路都要走）
+	const fresh: Array<string> = wordsOfLesson(unit, lesson)
+	for (let i = 0; i < fresh.length && out.length < 4; i++) {
+		if (i % 2 == 0) out.push(genListen2Pic(fresh[i], unit))
+		else out.push(genPic2Word(fresh[i], unit))
+	}
+	// 新词只有 3 个（第 2/3 课）时，补一道听词选图（主力题型多出一次不亏）
+	let guard: number = 0
+	while (out.length < 4 && guard < 20) {
+		guard++
+		out.push(genListen2Pic(fresh[out.length % fresh.length], unit))
+	}
+
+	// 第 5 题：复习本单元已学；第 1 课没有已学，就用跟读收尾（第一次开口，给点鼓励）
+	const learned: Array<string> = learnedWords(unit, lesson)
+	if (learned.length > 0) {
+		const pick: string = learned[studyRandIndex(learned.length)]
+		out.push(studyRandInt(0, 1) == 0 ? genPic2Word(pick, unit) : genSayIt(pick, unit))
+	} else {
+		out.push(genSayIt(fresh[0], unit))
+	}
+
+	while (out.length < STUDY_ROUND_SIZE) out.push(genListen2Pic(all[0], unit))
+	return out
+}
+
+/** 单向生成（测试用） */
+export function genEnByKind(kind: string, en: string, unit: number): StudyQuestion {
+	if (kind == 'en2') return genPic2Word(en, unit)
+	if (kind == 'en3') return genFirstSound(en, unit)
+	if (kind == 'en4') return genCountEn(en, unit)
+	if (kind == 'en5') return genSayIt(en, unit)
+	return genListen2Pic(en, unit)
+}
+
+/** 课标题：如「第 1 单元 · 动物 · 第 2 课」 */
+export function enLessonTitle(level: number): string {
+	const lessonNo: number = lessonIndex(level)
+	const unit: number = unitOfLesson(lessonNo)
+	const lesson: number = lessonOfUnit(lessonNo)
+	return '第 ' + unit.toString() + ' 单元 · ' + enThemeName(enThemeOfUnit(unit)) +
+		' · 第 ' + lesson.toString() + ' 课'
+}

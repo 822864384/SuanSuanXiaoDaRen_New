@@ -1,0 +1,268 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<view class="br-top">
+				<view class="chip" @click="exit">
+					<text class="chip-text">← 回去</text>
+				</view>
+				<view class="chip">
+					<text class="chip-gold">{{ cycleText }}</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip">
+					<text class="chip-dim">跟着圆圈呼吸</text>
+				</view>
+			</view>
+
+			<view class="br-mid">
+				<view class="circle" :class="sizeClass"></view>
+				<text class="br-phase">{{ phaseText }}</text>
+				<text class="br-hint">{{ hint }}</text>
+			</view>
+
+			<view class="br-btns">
+				<view v-if="running" class="btn br-btn" @click="stop">
+					<text class="btn-text">结束</text>
+				</view>
+				<view v-else class="btn br-btn btn-gold" @click="start">
+					<text class="btn-gold-text">再来一次</text>
+				</view>
+				<view class="btn br-btn" @click="exit">
+					<text class="btn-text">回心情小课堂</text>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { speak, stopSpeak, isTtsAvailable,
+		releaseSpeech
+	} from '@/common/tts.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/**
+	 * 呼吸练习：吸气 4 拍 → 停 2 拍 → 呼气 6 拍（呼气比吸气长，副交感才起效），共 3 轮约 36 秒。
+	 *
+	 * 三个刻意的"没有"：
+	 *  - 没有进度条（孩子会盯着条，注意力就离开呼吸了）
+	 *  - 没有提示音（只有语音引导，安静才容易跟着做）
+	 *  - 没有评分（做了就是做了）
+	 *
+	 * 圆的大小用 9 个固定 class 切换（c100~c180），不用 transform、也不拼内联 style ——
+	 * App 端 transform 有过不生效的记录，宽高变化最稳。
+	 */
+	const INHALE: number = 4000
+	const HOLD: number = 2000
+	const EXHALE: number = 6000
+	const CYCLE: number = 12000
+	const CYCLES: number = 3
+
+	const ttsReady: boolean = isTtsAvailable()
+
+	const size = ref<number>(100)
+	const phaseText = ref<string>('准备好了吗')
+	const hint = ref<string>('鼻子吸气，嘴巴慢慢呼气')
+	const cycleText = ref<string>('深呼吸')
+	const running = ref<boolean>(false)
+
+	const sizeClass = computed((): string => {
+		return 'c' + size.value.toString()
+	})
+
+	let timerId: number = -1
+	let elapsed: number = 0
+	let lastPhase: string = ''
+
+	onLoad(() => {
+		start()
+	})
+
+	onUnload(() => {
+		clearTimer()
+		stopSpeak()
+	})
+
+	function clearTimer() {
+		if (timerId >= 0) {
+			clearInterval(timerId)
+			timerId = -1
+		}
+	}
+
+	function start() {
+		clearTimer()
+		elapsed = 0
+		lastPhase = ''
+		running.value = true
+		size.value = 100
+		phaseText.value = '准备好'
+		hint.value = '鼻子吸气，嘴巴慢慢呼气'
+		cycleText.value = '第 1 次 / 共 3 次'
+		timerId = setInterval(() => {
+			elapsed += 100
+			applyFrame()
+		}, 100)
+	}
+
+	function applyFrame() {
+		if (elapsed >= CYCLE * CYCLES) {
+			stop()
+			return
+		}
+		const inCycle: number = elapsed % CYCLE
+		let raw: number = 100
+		let phase: string = ''
+		if (inCycle < INHALE) {
+			raw = 100 + 80 * inCycle / INHALE
+			phase = '吸气'
+		} else if (inCycle < INHALE + HOLD) {
+			raw = 180
+			phase = '停一下'
+		} else {
+			const t: number = inCycle - INHALE - HOLD
+			raw = 180 - 80 * t / EXHALE
+			phase = '呼气'
+		}
+		size.value = sizeOf(raw)
+		if (phase != lastPhase) {
+			lastPhase = phase
+			phaseText.value = phase
+			if (ttsReady) speak(phase)
+		}
+		const c: number = Math.floor(elapsed / CYCLE) + 1
+		cycleText.value = '第 ' + c.toString() + ' 次 / 共 ' + CYCLES.toString() + ' 次'
+	}
+
+	/** 把连续尺寸吸到 10rpx 一档，对应 9 个固定 class */
+	function sizeOf(v: number): number {
+		let s: number = Math.round(v / 10) * 10
+		if (s < 100) s = 100
+		if (s > 180) s = 180
+		return s
+	}
+
+	function stop() {
+		clearTimer()
+		running.value = false
+		size.value = 140
+		phaseText.value = '结束啦'
+		hint.value = '感觉好一点了吗？'
+		cycleText.value = '深呼吸完成'
+		if (ttsReady) speak('做得很好。感觉好一点了吗？')
+	}
+
+	function exit() {
+		try {
+			clearTimer()
+			stopSpeak()
+		} catch (e) {
+			console.log('[breath] 离场清理异常')
+		}
+		safeBack()
+	}
+</script>
+
+<style>
+	.br-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.br-mid {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+	}
+
+	/* 圆心：固定大圆角，宽容任意尺寸（半径大于半边长时会被裁成 50%，始终是圆） */
+	.circle {
+		background-color: rgba(255, 215, 110, 0.16);
+		border-width: 3rpx;
+		border-color: rgba(255, 215, 110, 0.7);
+		border-radius: 300rpx;
+	}
+
+	.c100 {
+		width: 100rpx;
+		height: 100rpx;
+	}
+
+	.c110 {
+		width: 110rpx;
+		height: 110rpx;
+	}
+
+	.c120 {
+		width: 120rpx;
+		height: 120rpx;
+	}
+
+	.c130 {
+		width: 130rpx;
+		height: 130rpx;
+	}
+
+	.c140 {
+		width: 140rpx;
+		height: 140rpx;
+	}
+
+	.c150 {
+		width: 150rpx;
+		height: 150rpx;
+	}
+
+	.c160 {
+		width: 160rpx;
+		height: 160rpx;
+	}
+
+	.c170 {
+		width: 170rpx;
+		height: 170rpx;
+	}
+
+	.c180 {
+		width: 180rpx;
+		height: 180rpx;
+	}
+
+	.br-phase {
+		color: #ffd76e;
+		font-size: 26rpx;
+		font-weight: bold;
+		margin-top: 22rpx;
+	}
+
+	.br-hint {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		text-align: center;
+		margin-top: 8rpx;
+	}
+
+	.br-btns {
+		flex-direction: row;
+		justify-content: center;
+		margin-bottom: 20rpx;
+	}
+
+	.br-btn {
+		margin-left: 7rpx;
+		margin-right: 7rpx;
+	}
+</style>

@@ -1,0 +1,178 @@
+/**
+ * 语音朗读插件 · Android 实现
+ *
+ * 直接调系统 TextToSpeech（离线、包体不增加）。
+ * 默认语速 0.62 / 音调 1.22（由上层 common/tts.uts 传入）：系统默认的 1.0 对 4~5 岁偏快，
+ * 0.62 相当于成人放慢一半，字与字之间更清楚。
+ *
+ * 三个实现上的坑，写在这里免得以后踩：
+ * 1. UTS 不支持匿名内部类，OnInitListener 必须显式声明成类（TtsInitListener）。
+ * 2. 引擎初始化是异步的，首题往往在 init 完成前就要读；所以未就绪时把最后一句
+ *    存进 pending，init 回调里再补读，避免"第一题没声音、第二题才正常"。
+ * 3. 部分电视盒子没有中文语音包，setLanguage 会返回 LANG_MISSING_DATA；
+ *    这时降级到系统默认语言，并把 failed 置真，供上层决定是否提示。
+ */
+
+import TextToSpeech from 'android.speech.tts.TextToSpeech'
+import OnInitListener from 'android.speech.tts.TextToSpeech.OnInitListener'
+import Locale from 'java.util.Locale'
+import { UTSAndroid } from 'io.dcloud.uts'
+
+class TtsInitListener implements OnInitListener {
+  owner: AndroidTts
+
+  constructor(owner: AndroidTts) {
+    this.owner = owner
+  }
+
+  override onInit(status: Int): void {
+    this.owner.handleInit(status)
+  }
+}
+
+class AndroidTts {
+  engine: TextToSpeech | null = null
+  /** 引擎已初始化完成，可以安全调用 speak */
+  ready: boolean = false
+  /** 正在初始化（防止并发重复 new） */
+  booting: boolean = false
+  /** 初始化失败（设备无语音引擎） */
+  failed: boolean = false
+  /** 初始化完成前想读的那一句 */
+  pending: string = ''
+  rate: number = 0.62
+  pitch: number = 1.22
+  /** 当前语言：中文题干 zh-CN，英语跟读题 en-US */
+  langTag: string = 'zh-CN'
+
+  /** 懒初始化：第一次要朗读时才创建引擎，避免拖慢启动 */
+  ensure(): void {
+    if (this.engine != null || this.booting) return
+    const ctx = UTSAndroid.getAppContext()
+    if (ctx == null) {
+      this.failed = true
+      return
+    }
+    this.booting = true
+    const listener = new TtsInitListener(this)
+    this.engine = new TextToSpeech(ctx, listener)
+  }
+
+  /**
+   * 切换语言
+   * 盒子没有对应语音包时会返回 LANG_MISSING_DATA / LANG_NOT_SUPPORTED，
+   * 这时降级到系统默认——念得不准总比没声音强，上层据此不影响流程。
+   */
+  applyLang(): void {
+    const e = this.engine
+    if (e == null) return
+    const r = e.setLanguage(Locale.forLanguageTag(this.langTag))
+    if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
+      e.setLanguage(Locale.getDefault())
+    }
+  }
+
+  /** 初始化回调 */
+  handleInit(status: number): void {
+    this.booting = false
+    const e = this.engine
+    if (status != TextToSpeech.SUCCESS || e == null) {
+      this.ready = false
+      this.failed = true
+      return
+    }
+    e.setSpeechRate(this.rate.toFloat())
+    e.setPitch(this.pitch.toFloat())
+    this.applyLang()
+    this.ready = true
+    this.failed = false
+    if (this.pending.length > 0) {
+      const t = this.pending
+      this.pending = ''
+      this.play(t)
+    }
+  }
+
+  /** 真正发声 */
+  play(text: string): boolean {
+    const e = this.engine
+    if (e == null || !this.ready) return false
+    // 先停再读：孩子连点两下"再听一遍"时不要叠音
+    e.stop()
+    e.setSpeechRate(this.rate.toFloat())
+    e.setPitch(this.pitch.toFloat())
+    const r = e.speak(text, TextToSpeech.QUEUE_FLUSH, null, 'ssxdr')
+    return r == TextToSpeech.SUCCESS
+  }
+
+  speak(text: string, rate: number, pitch: number, lang: string): boolean {
+    if (text.length == 0) return false
+    const langChanged: boolean = lang != this.langTag
+    this.rate = rate
+    this.pitch = pitch
+    this.langTag = lang
+    this.ensure()
+    const e = this.engine
+    if (e == null) return false
+    if (!this.ready) {
+      // 引擎还在初始化：记下这句，init 回调里补读
+      this.pending = text
+      return true
+    }
+    // 语文走中文、英语跟读走英文，同一个引擎来回切，切之前必须重设语言
+    if (langChanged) this.applyLang()
+    return this.play(text)
+  }
+
+  stop(): void {
+    this.pending = ''
+    const e = this.engine
+    if (e != null && this.ready) e.stop()
+  }
+
+  release(): void {
+    const e = this.engine
+    if (e != null) {
+      if (this.ready) e.stop()
+      e.shutdown()
+      this.engine = null
+    }
+    this.ready = false
+    this.booting = false
+  }
+}
+
+const tts = new AndroidTts()
+
+/**
+ * 朗读一段文本，返回是否已受理（初始化中返回 true，会在就绪后补读）
+ * @param lang BCP-47 语言标签：zh-CN（中文题库）/ en-US（英语跟读）
+ */
+export function ttsSpeak(text: string, rate: number, pitch: number, lang: string): boolean {
+  return tts.speak(text, rate, pitch, lang)
+}
+
+/** 立即停止 */
+export function ttsStop(): void {
+  tts.stop()
+}
+
+/** 提前预热引擎（App 启动时调用，首题不用等初始化） */
+export function ttsWarmup(): void {
+  tts.ensure()
+}
+
+/** 引擎是否已就绪 */
+export function ttsIsReady(): boolean {
+  return tts.ready
+}
+
+/** 是否初始化失败（无语音引擎） */
+export function ttsIsFailed(): boolean {
+  return tts.failed
+}
+
+/** 释放引擎（App 退出时） */
+export function ttsRelease(): void {
+  tts.release()
+}

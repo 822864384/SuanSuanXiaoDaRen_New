@@ -1,0 +1,332 @@
+/**
+ * 算算小达人 · 错题库（数学 / 语文 / 英语 三科共用）
+ *
+ * 口径（2026-11-07 用户确认）：
+ *  1. 答错 / 没认出来 → 自动进错题库；
+ *  2. 重练时做对 → **立刻出库**（不是"标记掌握"，是真删掉）；
+ *  3. 重练时又没做对 → 留在库里，错次 +1，并挪到队尾（下次先练别的）；
+ *  4. 三科各有各的库，按档案分片，互不影响。
+ *
+ * 为什么能"把同一道题再拿出来"：
+ * 题目全部是现场随机生成的，没有固定题面。所以每道题在生成前记下随机状态（seed），
+ * 重练时把随机源倒回这个 seed 再跑同一个生成函数——题面、选项、答案完全一致。
+ * 见 `common/rng.uts` 与各引擎的 `q.seed / q.src / q.unitNo`。
+ *
+ * 存储不用 JSON：UTS 强类型下 `JSON.parse` 返回 any，跨端取字段容易出事；
+ * 字段里没有控制字符，用 \u0001 / \u0002 做分隔最省事也最好查。
+ */
+
+import { Question, genByKind } from './math-engine.uts'
+import { StudyQuestion } from './quiz.uts'
+import { genCnByKind } from './cn-engine.uts'
+import { genEnByKind } from './en-engine.uts'
+import { rngState, setRngState, rngNext } from './rng.uts'
+import { getCurrentId } from './store.uts'
+
+/** 每科最多留多少道（4~5 岁的库不该无限长：练不完等于没练） */
+export const MAX_KEEP: number = 60
+/** 一次重练最多几道（与一关题量一致，孩子不会觉得"怎么练不完"） */
+export const DRILL_SIZE: number = 5
+
+/** 字段分隔 / 条目分隔（题面里不可能出现控制字符） */
+const FS: string = '\u0001'
+const RS: string = '\u0002'
+
+/** 错题条目 */
+export class WrongItem {
+	/** 科目：math / cn / en */
+	mode: string = 'math'
+	/** 题型：count / cn1 / en3… */
+	kind: string = ''
+	/** 生成前的随机状态（重建这道题的钥匙） */
+	seed: number = 0
+	/** 题源：语文=汉字，英语=单词，数学=空串 */
+	src: string = ''
+	/** 单元号（语文英语干扰项依赖它）；数学填 0 */
+	unit: number = 0
+	/** 正确答案（重建后用来校验，重建出来的不一样就跳过，不让旧题把孩子带偏） */
+	answer: string = ''
+	/** 题面文字（列表里给家长看） */
+	prompt: string = ''
+	/** 错过几次 */
+	misses: number = 1
+	/** 第一次进库的日期 */
+	date: string = ''
+}
+
+/* ---------------- 存储读写 ---------------- */
+
+function keyOf(mode: string): string {
+	return 'ssxdr.' + getCurrentId() + '.wq.' + mode
+}
+
+function readRaw(mode: string): string {
+	const v = uni.getStorageSync(keyOf(mode))
+	if (v == null) return ''
+	if (typeof v == 'string') return v as string
+	return ''
+}
+
+function writeRaw(mode: string, s: string): void {
+	uni.setStorageSync(keyOf(mode), s)
+}
+
+function todayStr(): string {
+	const d = new Date()
+	const m: number = d.getMonth() + 1
+	const day: number = d.getDate()
+	return (m < 10 ? '0' : '') + m.toString() + '/' + (day < 10 ? '0' : '') + day.toString()
+}
+
+function toInt(s: string, def: number): number {
+	if (s.length == 0) return def
+	const n: number = parseInt(s, 10)
+	// 可还原校验：脏数据（"12abc"、""）一律回落默认值
+	if (n.toString() == s) return n
+	return def
+}
+
+/** 一条 → 字符串 */
+function pack(it: WrongItem): string {
+	return it.mode + FS + it.kind + FS + it.seed.toString() + FS + it.src + FS +
+		it.unit.toString() + FS + it.answer + FS + it.prompt + FS + it.misses.toString() + FS + it.date
+}
+
+/** 字符串 → 一条（字段不全的脏数据直接丢掉，不抛异常） */
+function unpack(line: string, mode: string): WrongItem {
+	const f: Array<string> = line.split(FS)
+	if (f.length < 9) {
+		const bad = new WrongItem()
+		bad.mode = ''
+		return bad
+	}
+	const it = new WrongItem()
+	it.mode = mode
+	it.kind = f[1]
+	it.seed = toInt(f[2], 0)
+	it.src = f[3]
+	it.unit = toInt(f[4], 0)
+	it.answer = f[5]
+	it.prompt = f[6]
+	it.misses = toInt(f[7], 1)
+	it.date = f[8]
+	return it
+}
+
+/* ---------------- 对外 API ---------------- */
+
+/** 某一科的错题（按进库顺序，先进的先练） */
+export function getWrongItems(mode: string): Array<WrongItem> {
+	const out: Array<WrongItem> = []
+	const raw: string = readRaw(mode)
+	if (raw.length == 0) return out
+	const lines: Array<string> = raw.split(RS)
+	for (let i = 0; i < lines.length; i++) {
+		const one: string = lines[i]
+		if (one.length == 0) continue
+		const it: WrongItem = unpack(one, mode)
+		// mode 为空 = 脏数据（字段不够），跳过
+		if (it.mode.length == 0) continue
+		out.push(it)
+	}
+	return out
+}
+
+function save(mode: string, list: Array<WrongItem>): void {
+	let s: string = ''
+	for (let i = 0; i < list.length; i++) {
+		if (i > 0) s += RS
+		s += pack(list[i])
+	}
+	writeRaw(mode, s)
+}
+
+/** 同一道题的判据：题型 + 种子 + 题源 + 答案 */
+function sameItem(a: WrongItem, b: WrongItem): boolean {
+	if (a.kind != b.kind) return false
+	if (a.seed != b.seed) return false
+	if (a.src != b.src) return false
+	if (a.answer != b.answer) return false
+	return true
+}
+
+/**
+ * 记一道错题
+ * 已在库里：错次 +1、挪到队尾（下次练别的）；不在：追加到队尾。
+ */
+export function addWrong(item: WrongItem): void {
+	if (item.mode.length == 0 || item.prompt.length == 0) return
+	const list: Array<WrongItem> = getWrongItems(item.mode)
+	const kept: Array<WrongItem> = []
+	let found: WrongItem = new WrongItem()
+	found.mode = ''
+	for (let i = 0; i < list.length; i++) {
+		if (sameItem(list[i], item)) {
+			found = list[i]
+			continue
+		}
+		kept.push(list[i])
+	}
+	if (found.mode.length > 0) {
+		found.misses = found.misses + 1
+		kept.push(found)
+	} else {
+		const fresh = new WrongItem()
+		fresh.mode = item.mode
+		fresh.kind = item.kind
+		fresh.seed = item.seed
+		fresh.src = item.src
+		fresh.unit = item.unit
+		fresh.answer = item.answer
+		fresh.prompt = item.prompt
+		fresh.misses = 1
+		fresh.date = item.date.length > 0 ? item.date : todayStr()
+		kept.push(fresh)
+	}
+	// 超量时丢最早的（新错题更贴近当前水平，优先留）
+	let start: number = 0
+	if (kept.length > MAX_KEEP) start = kept.length - MAX_KEEP
+	const trimmed: Array<WrongItem> = []
+	for (let i = start; i < kept.length; i++) trimmed.push(kept[i])
+	save(item.mode, trimmed)
+}
+
+/** 做对一道题 → 出库。返回是否真的删掉了（用于日志/提示） */
+export function removeWrong(mode: string, kind: string, seed: number, src: string, answer: string): boolean {
+	const list: Array<WrongItem> = getWrongItems(mode)
+	const kept: Array<WrongItem> = []
+	let removed: boolean = false
+	for (let i = 0; i < list.length; i++) {
+		const it: WrongItem = list[i]
+		if (it.kind == kind && it.seed == seed && it.src == src && it.answer == answer) {
+			removed = true
+			continue
+		}
+		kept.push(it)
+	}
+	if (removed) save(mode, kept)
+	return removed
+}
+
+/**
+ * 正常练习里做对了同一道题 → 顺手把库里的那条清掉
+ *
+ * 判据用「题面 + 答案」而不是种子：同一道题的种子是随机的，正常练习几乎不会撞上同一次生成，
+ * 但题面相同的同类题（如"有3个苹果拿走1个"）做对了，说明这类题已经会了，留着只会占位。
+ */
+export function clearOnCorrect(mode: string, prompt: string, answer: string): boolean {
+	if (prompt.length == 0) return false
+	const list: Array<WrongItem> = getWrongItems(mode)
+	const kept: Array<WrongItem> = []
+	let removed: boolean = false
+	for (let i = 0; i < list.length; i++) {
+		const it: WrongItem = list[i]
+		if (it.prompt == prompt && it.answer == answer) {
+			removed = true
+			continue
+		}
+		kept.push(it)
+	}
+	if (removed) save(mode, kept)
+	return removed
+}
+
+/** 某科还有几道错题 */
+export function wrongCount(mode: string): number {
+	return getWrongItems(mode).length
+}
+
+/** 三科合计 */
+export function wrongTotal(): number {
+	return wrongCount('math') + wrongCount('cn') + wrongCount('en')
+}
+
+/** 清空某一科 */
+export function clearWrong(mode: string): void {
+	writeRaw(mode, '')
+}
+
+/** 清空三科（家长"重置进度"会用） */
+export function clearAllWrong(): void {
+	clearWrong('math')
+	clearWrong('cn')
+	clearWrong('en')
+}
+
+/* ---------------- 重建题目 ---------------- */
+
+/** 数学题的答案文本（数字题/选择题分开取） */
+function mathAnswerText(q: Question): string {
+	if (q.numeric) return q.ans.toString()
+	return q.ansText
+}
+
+/** 数学：按种子重建；重建出来对不上（题库改过）返回空题，调用方跳过 */
+function replayMath(it: WrongItem): Question {
+	const saved: number = rngState()
+	setRngState(it.seed)
+	const q: Question = genByKind(it.kind)
+	setRngState(saved)
+	if (q.kind != it.kind) return new Question()
+	if (mathAnswerText(q) != it.answer) return new Question()
+	return q
+}
+
+/** 语文/英语：按种子 + 题源 + 单元重建 */
+function replayStudy(it: WrongItem): StudyQuestion {
+	const saved: number = rngState()
+	setRngState(it.seed)
+	const q: StudyQuestion = it.mode == 'en' ? genEnByKind(it.kind, it.src, it.unit) : genCnByKind(it.kind, it.src, it.unit)
+	setRngState(saved)
+	if (q.kind != it.kind) return new StudyQuestion()
+	// 语文 CN5 遇到 SKIP_FILL 的字会改出"找字"题，kind 会变成 cn4：这类旧条目跳过
+	if (q.answer != it.answer) return new StudyQuestion()
+	return q
+}
+
+/** 一科能不能重练（有题且重建得出来） */
+export function drillReady(mode: string): boolean {
+	const list: Array<WrongItem> = getWrongItems(mode)
+	for (let i = 0; i < list.length; i++) {
+		if (mode == 'math') {
+			if (replayMath(list[i]).kind.length > 0) return true
+		} else {
+			if (replayStudy(list[i]).kind.length > 0) return true
+		}
+	}
+	return false
+}
+
+/** 组一轮重练题（数学） */
+export function buildMathDrill(max: number): Array<Question> {
+	const out: Array<Question> = []
+	const list: Array<WrongItem> = getWrongItems('math')
+	for (let i = 0; i < list.length && out.length < max; i++) {
+		const q: Question = replayMath(list[i])
+		if (q.kind.length == 0) continue
+		out.push(q)
+	}
+	return out
+}
+
+/** 组一轮重练题（语文 / 英语） */
+export function buildStudyDrill(mode: string, max: number): Array<StudyQuestion> {
+	const out: Array<StudyQuestion> = []
+	const list: Array<WrongItem> = getWrongItems(mode)
+	for (let i = 0; i < list.length && out.length < max; i++) {
+		const q: StudyQuestion = replayStudy(list[i])
+		if (q.kind.length == 0) continue
+		out.push(q)
+	}
+	return out
+}
+
+/**
+ * 随机给一个"还不会"的提醒文案（重练结算页用）
+ * 不用"错"字：4~5 岁看到"错题"两个字会有挫败感，界面上一律叫「再练一次」。
+ */
+export function drillPraise(left: number): string {
+	if (left <= 0) return '这一科的题都会啦，真棒！'
+	const list: Array<string> = ['还有 ' + left.toString() + ' 道再练一次就更好啦', '再练 ' + left.toString() + ' 道，就全都会了']
+	return list[Math.floor(rngNext() * list.length)]
+}

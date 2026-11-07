@@ -1,0 +1,272 @@
+<!--
+  播放页：用系统 WebView 打开央视网的视频详情页
+
+  三个刻意的取舍：
+  1. 只跳转、不下载。片源版权在央视，App 不存视频文件，也不做二次剪辑。
+  2. 加载不出来不装死。15 秒没动静就撤掉 WebView，换成一张说明卡：
+     重试 / 去栏目主页 / 复制链接。孩子看不到白屏，家长知道该干什么。
+  3. 顶栏常驻「返回小剧场」。网页里点进任意链接都在这个窗口内，
+     返回键不会被央视的页面吃掉。
+
+  已知限制：电视遥控器的方向键操作不了网页，需要用鼠标或遥控器的指针模式。
+-->
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶栏：让家长随时能退出来 -->
+			<view class="wtop">
+				<view class="chip" @click="goBack">
+					<text class="chip-text">← 返回小剧场</text>
+				</view>
+				<text class="wtitle">{{ title }}</text>
+				<view class="top-space"></view>
+				<text class="whint">{{ stateText }}</text>
+				<view class="chip" @click="retry">
+					<text class="chip-text">🔄 重来</text>
+				</view>
+			</view>
+
+			<!-- 正常态：WebView 铺满顶栏以外的剩余空间
+			     fullscreen 必须显式关掉：uni-app x 的 web-view 默认 fullscreen=true，
+			     那样它会按整页尺寸布局、忽略这里的 flex 约束，播放器下半截会被裁掉 -->
+			<view v-if="!failed" class="wv-wrap">
+				<web-view :key="wvKey" id="wv" class="wv" :fullscreen="false" :src="src"
+					@load="onLoaded" @error="onPageError"></web-view>
+			</view>
+
+			<!-- 降级态：不让孩子对着白屏 -->
+			<view v-else class="fallback">
+				<text class="fb-emoji">🌧️</text>
+				<text class="fb-title">这个窗口没打开</text>
+				<text class="fb-sub">{{ failText }}</text>
+				<text class="fb-tip">可能是网络没连上，或者这个网页换了地方</text>
+				<view class="fb-btns">
+					<view class="btn btn-gold gap" @click="retry">
+						<text class="btn-gold-text">再试一次</text>
+					</view>
+					<view v-if="showFallback" class="btn gap" @click="openFallback">
+						<text class="btn-text">去栏目主页看看</text>
+					</view>
+					<view class="btn gap" @click="copyLink">
+						<text class="btn-text">复制链接</text>
+					</view>
+					<view class="btn gap" @click="goBack">
+						<text class="btn-text">回小剧场</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		getVideoPlayId, getVideoPlayUrl, getVideoPlayTitle, getVideoPlayFallback
+	} from '@/common/mind-session.uts'
+	import { MIND_VIDEOS, fallbackOf, MindVideo } from '@/common/mind-video.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/**
+	 * src 必须在这里定好：web-view 创建后再改绑定值不生效，
+	 * 所以读的是小剧场在 navigateTo 之前写进单例的播放规格。
+	 */
+	const title = ref<string>(getVideoPlayTitle())
+	const src = ref<string>(getVideoPlayUrl())
+	let fallbackUrl: string = getVideoPlayFallback()
+	let videoId: string = getVideoPlayId()
+
+	const failed = ref<boolean>(false)
+	const loaded = ref<boolean>(false)
+	const failText = ref<string>('')
+	/** 换了 key 就让 web-view 重新创建（重试靠这个，不依赖 WebViewContext） */
+	const wvKey = ref<number>(1)
+
+	/** 栏目兜底按钮只在「清单里的单条」时给，栏目页自己就不用再兜一次 */
+	const showFallback = ref<boolean>(false)
+	const stateText = ref<string>('在网页里点一下播放键')
+
+	let guard: number = -1
+
+	onLoad(() => {
+		// 深链 / 刷新 / 热重载进来时单例是空的：用清单第一条兜底，
+		// 否则 web-view 的 src 为空，孩子看到的就是一个纯黑窗口
+		if (src.value.length == 0 && MIND_VIDEOS.length > 0) {
+			const first: MindVideo = MIND_VIDEOS[0]
+			title.value = first.title
+			src.value = first.url
+			videoId = first.id
+			fallbackUrl = fallbackOf(first)
+		}
+		showFallback.value = videoId.length > 0 && fallbackUrl.length > 0 && fallbackUrl != src.value
+		armGuard()
+	})
+
+	onUnload(() => {
+		disarmGuard()
+	})
+
+	/** 15 秒没 load 也没 error，多半是网络在用但页面没回来，主动降级 */
+	function armGuard() {
+		disarmGuard()
+		guard = setTimeout(() => {
+			if (!loaded.value) {
+				failText.value = '等了很久还没打开'
+				failed.value = true
+			}
+		}, 15000)
+	}
+
+	function disarmGuard() {
+		if (guard >= 0) {
+			clearTimeout(guard)
+			guard = -1
+		}
+	}
+
+	function onLoaded() {
+		loaded.value = true
+		stateText.value = '在网页里点一下播放键'
+		disarmGuard()
+	}
+
+	function onPageError() {
+		loaded.value = false
+		failText.value = '网页没有加载出来'
+		failed.value = true
+		disarmGuard()
+	}
+
+	function retry() {
+		if (!failed.value) {
+			// 正常态点重来：重新创建一次 web-view，等于重新发一次请求
+			loaded.value = false
+			wvKey.value = wvKey.value + 1
+			armGuard()
+			return
+		}
+		failed.value = false
+		loaded.value = false
+		src.value = getVideoPlayUrl()
+		wvKey.value = wvKey.value + 1
+		armGuard()
+	}
+
+	/** 单条失效时改投栏目主页，仍在 App 内，不跳浏览器 */
+	function openFallback() {
+		src.value = fallbackUrl
+		failed.value = false
+		loaded.value = false
+		showFallback.value = false
+		wvKey.value = wvKey.value + 1
+		armGuard()
+	}
+
+	/** 复制链接：电视上没用，手机上家长可以粘到浏览器里看 */
+	function copyLink() {
+		uni.setClipboardData({
+			data: src.value,
+			success: () => {
+				uni.showToast({ title: '链接复制好了', icon: 'none' })
+			},
+			fail: () => {
+				uni.showToast({ title: '复制没成功', icon: 'none' })
+			}
+		})
+	}
+
+	function goBack() {
+		disarmGuard()
+		safeBack()
+	}
+</script>
+
+<style>
+	.wtop {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 8rpx;
+		margin-left: 20rpx;
+		margin-right: 20rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.wtitle {
+		color: #ffd76e;
+		font-size: 12rpx;
+		font-weight: bold;
+		margin-left: 10rpx;
+	}
+
+	.whint {
+		color: #8fa6e6;
+		font-size: 9rpx;
+		margin-right: 8rpx;
+	}
+
+	/* WebView 要吃满顶栏以外的全部高度。
+	   只用 flex:1，不要再写 height:100%——100% 是相对 .stage 整页算的，
+	   加上顶栏就超出容器，底部会被 .stage 的 overflow:hidden 裁掉（视频下半截看不见）。 */
+	.wv-wrap {
+		flex: 1;
+		width: 100%;
+		margin-top: 6rpx;
+		border-radius: 8rpx;
+		overflow: hidden;
+		background-color: #000000;
+	}
+
+	/* web-view 自己要把父容器的剩余高度吃满：宽高各 100% */
+	.wv {
+		width: 100%;
+		height: 100%;
+	}
+
+	.fallback {
+		flex: 1;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.fb-emoji {
+		font-size: 40rpx;
+	}
+
+	.fb-title {
+		color: #ffffff;
+		font-size: 17rpx;
+		font-weight: bold;
+		margin-top: 8rpx;
+	}
+
+	.fb-sub {
+		color: #ffd76e;
+		font-size: 12rpx;
+		margin-top: 4rpx;
+	}
+
+	.fb-tip {
+		color: #8fa6e6;
+		font-size: 10rpx;
+		margin-top: 6rpx;
+	}
+
+	.fb-btns {
+		flex-direction: row;
+		margin-top: 14rpx;
+	}
+
+	.gap {
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+	}
+</style>

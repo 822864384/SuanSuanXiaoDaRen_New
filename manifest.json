@@ -1,0 +1,84 @@
+{
+	"name": "算算小达人",
+	"appid": "__UNI__5CDB97C",
+	"description": "",
+	"versionName": "1.0.0",
+	"versionCode": "100",
+	"uni-app-x": {
+		"vapor": true,
+		"styleIsolationVersion": "2",
+		"vapor-render-target": "bytecode",
+		"vapor-default-script-lang": "ts"
+	},
+	/* 快应用特有相关 */
+	"quickapp": {},
+	/* 小程序特有相关 */
+	"mp-weixin": {
+		"appid": "",
+		"setting": {
+			"urlCheck": false
+		},
+		"usingComponents": true
+	},
+	"mp-alipay": {
+		"usingComponents": true
+	},
+	"mp-baidu": {
+		"usingComponents": true
+	},
+	"mp-toutiao": {
+		"usingComponents": true
+	},
+	"uniStatistics": {
+		"enable": false
+	},
+	"vueVersion": "3",
+	"app": {
+		/* 电视端为暗色主题，避免系统弹窗/输入法出现亮色刺眼 */
+		"defaultAppTheme": "dark",
+		"distribute": {
+			"icons": {
+				"android": {
+					"hdpi": "static/appicon/icon-72.png",
+					"xhdpi": "static/appicon/icon-96.png",
+					"xxhdpi": "static/appicon/icon-144.png",
+					"xxxhdpi": "static/appicon/icon-192.png"
+				}
+			}
+		}
+	},
+	"app-android": {
+		"distribute": {
+			"modules": {},
+			/* 语音答题必需：录音权限。阶段一未接 Vosk/TTS 插件，权限先声明好，避免后续改包名重打包
+			   注意：permissions 的每一项必须是完整 <uses-permission/> 片段（android:name 的双引号需转义），
+			   只写 "android.permission.RECORD_AUDIO" 会被 HBuilderX 判为「格式不正确」 */
+			"permissions": [
+				"<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+				"<uses-permission android:name=\"android.permission.INTERNET\"/>",
+				"<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"
+			],
+			"minSdkVersion": 21,
+			"abiFilters": [
+				"arm64-v8a",
+				"armeabi-v7a"
+			],
+			"icons": {
+				"hdpi": "static/appicon/icon-72.png",
+				"xhdpi": "static/appicon/icon-96.png",
+				"xxhdpi": "static/appicon/icon-144.png",
+				"xxxhdpi": "static/appicon/icon-192.png"
+			},
+			"splashScreens": {
+				"default": {}
+			}
+		}
+	},
+	"app-ios": {
+		"distribute": {
+			"modules": {},
+			"icons": {},
+			"splashScreens": {}
+		}
+	}
+}

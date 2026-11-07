@@ -1,0 +1,82 @@
+/**
+ * 算算小达人 · 页面返回的唯一出口
+ *
+ * 为什么单独抽一个文件：
+ * `uni.navigateBack()` 在「页面栈只有一层」时会**静默失败**——不报错、不返回、什么都不发生，
+ * 用户看到的就是「点了没反应」。
+ *
+ * 什么时候栈只有一层：
+ *  1. H5 预览时直接在地址栏/刷新进入 `#/pages/mind/mind` 这类深层页面；
+ *  2. 从 `reLaunch` 进入的页面；
+ *  3. App 冷启动后直接落到某个页面（将来做桌面快捷方式时会出现）。
+ *
+ * 这跟平台无关、跟代码写得对不对也无关，是 navigateBack 的定义决定的：
+ * 没有上一页可退，它就只能什么都不做。所以「回首页 / 返回」一律走 safeBack()。
+ *
+ * 第二层兜底（真机踩过）：栈里明明有上一页、navigateBack 也调了，个别机型/栈状态下它
+ * 仍然会静默失败——孩子连点几下都停在原地，看起来就是按钮坏了。
+ * 所以退完 400ms 再看一眼栈顶是不是还停在原页面，还是就改走 reLaunch：
+ * 宁可丢掉返回动画，也不能让「回首页」看起来是死的。
+ */
+
+/** 首页路径（reLaunch 用） */
+const HOME: string = '/pages/home/home'
+
+/** 当前页面栈深度（1 表示已经是栈底，退无可退） */
+export function stackDepth(): number {
+	const pages = getCurrentPages()
+	return pages.length
+}
+
+/** 栈顶页面路由；取不到返回空串 */
+function topRoute(pages: Array<UniPage>): string {
+	if (pages.length == 0) return ''
+	const top = pages[pages.length - 1]
+	return top.route
+}
+
+/**
+ * 安全返回：能退就退，退不了就回首页
+ *
+ * 优先 navigateBack 是为了保留正常的返回过渡（从上一页点进来的绝大多数情况）；
+ * 只有确实没有上一页时才 reLaunch 回首页，避免「点了没反应」。
+ * 首页之后的页面（数学/心情/家长课堂/小剧场/播放页）都用这一个。
+ */
+export function safeBack(): void {
+	let depth: number = 0
+	let route: string = ''
+	try {
+		const pages = getCurrentPages()
+		depth = pages.length
+		route = topRoute(pages)
+	} catch (e) {
+		// 取页面栈失败时按"栈底"处理：直接回首页，总比什么都不做强
+		depth = 0
+	}
+	console.log('[nav] 页面栈深度 ' + depth.toString())
+
+	if (depth > 1) {
+		try {
+			uni.navigateBack({ delta: 1 })
+		} catch (e) {
+			uni.reLaunch({ url: HOME })
+			return
+		}
+		// 兜底：还停在原页面说明这次返回没生效，改 reLaunch
+		setTimeout(() => {
+			try {
+				const now = getCurrentPages()
+				if (now.length == 0) return
+				if (now.length >= depth && topRoute(now) == route) {
+					console.log('[nav] navigateBack 未生效，改用 reLaunch 回首页')
+					uni.reLaunch({ url: HOME })
+				}
+			} catch (e) {
+				// 检查本身失败就算了，不要因为兜底逻辑再抛一次
+			}
+		}, 400)
+		return
+	}
+	// 栈底：没有上一页可退，navigateBack 会静默失败，必须换 reLaunch
+	uni.reLaunch({ url: HOME })
+}

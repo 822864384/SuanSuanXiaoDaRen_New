@@ -1,0 +1,122 @@
+/**
+ * 算算小达人 · 题库词库（v3）
+ *
+ * 口径：4~5 岁。所有物品都选"孩子日常生活见过"的，emoji 只用 Android 7+ 都能显示的常见字符。
+ * 类别取值：fruit 水果 / animal 动物 / vehicle 交通工具 / toy 玩具
+ * 说明：分类题（C1）依赖 cat 字段，新增物品时**必须**填对类别，否则"哪个不是水果"会出错。
+ */
+
+export class Thing {
+	emoji: string = ''
+	name: string = ''
+	cat: string = ''
+
+	constructor(emoji: string, name: string, cat: string) {
+		this.emoji = emoji
+		this.name = name
+		this.cat = cat
+	}
+}
+
+/** 全部物品（顺序即随机池顺序） */
+export const THINGS: Array<Thing> = [
+	// 水果 8
+	new Thing('🍎', '苹果', 'fruit'),
+	new Thing('🍌', '香蕉', 'fruit'),
+	new Thing('🍇', '葡萄', 'fruit'),
+	new Thing('🍓', '草莓', 'fruit'),
+	new Thing('🍊', '橘子', 'fruit'),
+	new Thing('🍉', '西瓜', 'fruit'),
+	new Thing('🍐', '梨', 'fruit'),
+	new Thing('🍑', '桃子', 'fruit'),
+	// 动物 8
+	new Thing('🐱', '小猫', 'animal'),
+	new Thing('🐶', '小狗', 'animal'),
+	new Thing('🐰', '小兔', 'animal'),
+	new Thing('🐼', '熊猫', 'animal'),
+	new Thing('🐘', '大象', 'animal'),
+	new Thing('🐟', '小鱼', 'animal'),
+	new Thing('🐦', '小鸟', 'animal'),
+	new Thing('🐢', '乌龟', 'animal'),
+	// 交通工具 8
+	new Thing('🚗', '汽车', 'vehicle'),
+	new Thing('🚌', '公交车', 'vehicle'),
+	new Thing('🚲', '自行车', 'vehicle'),
+	new Thing('✈️', '飞机', 'vehicle'),
+	new Thing('🚂', '火车', 'vehicle'),
+	new Thing('🚢', '轮船', 'vehicle'),
+	new Thing('🚑', '救护车', 'vehicle'),
+	new Thing('🚕', '出租车', 'vehicle'),
+	// 玩具 8
+	// 注意：🧸(Unicode 11) 🧩(10) 🪀(12) 都是近年新增，Android 7 的电视盒子显示豆腐块，
+	// 已换成 Unicode 9 以内的字符；新增条目前先查 emoji 版本（tests/explain.test.mts 会拦）。
+	new Thing('⚽', '足球', 'toy'),
+	new Thing('🎈', '气球', 'toy'),
+	new Thing('🛴', '滑板车', 'toy'),
+	new Thing('🎨', '画笔', 'toy'),
+	new Thing('🎳', '保龄球', 'toy'),
+	new Thing('🏀', '篮球', 'toy'),
+	new Thing('🎯', '飞镖盘', 'toy'),
+	new Thing('🎲', '骰子', 'toy')
+]
+
+/** 类别 → 中文名（分类题朗读与题干用） */
+export function catName(cat: string): string {
+	if (cat == 'fruit') return '水果'
+	if (cat == 'animal') return '动物'
+	if (cat == 'vehicle') return '交通工具'
+	return '玩具'
+}
+
+/** 某一类的全部物品 */
+export function thingsOfCat(cat: string): Array<Thing> {
+	const out: Array<Thing> = []
+	for (let i = 0; i < THINGS.length; i++) {
+		if (THINGS[i].cat == cat) out.push(THINGS[i])
+	}
+	return out
+}
+
+/** 按名字找物品（找不到返回空对象，调用方需判空） */
+export function thingByName(name: string): Thing {
+	for (let i = 0; i < THINGS.length; i++) {
+		if (THINGS[i].name == name) return THINGS[i]
+	}
+	return new Thing('', '', '')
+}
+
+/** 轻重比较对（生活常识可判，不考密度） */
+export class WeightPair {
+	heavy: Thing = new Thing('', '', '')
+	light: Thing = new Thing('', '', '')
+	constructor(heavy: Thing, light: Thing) {
+		this.heavy = heavy
+		this.light = light
+	}
+}
+
+export const WEIGHT_PAIRS: Array<WeightPair> = [
+	new WeightPair(thingByName('西瓜'), thingByName('苹果')),
+	new WeightPair(thingByName('大象'), thingByName('小鸟')),
+	new WeightPair(thingByName('篮球'), thingByName('气球')),
+	new WeightPair(thingByName('汽车'), thingByName('自行车'))
+]
+
+/** 类比关系对：小猫爱吃鱼 / 小狗爱吃骨头 这一类 */
+export class AnalogyPair {
+	role: Thing = new Thing('', '', '')
+	target: Thing = new Thing('', '', '')
+	constructor(role: Thing, target: Thing) {
+		this.role = role
+		this.target = target
+	}
+}
+
+/** 类比用食物（不入 THINGS，避免被分类题抽到） */
+export const FOOD_FISH = new Thing('🐟', '小鱼', 'food')
+export const FOOD_BONE = new Thing('🍖', '骨头', 'food')
+export const FOOD_CARROT = new Thing('🥕', '胡萝卜', 'food')
+export const FOOD_BAMBOO = new Thing('🎋', '竹子', 'food')
+export const FOOD_BANANA = new Thing('🍌', '香蕉', 'food')
+export const FOOD_GRASS = new Thing('🌿', '青草', 'food')
+export const FOOD_APPLE = new Thing('🍎', '苹果', 'food')

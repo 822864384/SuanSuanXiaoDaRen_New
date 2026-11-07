@@ -1,0 +1,1708 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶部：返回 / 关卡题号 / 连击 / 得分 -->
+			<view class="math-top" :class="cx('math-top')">
+				<view class="chip" @click="goHome">
+					<text class="chip-text">← 回首页</text>
+				</view>
+				<view class="chip">
+					<text class="chip-text">{{ headText }} · {{ idx }}/{{ roundSize }}</text>
+				</view>
+				<view v-if="combo >= 2" class="chip">
+					<text class="chip-gold">🔥 {{ combo }} 连击</text>
+				</view>
+				<view v-if="speaking" class="chip">
+					<text class="chip-say">🔊 正在读题</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip">
+					<text class="chip-gold">⭐ {{ score }}</text>
+				</view>
+			</view>
+
+			<!-- 题面：按 layout 分支渲染（8 种布局） -->
+			<view class="q-area">
+
+				<!-- ① 大字算式 / 问题（相邻数、数的分合） -->
+				<view v-if="q.layout == 'expr'" class="q-block">
+					<text class="q-expr-text" :class="cx('q-expr-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ② 单行图形（减法、序数） -->
+				<view v-else-if="q.layout == 'items'" class="q-block">
+					<text class="q-emojis" :class="cx('q-emojis')">{{ q.emojis }}</text>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ③ 两行图形（点数：错位摆放，防止一眼蒙对） -->
+				<view v-else-if="q.layout == 'items2'" class="q-block">
+					<text class="q-emojis" :class="cx('q-emojis')">{{ q.emojis }}</text>
+					<text class="q-emojis" :class="cx('q-emojis')">{{ q.emojis2 }}</text>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ④ 多组并排（守恒 / 比多少 / 比轻重 / 加法） -->
+				<view v-else-if="q.layout == 'groups'" class="q-block">
+					<view class="q-groups">
+						<view v-for="(g, i) in q.groups" :key="'g' + i" class="q-group-wrap">
+							<view class="q-group">
+								<text class="q-emojis-sm" :class="cx('q-emojis-sm') + ' ' + (q.groupClasses.length > i ? (compact ? q.groupClasses[i] + '-c' : q.groupClasses[i]) : '')">{{ g }}</text>
+								<text v-if="q.groupLabels.length > i && q.groupLabels[i].length > 0" class="q-side" :class="cx('q-side')">{{ q.groupLabels[i] }}</text>
+							</view>
+							<text v-if="q.groupSep.length > 0 && i < q.groups.length - 1" class="q-sep">{{ q.groupSep }}</text>
+						</view>
+					</view>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ⑤ 横条比长短（长度差 ≥2 倍，底部左对齐） -->
+				<view v-else-if="q.layout == 'bars'" class="q-block">
+					<view class="bar-row">
+						<text class="bar-label">左边</text>
+						<view class="bar-track">
+							<view class="bar" :class="q.leftClass"></view>
+						</view>
+					</view>
+					<view class="bar-row">
+						<text class="bar-label">右边</text>
+						<view class="bar-track">
+							<view class="bar" :class="q.rightClass"></view>
+						</view>
+					</view>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ⑥ 竖条比高矮（底部对齐） -->
+				<view v-else-if="q.layout == 'towers'" class="q-block">
+					<view class="tower-row">
+						<view class="tower-col" :class="cx('tower-col')">
+							<view class="tower" :class="compact ? q.leftClass + '-c' : q.leftClass"></view>
+							<text class="bar-label">左边</text>
+						</view>
+						<view class="tower-col" :class="cx('tower-col')">
+							<view class="tower" :class="compact ? q.rightClass + '-c' : q.rightClass"></view>
+							<text class="bar-label">右边</text>
+						</view>
+					</view>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ⑦ 找规律序列 -->
+				<view v-else-if="q.layout == 'pattern'" class="q-block">
+					<text class="q-emojis" :class="cx('q-emojis')">{{ q.seq }} ❓</text>
+					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
+				</view>
+
+				<!-- ⑧ 纯文字（找不同、按数取物） -->
+				<view v-else class="q-block">
+					<text class="q-plain" :class="cx('q-plain')">{{ q.expr }}</text>
+				</view>
+
+			</view>
+
+			<text class="q-hint" :class="cx('q-hint')">{{ q.hint }}</text>
+
+			<!-- 计时条：2 分钟/题，末 10 秒转红并显示剩余时间 -->
+			<view class="timer-row" :class="cx('timer-row')">
+				<view class="timer-wrap">
+					<view class="timer-fill" :class="urgent ? 'timer-fill-red' : ''" :style="timerStyle"></view>
+				</view>
+				<text class="timer-text" :class="(urgent ? 'timer-text-red ' : '') + cx('timer-text')">⏱ {{ timeText }}</text>
+			</view>
+
+			<!-- 作答区：数字垫 / 2×2 网格 / 5 小格 / 一行选项 -->
+			<view class="pad" :class="cx('pad')">
+				<view v-if="q.numeric" class="pad-row" :class="cx('pad-row')">
+					<view v-for="(n, i) in q.numberOptions" :key="'n' + i" class="ans"
+						:class="ansClassOf(numKey(n)) + ' ' + cx('ans')" @click="pickNumber(n)">
+						<text class="ans-text" :class="cx('ans-text')">{{ n }}</text>
+					</view>
+				</view>
+
+				<view v-else-if="q.optionsLayout == 'grid2x2'" class="pad-grid" :class="cx('pad-grid')">
+					<view v-for="(o, i) in options" :key="'o' + i" class="ans ans-grid"
+						:class="ansClassOf(o) + ' ' + cx('ans') + ' ' + cx('ans-grid')" @click="pickOption(o)">
+						<text class="ans-emoji" :class="cx('ans-emoji')">{{ o }}</text>
+					</view>
+				</view>
+
+				<view v-else-if="q.optionsLayout == 'row5'" class="pad-row" :class="cx('pad-row')">
+					<view v-for="(o, i) in options" :key="'o' + i" class="ans ans-sq"
+						:class="ansClassOf(o) + ' ' + cx('ans') + ' ' + cx('ans-sq')" @click="pickOption(o)">
+						<text class="ans-emoji-md" :class="cx('ans-emoji-md')">{{ o }}</text>
+					</view>
+				</view>
+
+				<view v-else class="pad-row" :class="cx('pad-row')">
+					<view v-for="(o, i) in options" :key="'o' + i"
+						class="ans" :class="ansClassOf(o) + ' ' + (q.kind == 'take' ? 'ans-stack' : 'ans-wide') + ' ' + cx('ans') + ' ' + cx(q.kind == 'take' ? 'ans-stack' : 'ans-wide')"
+						@click="pickOption(o)">
+						<text :class="(q.kind == 'take' ? 'ans-emoji-str' : 'ans-text-lg') + ' ' + cx(q.kind == 'take' ? 'ans-emoji-str' : 'ans-text-lg')">{{ o }}</text>
+					</view>
+				</view>
+
+				<view class="pad-row" :class="cx('pad-row')">
+					<view class="ans ans-say" :class="cx('ans') + ' ' + cx('ans-say')" @click="repeatQuestion">
+						<text class="ans-say-text" :class="cx('ans-say-text')">{{ sayLabel }}</text>
+					</view>
+					<view class="ans ans-say" :class="cx('ans') + ' ' + cx('ans-say')" @click="voiceAnswer">
+						<text class="ans-say-text" :class="cx('ans-say-text')">🎤 语音回答</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 反馈浮层：答对绿罩鼓励，答错暖棕罩且必须告知正确答案 -->
+			<view v-if="feedbackShow" class="feedback" :class="feedbackGood ? 'feedback-good' : 'feedback-bad'">
+				<text class="fb-face" :class="cx('fb-face')">{{ feedbackFace }}</text>
+				<text class="fb-title" :class="cx('fb-title')">{{ feedbackTitle }}</text>
+				<text class="fb-sub" :class="cx('fb-sub')">{{ feedbackSub }}</text>
+			</view>
+
+			<!-- 小黑板：答错后小老师一边写一边讲（3~4 步，慢慢来） -->
+			<view v-if="boardShow" class="board-mask">
+				<view class="board-row">
+
+					<!-- 左：黑板，一行一行往上写 -->
+					<view class="board-frame" :class="cx('board-frame')">
+						<view class="board-head">
+							<text class="board-title" :class="cx('board-title')">✏️ {{ boardTitle }}</text>
+							<text class="board-step" :class="cx('board-step')">第 {{ stepIdx + 1 }} / {{ stepTotal }} 步</text>
+						</view>
+						<view class="board-body">
+							<view v-for="(l, i) in boardDone" :key="'bd' + i" class="board-line">
+								<text v-if="l.icon.length > 0" class="board-icon" :class="cx('board-icon')">{{ l.icon }}</text>
+								<text class="board-text" :class="cx('board-text')">{{ l.board }}</text>
+							</view>
+							<view v-if="boardTyping.length > 0 || boardIconNow.length > 0" class="board-line">
+								<text v-if="boardIconNow.length > 0" class="board-icon" :class="cx('board-icon')">{{ boardIconNow }}</text>
+								<text class="board-text" :class="cx('board-text')">{{ boardTyping }}<text class="board-caret">▏</text></text>
+							</view>
+						</view>
+					</view>
+
+					<!-- 右：小老师，教鞭一直在指，气泡逐字说话 -->
+					<view class="teacher-col" :class="cx('teacher-col')">
+						<text class="teacher-pointer" :class="cx('teacher-pointer')">{{ pointerHand }}</text>
+						<text class="teacher-face" :class="cx('teacher-face')">{{ teacherFace }}</text>
+						<text class="teacher-name" :class="cx('teacher-name')">小老师</text>
+						<view class="bubble" :class="cx('bubble')">
+							<text class="bubble-text" :class="cx('bubble-text')">{{ bubbleText }}</text>
+						</view>
+					</view>
+				</view>
+
+				<view class="board-btns">
+					<view class="b-btn" :class="cx('b-btn')" @click="replayStep">
+						<text class="b-btn-text" :class="cx('b-btn-text')">🔊 再讲一遍</text>
+					</view>
+					<view class="b-btn b-btn-gold" :class="cx('b-btn')" @click="tapNext">
+						<text class="b-btn-gold-text" :class="cx('b-btn-gold-text')">{{ stepIdx + 1 >= stepTotal ? '👉 我明白了' : '👉 接着讲' }}</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		genQuestion, buildRound, shuffleOptions, isCorrectNumber, isCorrectText,
+		randomPraise, randomEncourage, starsOf,
+		Question, ROUND_SIZE, SECONDS_PER_QUESTION, URGENT_SECONDS
+	} from '@/common/math-engine.uts'
+	import { getLevel, recordAnswer, addStars, addCandy, getCurrentProfile } from '@/common/store.uts'
+	import { Explain, ExplainLine } from '@/common/explain.uts'
+	import { beginRound, endRound } from '@/common/session.uts'
+	import { inDrill, setDrillTotal, stopDrill, drillMode } from '@/common/wrong-session.uts'
+	import { addWrong, removeWrong, clearOnCorrect, buildMathDrill, WrongItem, DRILL_SIZE } from '@/common/wrongbook.uts'
+	import {
+		speak, stopSpeak, cleanForSpeech, questionSpeech, repeatSpeech, estimateSpeakMs,
+		isTtsAvailable, unlockTts,
+		releaseSpeech
+	} from '@/common/tts.uts'
+	import { playAsk, playCorrect, playWrong, playTimeUp, releaseSfx } from '@/common/sfx.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** 本轮题量：正常闯关 5 题，错题重练可能不足 5 题 */
+	const roundSize = ref<number>(ROUND_SIZE)
+	const totalSeconds: number = SECONDS_PER_QUESTION
+	/** 这次是错题重练（顶栏文案与结算页都跟着变） */
+	const drill = ref<boolean>(false)
+
+	/**
+	 * 紧凑版式开关（手机横屏）
+	 *
+	 * 设计稿按 16:9 排：750rpx 宽对 421rpx 高。手机横屏是 19.5:9，
+	 * 同样的宽度只剩约 340rpx 高，页面里所有固定高度加起来就超了，
+	 * 超出的部分被 .stage 的 overflow:hidden 直接裁掉 —— 表现就是"显示不全"。
+	 * 这里按真实屏幕高度判断，矮屏时把每个固定高度的元素各收一档。
+	 */
+	const compact = ref<boolean>(false)
+
+	/** 紧凑版式下追加的类名（约定：基础类名 + '-c'） */
+	function cx(base: string): string {
+		return compact.value ? base + '-c' : ''
+	}
+
+	function detectLayout() {
+		const info = uni.getWindowInfo()
+		const w: number = info.windowWidth
+		const h: number = info.windowHeight
+		if (w <= 0 || h <= 0) {
+			// 取不到尺寸时按电视版式走（宁可不紧凑，也不要在电视上缩小字）
+			compact.value = false
+			return
+		}
+		// 高度换算成 rpx：h * 750 / w。16:9 → 421rpx；手机横屏 → 约 340rpx
+		const hRpx: number = h * 750 / w
+		compact.value = hRpx < 390
+	}
+
+	/**
+	 * 本平台能否真朗读
+	 * H5=能（浏览器 TTS）；App 真机=还不能（待语音阶段接 UTS 插件）
+	 * 不能朗读时：不排队、不亮"正在读题"，按钮改成明确提示，避免"指示亮着却没声音"
+	 */
+	const ttsReady: boolean = isTtsAvailable()
+	const sayLabel: string = ttsReady ? '🔊 再听一遍' : '🔈 朗读待接入'
+
+	/** 当前档案名字：读题时先叫名字（"豆豆，请听题"） */
+	const profileName = ref<string>('小朋友')
+	/** 正在朗读（顶部提示，家长能看到"它在说话"） */
+	const speaking = ref<boolean>(false)
+
+	const level = ref<number>(1)
+	const idx = ref<number>(1)
+	const score = ref<number>(0)
+	const combo = ref<number>(0)
+
+	/** 顶栏文案：错题重练时不显示"第 N 关"（重练没有关卡概念） */
+	const headText = computed((): string => {
+		return drill.value ? '📕 再练一次' : '第 ' + level.value.toString() + ' 关'
+	})
+
+	/** 当前题目（首帧先给一题，避免空白闪一下） */
+	const q = ref<Question>(genQuestion())
+	const options = ref<Array<string>>(shuffleOptions(q.value))
+
+	/** 本关题目：一次性组卷，保证题型分布与"不连续重复"约束 */
+	let roundQuestions: Array<Question> = [q.value]
+
+	/** 已作答的选项键，非空即锁定输入（防重入） */
+	const answeredKey = ref<string>('')
+	const lastOk = ref<boolean>(false)
+
+	/** 计时：2 分钟/题，末 10 秒转红 */
+	const remain = ref<number>(SECONDS_PER_QUESTION)
+	const urgent = computed((): boolean => remain.value <= URGENT_SECONDS)
+	const timerStyle = computed((): string => {
+		let pct: number = remain.value * 100 / totalSeconds
+		if (pct < 0) pct = 0
+		// 保留一位小数：2 分钟的条用整数百分比会一跳 1%，看着像卡住
+		return 'width:' + (Math.round(pct * 10) / 10).toString() + '%;'
+	})
+	const timeText = computed((): string => {
+		const total: number = Math.ceil(remain.value)
+		const m: number = Math.floor(total / 60)
+		const s: number = total - m * 60
+		return m.toString() + ':' + (s < 10 ? '0' + s.toString() : s.toString())
+	})
+
+	/** 反馈浮层 */
+	const feedbackShow = ref<boolean>(false)
+	const feedbackGood = ref<boolean>(true)
+	const feedbackFace = ref<string>('🎉')
+	const feedbackTitle = ref<string>('')
+	const feedbackSub = ref<string>('')
+
+	/* ---------------- 小黑板（答错后的讲解） ---------------- */
+
+	/** 黑板上已经写完的一行 */
+	class BoardLine {
+		board: string = ''
+		icon: string = ''
+
+		constructor(board: string, icon: string) {
+			this.board = board
+			this.icon = icon
+		}
+	}
+
+	/** 板书打字速度（毫秒/字）：比口述快，像老师在写 */
+	const BOARD_TYPE_MS: number = 62
+	/** 口述打字速度（毫秒/字）：故意慢，让孩子跟得上 */
+	const BUBBLE_TYPE_MS: number = 92
+	/** 中间步骤停多久（打完字之后再停）：给孩子看一眼、想一下 */
+	const STEP_HOLD_MS: number = 1800
+	/** 最后一步（结论）停多久：最长，让孩子自己消化 */
+	const FINAL_HOLD_MS: number = 8000
+
+	const boardShow = ref<boolean>(false)
+	const boardTitle = ref<string>('')
+	const stepIdx = ref<number>(0)
+	const stepTotal = ref<number>(0)
+	/** 已写完的板书行（累积，孩子能看见"老师一行一行写上去"） */
+	const boardDone = ref<Array<BoardLine>>([])
+	/** 正在写的那一行（逐字长出来） */
+	const boardTyping = ref<string>('')
+	/** 正在写的那一行一起画的图形 */
+	const boardIconNow = ref<string>('')
+	/** 老师气泡里已经出现的字 */
+	const bubbleText = ref<string>('')
+	const teacherFace = ref<string>('🤔')
+	/** 教鞭：👉 / 👆 交替，制造"老师在动"的感觉（不用 @keyframes，App 端不支持） */
+	const pointerHand = ref<string>('👉')
+
+	/** 当前这道题的讲解步骤 */
+	let exLines: Array<ExplainLine> = []
+	let boardTypeId: number = -1
+	let bubbleTypeId: number = -1
+	let stepTimerId: number = -1
+	let pointerId: number = -1
+	let boardFull: string = ''
+	let bubbleFull: string = ''
+	let boardTyped: boolean = false
+	let bubbleTyped: boolean = false
+	/** 当前是不是最后一步（setTimeout 回调里读，避免闭包捕获局部 const） */
+	let lastStep: boolean = false
+
+	let right: number = 0
+	let wrong: number = 0
+	/** 本轮是否正常走完（走完就交给结算页，不清理重练状态） */
+	let finishing: boolean = false
+	let elapsedMs: number = 0
+	let timerId: number = -1
+	let advanceId: number = -1
+	let locked: boolean = false
+	/** 朗读排队 / 结束估算的定时器 */
+	let sayId: number = -1
+	let sayEndId: number = -1
+
+	onLoad(() => {
+		detectLayout()
+		profileName.value = getCurrentProfile().name
+		drill.value = inDrill()
+		if (drill.value) {
+			// 错题重练：不按关卡组卷，直接把库里的题按进库顺序拿出来
+			const list: Array<Question> = buildMathDrill(DRILL_SIZE)
+			if (list.length == 0) {
+				// 一条都重建不出来（题库改过 / 存储脏了）：说清楚再退回错题库，别留在白屏
+				uni.showToast({ title: '这几道题已经练完啦', icon: 'none' })
+				setTimeout(() => {
+					stopDrill()
+					uni.reLaunch({ url: '/pages/wrong/wrong' })
+				}, 900)
+				return
+			}
+			level.value = 0
+			roundSize.value = list.length
+			roundQuestions = list
+			setDrillTotal(list.length)
+			beginRound('math', 0)
+			idx.value = 1
+			q.value = roundQuestions[0]
+			options.value = shuffleOptions(q.value)
+			askQuestion()
+			return
+		}
+		level.value = getLevel('math')
+		beginRound('math', level.value)
+		idx.value = 1
+		// 按难度档组卷：L1~L4 的题型池不同
+		roundQuestions = buildRound(level.value)
+		q.value = roundQuestions[0]
+		options.value = shuffleOptions(q.value)
+		askQuestion()
+	})
+
+	onUnload(() => {
+		clearTimer()
+		clearAdvance()
+		clearSay()
+		clearStepTimers()
+		clearPointer()
+		stopSpeak()
+		// 没走到结算页就离开（系统返回 / 跳走）：把"重练中"收掉，避免污染下一次闯关
+		if (!finishing) stopDrill()
+		releaseSfx()
+		releaseSpeech()
+	})
+
+	/* ---------------- 朗读调度 ---------------- */
+
+	/** 清掉排队中的朗读与"正在读"状态 */
+	function clearSay() {
+		if (sayId >= 0) {
+			clearTimeout(sayId)
+			sayId = -1
+		}
+		if (sayEndId >= 0) {
+			clearTimeout(sayEndId)
+			sayEndId = -1
+		}
+		speaking.value = false
+	}
+
+	/**
+	 * 延迟朗读
+	 * @param text 文案（含 emoji 也没关系，这里统一清洗）
+	 * @param delay 延迟毫秒：留给音效先响，避免和读音叠在一起
+	 */
+	function say(text: string, delay: number) {
+		// 平台不支持朗读时直接跳过：不排定时器、不亮指示，音效照常
+		if (!ttsReady) return
+		const clean: string = cleanForSpeech(text)
+		if (clean.length == 0) return
+		if (sayId >= 0) clearTimeout(sayId)
+		sayId = setTimeout(() => {
+			sayId = -1
+			// speak() 返回 false 说明这台设备没读出来（如标准基座缺插件），
+			// 此时不点亮"正在读题"，避免"亮着却没声音"的假提示
+			const started: boolean = speak(clean)
+			speaking.value = started
+			if (!started) return
+			if (sayEndId >= 0) clearTimeout(sayEndId)
+			// 原生 TTS 暂无结束回调，按字数估算消隐
+			sayEndId = setTimeout(() => {
+				speaking.value = false
+				sayEndId = -1
+			}, estimateSpeakMs(clean))
+		}, delay)
+	}
+
+	/* ---------------- 出题与作答 ---------------- */
+
+	/** 展示当前题：提示音 + 叫名字读题 + 起计时 */
+	function askQuestion() {
+		answeredKey.value = ''
+		lastOk.value = false
+		feedbackShow.value = false
+		remain.value = totalSeconds
+		elapsedMs = 0
+		// 出题必须朗读（4~5 岁不识字）：先叫名字抓注意力，再读题干
+		clearSay()
+		stopSpeak()
+		playAsk()
+		say(questionSpeech(profileName.value, q.value.prompt), 420)
+		startTimer()
+	}
+
+	function startTimer() {
+		clearTimer()
+		elapsedMs = 0
+		// 200ms 一跳：2 分钟的条与秒表都够平滑，低配电视盒子上也少一半刷新
+		timerId = setInterval(() => {
+			elapsedMs += 200
+			const left: number = totalSeconds - elapsedMs / 1000
+			remain.value = left > 0 ? left : 0
+			if (left <= 0) {
+				clearTimer()
+				judge(false, true)
+			}
+		}, 200)
+	}
+
+	function clearTimer() {
+		if (timerId >= 0) {
+			clearInterval(timerId)
+			timerId = -1
+		}
+	}
+
+	function clearAdvance() {
+		if (advanceId >= 0) {
+			clearTimeout(advanceId)
+			advanceId = -1
+		}
+	}
+
+	function numKey(n: number): string {
+		return 'n:' + n.toString()
+	}
+
+	function pickNumber(n: number) {
+		if (locked) return
+		unlockTts()
+		const ok: boolean = isCorrectNumber(q.value, n)
+		locked = true
+		answeredKey.value = numKey(n)
+		judge(ok, false)
+	}
+
+	function pickOption(text: string) {
+		if (locked) return
+		unlockTts()
+		const ok: boolean = isCorrectText(q.value, text)
+		locked = true
+		answeredKey.value = text
+		judge(ok, false)
+	}
+
+	/** 语音答题入口：阶段一未接 Vosk，先给出明确提示，接口保持与判定一致 */
+	function voiceAnswer() {
+		if (locked) return
+		uni.showToast({ title: '语音识别还在接入，先按数字吧', icon: 'none' })
+	}
+
+	/**
+	 * 判定 + 反馈
+	 * @param ok 是否正确
+	 * @param timeout 是否超时（超时按未答计入 wrong，并朗读正确答案）
+	 */
+	function judge(ok: boolean, timeout: boolean) {
+		clearTimer()
+		stopSpeak()
+		// 清掉还在排队的读题，避免判定后还继续念题目
+		clearSay()
+		// 一旦判定即锁死输入：超时路径也必须锁，否则等待跳题的 2 秒内还能按键
+		locked = true
+
+		if (ok) {
+			right++
+			score.value++
+			combo.value++
+			addStars(1)
+			addCandy(1)
+			recordAnswer('math', true)
+			// 做对了就从错题库出库：重练时是对号入座删这道题；正常练习里删掉"同一题面"的旧条目
+			if (drill.value) {
+				removeWrong('math', q.value.kind, q.value.seed, '', answerText())
+			} else {
+				clearOnCorrect('math', q.value.prompt, answerText())
+			}
+			lastOk.value = true
+			// 音效先响，620ms 后再夸，两段不叠在一起
+			playCorrect()
+			if (q.value.exempt) {
+				// 数量守恒答对：额外奖励一颗糖，强化"数一数再判断"
+				addCandy(1)
+				showFeedback('🎉', randomPraise(), '+1 ⭐  再奖励一颗糖 🍬', true)
+				say('真棒！两边其实一样多', 620)
+				advanceId = setTimeout(() => {
+					nextQuestion()
+				}, 3200)
+			} else {
+				showFeedback('🎉', randomPraise(), '+1 ⭐', true)
+				say('真棒！', 620)
+				advanceId = setTimeout(() => {
+					nextQuestion()
+				}, 2000)
+			}
+			return
+		}
+
+		// 数量守恒：答错免责——不计错、不扣分、不断连击（4 岁答错是正常发展阶段）
+		if (q.value.exempt && !timeout) {
+			playWrong()
+			// 守恒最容易"看着大小判多少"，也领到小黑板前数一遍
+			if (hasExplain()) {
+				introThenBoard('🔍', '再看看哦', '我们一起数一数', '再看看哦，我们一起数一数')
+				return
+			}
+			showFeedback('🔍', '再看看哦', '数一数两边，其实一样多', false)
+			say('再看看哦，数一数两边，其实一样多', 620)
+			advanceId = setTimeout(() => {
+				nextQuestion()
+			}, 3600)
+			return
+		}
+
+		wrong++
+		combo.value = 0
+		recordAnswer('math', false)
+		// 没做出来 / 超时 → 进错题库（下一轮"再练一次"会原样出这道题）
+		recordToWrongBook()
+		lastOk.value = false
+		const ansText: string = answerText()
+		if (timeout) {
+			playTimeUp()
+			if (hasExplain()) {
+				introThenBoard('⏰', '时间到啦', '我们一起看看怎么做', '时间到啦，我们一起看看怎么做')
+				return
+			}
+			showFeedback('⏰', '时间到啦', '正确答案是 ' + ansText, false)
+			say('时间到啦，正确答案是' + ansText, 620)
+			advanceId = setTimeout(() => {
+				nextQuestion()
+			}, 3800)
+			return
+		}
+		// 答错不用否定性音效：柔和下行提示；有讲解就带孩子看小黑板，没讲解才直接报答案
+		playWrong()
+		if (hasExplain()) {
+			introThenBoard('🤔', randomEncourage(), '我们一起看看怎么做', '没关系，我们一起看看怎么做')
+			return
+		}
+		showFeedback('🤔', randomEncourage(), '正确答案是 ' + ansText, false)
+		say('没关系，正确答案是' + ansText, 620)
+		advanceId = setTimeout(() => {
+			nextQuestion()
+		}, 3600)
+	}
+
+	/** 正确答案的可读文本 */
+	function answerText(): string {
+		if (q.value.numeric) return q.value.ans.toString()
+		return q.value.ansText
+	}
+
+	/**
+	 * 把当前这道题记进错题库
+	 *
+	 * 记的是"重建这道题需要的全部信息"（题型 + 种子 + 答案 + 题面），
+	 * 下次重练时用同一个种子重跑生成函数，题面与选项和这次一模一样。
+	 */
+	function recordToWrongBook(): void {
+		// 数量守恒题答错免责：它本来就不该被当成"错题"反复练
+		if (q.value.exempt) return
+		const it = new WrongItem()
+		it.mode = 'math'
+		it.kind = q.value.kind
+		it.seed = q.value.seed
+		it.src = ''
+		it.unit = 0
+		it.answer = answerText()
+		it.prompt = q.value.prompt
+		it.misses = 1
+		addWrong(it)
+	}
+
+	function showFeedback(face: string, title: string, sub: string, good: boolean) {
+		feedbackFace.value = face
+		feedbackTitle.value = title
+		feedbackSub.value = sub
+		feedbackGood.value = good
+		feedbackShow.value = true
+	}
+
+	/* ---------------- 小黑板：答错后一边写一边讲 ---------------- */
+
+	/** 这道题有没有讲解（数据异常时回退到"正确答案是 X"） */
+	function hasExplain(): boolean {
+		return q.value.explain.lines.length > 0
+	}
+
+	/**
+	 * 先给一句安抚，再把孩子领到小黑板前
+	 *
+	 * 不当场报答案：报答案是最省事的教法，也是最留不住的教法。
+	 * 2.3 秒够那句安抚说完（约 12 字），孩子注意力已经被拉回来了。
+	 */
+	function introThenBoard(face: string, title: string, sub: string, sayText: string) {
+		showFeedback(face, title, sub, false)
+		say(sayText, 620)
+		advanceId = setTimeout(() => {
+			advanceId = -1
+			openBoard()
+		}, 2300)
+	}
+
+	function openBoard() {
+		const ex: Explain = q.value.explain
+		if (ex.lines.length == 0) {
+			nextQuestion()
+			return
+		}
+		clearTimer()
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		feedbackShow.value = false
+
+		exLines = ex.lines
+		boardTitle.value = ex.title
+		stepTotal.value = ex.lines.length
+		stepIdx.value = 0
+		boardDone.value = []
+		boardShow.value = true
+		startPointer()
+		playStep(0)
+	}
+
+	/** 演第 i 步：板书逐字写、气泡逐字说、TTS 同时慢慢念 */
+	function playStep(i: number) {
+		clearStepTimers()
+		stepIdx.value = i
+		const line: ExplainLine = exLines[i]
+		teacherFace.value = line.face
+
+		boardFull = line.board
+		boardIconNow.value = line.icon
+		boardTyping.value = ''
+		boardTyped = false
+		bubbleFull = line.say
+		bubbleTyped = false
+		startBoardType()
+		startBubbleType()
+
+		// 朗读和逐字出现走同一条气：字长出来的时候，声音也正好在念这句话
+		if (ttsReady) {
+			const clean: string = cleanForSpeech(line.say)
+			if (clean.length > 0) speak(clean)
+		}
+	}
+
+	/** 板书打字机：一行一行往上写，写完就留在黑板上 */
+	function startBoardType() {
+		if (boardTypeId >= 0) {
+			clearInterval(boardTypeId)
+			boardTypeId = -1
+		}
+		let pos: number = 0
+		boardTypeId = setInterval(() => {
+			pos++
+			boardTyping.value = boardFull.substring(0, pos)
+			if (pos >= boardFull.length) {
+				clearInterval(boardTypeId)
+				boardTypeId = -1
+				// 写完这一行，整行（含画的图形）搬进"已写"，下一行从空开始
+				boardDone.value.push(new BoardLine(boardFull, boardIconNow.value))
+				boardTyping.value = ''
+				boardTyped = true
+				tryAdvance()
+			}
+		}, BOARD_TYPE_MS)
+	}
+
+	/** 气泡打字机：故意比板书慢，让孩子读得过来 */
+	function startBubbleType() {
+		if (bubbleTypeId >= 0) {
+			clearInterval(bubbleTypeId)
+			bubbleTypeId = -1
+		}
+		bubbleText.value = ''
+		bubbleTyped = false
+		let pos: number = 0
+		bubbleTypeId = setInterval(() => {
+			pos++
+			bubbleText.value = bubbleFull.substring(0, pos)
+			if (pos >= bubbleFull.length) {
+				clearInterval(bubbleTypeId)
+				bubbleTypeId = -1
+				bubbleTyped = true
+				tryAdvance()
+			}
+		}, BUBBLE_TYPE_MS)
+	}
+
+	/**
+	 * 两步都打完才排下一步
+	 *
+	 * 停留时长取「基础停顿」与「这句话还没念完的时间」的较大值：
+	 * 否则孩子还在听，画面已经翻页了——这就是"没给孩子思考时间"。
+	 */
+	function tryAdvance() {
+		if (!boardTyped || !bubbleTyped) return
+		if (stepTimerId >= 0) {
+			clearTimeout(stepTimerId)
+			stepTimerId = -1
+		}
+		lastStep = stepIdx.value + 1 >= stepTotal.value
+		let hold: number = lastStep ? FINAL_HOLD_MS : STEP_HOLD_MS
+		if (ttsReady) {
+			// 步骤之间保留教学停顿，但绝不在上一句还没念完时切断语音。
+			const speechHold: number = estimateSpeakMs(cleanForSpeech(bubbleFull)) + 300
+			if (speechHold > hold) hold = speechHold
+		}
+		stepTimerId = setTimeout(() => {
+			stepTimerId = -1
+			if (lastStep) {
+				closeBoard()
+			} else {
+				playStep(stepIdx.value + 1)
+			}
+		}, hold)
+	}
+
+	/** 孩子自己点「接着讲」：不用等自动翻，也能提前走 */
+	function tapNext() {
+		clearStepTimers()
+		stopSpeak()
+		if (stepIdx.value + 1 >= stepTotal.value) {
+			closeBoard()
+			return
+		}
+		playStep(stepIdx.value + 1)
+	}
+
+	/** 再讲一遍：板书留着（已经写上去了），只把这句话重打一遍 + 重念 */
+	function replayStep() {
+		if (stepTimerId >= 0) {
+			clearTimeout(stepTimerId)
+			stepTimerId = -1
+		}
+		stopSpeak()
+		startBubbleType()
+		if (ttsReady) {
+			const clean: string = cleanForSpeech(bubbleFull)
+			if (clean.length > 0) speak(clean)
+		}
+	}
+
+	function closeBoard() {
+		clearStepTimers()
+		clearPointer()
+		stopSpeak()
+		clearSay()
+		boardShow.value = false
+		boardDone.value = []
+		boardTyping.value = ''
+		boardIconNow.value = ''
+		bubbleText.value = ''
+		boardFull = ''
+		bubbleFull = ''
+		// 讲解看完才走：这一题的账早在 judge 里结过了，这里只负责把她讲明白
+		nextQuestion()
+	}
+
+	function clearStepTimers() {
+		if (boardTypeId >= 0) {
+			clearInterval(boardTypeId)
+			boardTypeId = -1
+		}
+		if (bubbleTypeId >= 0) {
+			clearInterval(bubbleTypeId)
+			bubbleTypeId = -1
+		}
+		if (stepTimerId >= 0) {
+			clearTimeout(stepTimerId)
+			stepTimerId = -1
+		}
+	}
+
+	/**
+	 * 教鞭摆动
+	 *
+	 * App 端不支持 @keyframes，所以不用动画曲线，直接两个字符交替——
+	 * 成本为零、跨端一致，孩子看到的是"老师的棍子一直在指"。
+	 */
+	function startPointer() {
+		if (pointerId >= 0) return
+		pointerId = setInterval(() => {
+			pointerHand.value = pointerHand.value == '👉' ? '👆' : '👉'
+		}, 480)
+	}
+
+	function clearPointer() {
+		if (pointerId >= 0) {
+			clearInterval(pointerId)
+			pointerId = -1
+		}
+		pointerHand.value = '👉'
+	}
+
+	function ansClassOf(key: string): string {
+		if (answeredKey.value.length == 0) return ''
+		if (key == answeredKey.value) return lastOk.value ? 'ans-correct' : 'ans-wrong'
+		return 'ans-dim'
+	}
+
+	/* ---------------- 流转 ---------------- */
+
+	function nextQuestion() {
+		clearAdvance()
+		if (idx.value >= roundSize.value) {
+			finish()
+			return
+		}
+		idx.value = idx.value + 1
+		locked = false
+		// 取预组好的下一题；万一长度不够（不应发生）退回随机生成
+		if (idx.value - 1 < roundQuestions.length) {
+			q.value = roundQuestions[idx.value - 1]
+		} else {
+			q.value = genQuestion()
+		}
+		options.value = shuffleOptions(q.value)
+		askQuestion()
+	}
+
+	function finish() {
+		clearTimer()
+		clearAdvance()
+		clearSay()
+		stopSpeak()
+		// 是正常走完的：结算页还要用"重练中"这个状态，unload 时别清
+		finishing = true
+		endRound(right, wrong)
+		uni.redirectTo({ url: '/pages/result/result' })
+	}
+
+	/** 重听：不念名字，避免孩子以为换人了 */
+	function repeatQuestion() {
+		if (locked) return
+		stopSpeak()
+		clearSay()
+		const text: string = cleanForSpeech(repeatSpeech(q.value.prompt))
+		if (text.length == 0) return
+		// 直接调 speak() 拿返回值：读不出来就明说，不让孩子对着没声音的按钮按
+		const started: boolean = speak(text)
+		if (!started) {
+			uni.showToast({ title: '这台设备暂时读不出声音', icon: 'none' })
+			return
+		}
+		speaking.value = true
+		if (sayEndId >= 0) clearTimeout(sayEndId)
+		sayEndId = setTimeout(() => {
+			speaking.value = false
+			sayEndId = -1
+		}, estimateSpeakMs(text))
+	}
+
+	function goHome() {
+		// 清理必须包起来：任一处抛异常都会让下面的返回不执行，
+		// 表现就是"点了回首页没反应"。返回是用户意图，不能被清理动作挡住。
+		try {
+			clearTimer()
+			clearAdvance()
+			clearSay()
+			stopSpeak()
+			// 中途离开重练：把"重练中"的状态收掉，否则下次正常闯关会被当成重练
+			stopDrill()
+		} catch (e) {
+			console.log('[math] 离场清理异常')
+		}
+		safeBack()
+	}
+</script>
+
+<style>
+	.math-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.chip {
+		margin-right: 6rpx;
+	}
+
+	/* 朗读指示：让孩子/家长知道"它在说话" */
+	.chip-say {
+		color: #ffd76e;
+		font-size: 12rpx;
+	}
+
+	.q-area {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+		padding-left: 31rpx;
+		padding-right: 31rpx;
+	}
+
+	.q-block {
+		align-items: center;
+	}
+
+	.q-expr-text {
+		color: #ffffff;
+		font-size: 48rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.q-plain {
+		color: #ffffff;
+		font-size: 30rpx;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.q-emojis {
+		font-size: 34rpx;
+		line-height: 50rpx;
+		text-align: center;
+	}
+
+	.q-emojis-sm {
+		font-size: 27rpx;
+		line-height: 41rpx;
+		text-align: center;
+	}
+
+	.q-text {
+		color: #ffffff;
+		font-size: 17rpx;
+		margin-top: 8rpx;
+		text-align: center;
+	}
+
+	/* ---------- 多组并排 ---------- */
+	.q-groups {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.q-group-wrap {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.q-group {
+		align-items: center;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		padding: 6rpx;
+		padding-left: 9rpx;
+		padding-right: 9rpx;
+		border-radius: 9rpx;
+		background-color: rgba(255, 255, 255, 0.06);
+	}
+
+	.q-side {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		margin-top: 5rpx;
+	}
+
+	.q-sep {
+		color: #ffd76e;
+		font-size: 24rpx;
+		font-weight: bold;
+		margin-left: 4rpx;
+		margin-right: 4rpx;
+	}
+
+	/* 数量守恒：两边数量相同，靠字号制造"看起来多少不同" */
+	.g-emoji-lg {
+		font-size: 34rpx;
+	}
+
+	.g-emoji-sm {
+		font-size: 20rpx;
+	}
+
+	/* ---------- 比长短（横条） ---------- */
+	.bar-row {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 10rpx;
+	}
+
+	.bar-label {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		width: 44rpx;
+	}
+
+	.bar-track {
+		width: 400rpx;
+		height: 24rpx;
+		flex-direction: row;
+	}
+
+	.bar {
+		height: 24rpx;
+		border-radius: 12rpx;
+		background-image: linear-gradient(to right, #ffd76e, #ff9f43);
+	}
+
+	.bar-w1 { width: 60rpx; }
+	.bar-w2 { width: 120rpx; }
+	.bar-w3 { width: 180rpx; }
+	.bar-w4 { width: 240rpx; }
+	.bar-w5 { width: 300rpx; }
+	.bar-w6 { width: 360rpx; }
+
+	/* ---------- 比高矮（竖条） ---------- */
+	.tower-row {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: center;
+	}
+
+	/* 140rpx：题面区在 16:9 下只有约 177rpx 可用（140 + 题干 32 ≈ 172），超过就会被裁掉半截 */
+	.tower-col {
+		height: 140rpx;
+		justify-content: flex-end;
+		align-items: center;
+		margin-left: 22rpx;
+		margin-right: 22rpx;
+	}
+
+	.tower {
+		width: 76rpx;
+		border-radius: 8rpx;
+		background-image: linear-gradient(to bottom, #8ec5ff, #4a7bff);
+	}
+
+	.bar-h1 { height: 40rpx; }
+	.bar-h2 { height: 64rpx; }
+	.bar-h3 { height: 88rpx; }
+	.bar-h4 { height: 114rpx; }
+	.bar-h5 { height: 140rpx; }
+
+	.q-hint {
+		color: #7d90c9;
+		font-size: 11rpx;
+		text-align: center;
+		margin-top: 3rpx;
+	}
+
+	/* ---------- 计时 ---------- */
+	.timer-row {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 10rpx;
+		padding-left: 31rpx;
+		padding-right: 31rpx;
+	}
+
+	.timer-wrap {
+		flex: 1;
+		height: 6rpx;
+		border-radius: 3rpx;
+		background-color: rgba(255, 255, 255, 0.12);
+	}
+
+	.timer-text {
+		margin-left: 16rpx;
+		color: #9fb4ff;
+		font-size: 12rpx;
+	}
+
+	.timer-text-red {
+		color: #ff5c5c;
+	}
+
+	.timer-fill {
+		height: 6rpx;
+		border-radius: 3rpx;
+		background-color: #ffd76e;
+	}
+
+	.timer-fill-red {
+		background-color: #ff5c5c;
+	}
+
+	/* ---------- 作答区 ---------- */
+	.pad {
+		align-items: center;
+		margin-top: 13rpx;
+		margin-bottom: 22rpx;
+	}
+
+	.pad-row {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 4rpx;
+	}
+
+	/* 4 选 1：2×2 网格（方向键上下左右都能走） */
+	.pad-grid {
+		flex-direction: row;
+		flex-wrap: wrap;
+		width: 520rpx;
+		justify-content: center;
+		margin-bottom: 4rpx;
+	}
+
+	.ans {
+		width: 74rpx;
+		height: 58rpx;
+		margin: 5rpx;
+		border-radius: 11rpx;
+		background-color: rgba(255, 255, 255, 0.1);
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.ans-wide {
+		width: 150rpx;
+	}
+
+	/* 按数取物：选项是三堆图形，需要更宽的按钮 */
+	.ans-stack {
+		width: 200rpx;
+		height: 72rpx;
+	}
+
+	.ans-grid {
+		width: 240rpx;
+		height: 84rpx;
+	}
+
+	.ans-sq {
+		width: 78rpx;
+		height: 66rpx;
+	}
+
+	.ans-text {
+		color: #ffffff;
+		font-size: 27rpx;
+		font-weight: bold;
+	}
+
+	.ans-text-lg {
+		color: #ffffff;
+		font-size: 21rpx;
+		font-weight: bold;
+	}
+
+	.ans-emoji {
+		font-size: 40rpx;
+	}
+
+	.ans-emoji-md {
+		font-size: 32rpx;
+	}
+
+	.ans-emoji-str {
+		font-size: 13rpx;
+	}
+
+	.ans-say {
+		width: 117rpx;
+		height: 41rpx;
+		background-color: rgba(255, 215, 110, 0.16);
+	}
+
+	.ans-say-text {
+		color: #ffd76e;
+		font-size: 12rpx;
+	}
+
+	.ans-correct {
+		background-color: #3ecf8e;
+		border-color: #3ecf8e;
+		transform: scale(1.06);
+	}
+
+	.ans-wrong {
+		background-color: #ff5c5c;
+		border-color: #ff5c5c;
+	}
+
+	.ans-dim {
+		opacity: 0.45;
+	}
+
+	/* ---------- 反馈浮层 ---------- */
+	.feedback {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.feedback-good {
+		background-color: rgba(62, 207, 142, 0.18);
+	}
+
+	.feedback-bad {
+		background-color: rgba(255, 138, 92, 0.16);
+	}
+
+	.fb-face {
+		font-size: 70rpx;
+	}
+
+	.fb-title {
+		color: #ffffff;
+		font-size: 25rpx;
+		font-weight: bold;
+		margin-top: 7rpx;
+	}
+
+	.fb-sub {
+		color: #ffd76e;
+		font-size: 16rpx;
+		margin-top: 6rpx;
+	}
+
+	/* ================= 小黑板（答错后的讲解） =================
+	   高度预算（16:9 = 750×421rpx）：
+	     mask 上下 padding 14×2 = 28 → 393
+	     board-btns 44 + margin 8 = 52 → board-row 341
+	     边框 7×2 + padding 8×2 = 30 → 黑板内容 311；head 约 26 → 板书区 285
+	   板书行高 29rpx（字 17 + 行距）→ 一次能放 9 行，讲解最多 4 行，富余很大。
+	   改字号前先算这笔账，别让最后一行被 .stage 的 overflow:hidden 吃掉。 */
+	.board-mask {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		padding: 14rpx;
+		background-color: rgba(8, 12, 28, 0.94);
+	}
+
+	.board-row {
+		flex: 1;
+		flex-direction: row;
+		align-items: stretch;
+	}
+
+	/* 黑板：墨绿板面 + 木框。用 flex 比例分宽（3:1），不用固定宽度——
+	    固定 214rpx 在 rpx 基准不同的环境（H5 预览）会被 flex:1 的黑板挤成一条缝 */
+	.board-frame {
+		flex: 3;
+		border-radius: 10rpx;
+		border-width: 7rpx;
+		border-color: #8b5e34;
+		background-color: #26463d;
+		padding: 8rpx;
+	}
+
+	.board-head {
+		flex-direction: row;
+		align-items: center;
+		background-color: rgba(255, 255, 255, 0.07);
+		border-radius: 6rpx;
+		padding: 4rpx 8rpx;
+	}
+
+	.board-title {
+		color: #ffe9a8;
+		font-size: 17rpx;
+		font-weight: bold;
+	}
+
+	.board-step {
+		color: #9fd8c4;
+		font-size: 12rpx;
+		margin-left: 12rpx;
+	}
+
+	/* 板书在黑板里垂直居中：黑板比 4 行板书高得多，贴顶会像写漏了一半 */
+	.board-body {
+		flex: 1;
+		margin-top: 6rpx;
+		justify-content: center;
+	}
+
+	.board-line {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 8rpx;
+	}
+
+	.board-icon {
+		font-size: 21rpx;
+		margin-right: 8rpx;
+	}
+
+	/* 粉笔字：偏暖白，不用纯白（纯白在深绿底上刺眼） */
+	.board-text {
+		color: #f4fbf6;
+		font-size: 20rpx;
+		line-height: 29rpx;
+	}
+
+	.board-caret {
+		color: #ffe9a8;
+	}
+
+	/* 小老师：教鞭 + 脸 + 名 + 气泡，纵向一列 */
+	.teacher-col {
+		flex: 1;
+		margin-left: 12rpx;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.teacher-pointer {
+		font-size: 32rpx;
+	}
+
+	.teacher-face {
+		font-size: 88rpx;
+		line-height: 96rpx;
+	}
+
+	.teacher-name {
+		color: #9fd8c4;
+		font-size: 11rpx;
+		margin-top: 2rpx;
+	}
+
+	/* 气泡用米白，和深色板书区拉开层次：说的话和写的话要能一眼分开 */
+	.bubble {
+		margin-top: 8rpx;
+		width: 100%;
+		min-height: 88rpx;
+		background-color: #fffaf0;
+		border-radius: 10rpx;
+		padding: 8rpx;
+	}
+
+	.bubble-text {
+		color: #2a3b52;
+		font-size: 15rpx;
+		line-height: 22rpx;
+	}
+
+	.board-btns {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 8rpx;
+	}
+
+	.b-btn {
+		height: 44rpx;
+		padding-left: 20rpx;
+		padding-right: 20rpx;
+		margin-left: 8rpx;
+		margin-right: 8rpx;
+		border-radius: 22rpx;
+		background-color: rgba(255, 255, 255, 0.12);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.b-btn-text {
+		color: #cfe3ff;
+		font-size: 15rpx;
+	}
+
+	.b-btn-gold {
+		background-color: #ffd76e;
+	}
+
+	.b-btn-gold-text {
+		color: #4a3210;
+		font-size: 15rpx;
+		font-weight: bold;
+	}
+
+	/* ================= 紧凑版式（手机横屏） =================
+	   触发条件：可用高度 < 390rpx（16:9 = 421rpx，手机横屏 ≈ 340rpx）。
+	   只收「固定高度」，题面区依然是 flex:1 吃剩余空间。
+	   命名约定：基础类名 + '-c'，所以模板里统一用 :class="cx('xxx')"。
+	   同类属性依赖声明顺序：基础 -c 在前，具体变体 -c 在后。 */
+	.math-top-c {
+		margin-top: 6rpx;
+	}
+
+	.q-expr-text-c {
+		font-size: 36rpx;
+	}
+
+	.q-plain-c {
+		font-size: 24rpx;
+	}
+
+	.q-emojis-c {
+		font-size: 25rpx;
+		line-height: 33rpx;
+	}
+
+	.q-emojis-sm-c {
+		font-size: 20rpx;
+		line-height: 27rpx;
+	}
+
+	.q-text-c {
+		font-size: 14rpx;
+		margin-top: 5rpx;
+	}
+
+	.q-side-c {
+		font-size: 10rpx;
+		margin-top: 3rpx;
+	}
+
+	/* 守恒题的字号差：小号要跟着缩，否则会撑破分组框 */
+	.g-emoji-lg-c {
+		font-size: 25rpx;
+	}
+
+	.g-emoji-sm-c {
+		font-size: 15rpx;
+	}
+
+	.tower-col-c {
+		height: 112rpx;
+	}
+
+	.bar-h1-c { height: 34rpx; }
+	.bar-h2-c { height: 52rpx; }
+	.bar-h3-c { height: 71rpx; }
+	.bar-h4-c { height: 92rpx; }
+	.bar-h5-c { height: 112rpx; }
+
+	.q-hint-c {
+		font-size: 10rpx;
+		margin-top: 1rpx;
+	}
+
+	.timer-row-c {
+		margin-top: 4rpx;
+	}
+
+	.timer-text-c {
+		font-size: 10rpx;
+		margin-left: 12rpx;
+	}
+
+	.pad-c {
+		margin-top: 4rpx;
+		margin-bottom: 4rpx;
+	}
+
+	.pad-row-c {
+		margin-bottom: 1rpx;
+	}
+
+	.pad-grid-c {
+		width: 460rpx;
+		margin-bottom: 2rpx;
+	}
+
+	/* 先写通用收身，再写各类变体（同优先级按文件顺序生效） */
+	.ans-c {
+		height: 44rpx;
+		margin: 3rpx;
+	}
+
+	.ans-wide-c {
+		width: 132rpx;
+	}
+
+	.ans-stack-c {
+		width: 176rpx;
+		height: 56rpx;
+	}
+
+	.ans-grid-c {
+		width: 210rpx;
+		height: 62rpx;
+	}
+
+	.ans-sq-c {
+		width: 70rpx;
+		height: 52rpx;
+	}
+
+	.ans-say-c {
+		width: 108rpx;
+		height: 28rpx;
+	}
+
+	.ans-text-c {
+		font-size: 23rpx;
+	}
+
+	.ans-text-lg-c {
+		font-size: 18rpx;
+	}
+
+	.ans-emoji-c {
+		font-size: 32rpx;
+	}
+
+	.ans-emoji-md-c {
+		font-size: 26rpx;
+	}
+
+	.ans-emoji-str-c {
+		font-size: 11rpx;
+	}
+
+	.ans-say-text-c {
+		font-size: 10rpx;
+	}
+
+	.fb-face-c {
+		font-size: 50rpx;
+	}
+
+	.fb-title-c {
+		font-size: 20rpx;
+		margin-top: 5rpx;
+	}
+
+	.fb-sub-c {
+		font-size: 14rpx;
+		margin-top: 4rpx;
+	}
+
+	/* ---------- 小黑板 · 紧凑档（手机横屏 ≈340rpx 高） ---------- */
+	.board-frame-c {
+		border-width: 5rpx;
+		padding: 5rpx;
+	}
+
+	.board-title-c {
+		font-size: 14rpx;
+	}
+
+	.board-step-c {
+		font-size: 10rpx;
+		margin-left: 8rpx;
+	}
+
+	.board-icon-c {
+		font-size: 17rpx;
+		margin-right: 6rpx;
+	}
+
+	.board-text-c {
+		font-size: 16rpx;
+		line-height: 23rpx;
+	}
+
+	.teacher-col-c {
+		margin-left: 8rpx;
+	}
+
+	.teacher-pointer-c {
+		font-size: 24rpx;
+	}
+
+	.teacher-face-c {
+		font-size: 66rpx;
+		line-height: 72rpx;
+	}
+
+	.teacher-name-c {
+		font-size: 9rpx;
+	}
+
+	.bubble-c {
+		min-height: 68rpx;
+		padding: 5rpx;
+		margin-top: 5rpx;
+	}
+
+	.bubble-text-c {
+		font-size: 12rpx;
+		line-height: 18rpx;
+	}
+
+	.b-btn-c {
+		height: 34rpx;
+		border-radius: 17rpx;
+		padding-left: 14rpx;
+		padding-right: 14rpx;
+	}
+
+	.b-btn-text-c {
+		font-size: 12rpx;
+	}
+
+	.b-btn-gold-text-c {
+		font-size: 12rpx;
+	}
+</style>

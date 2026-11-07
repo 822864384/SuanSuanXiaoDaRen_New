@@ -1,0 +1,76 @@
+/**
+ * 算算小达人 · 心情小课堂的跨页会话状态
+ *
+ * 为什么不用页面传参：延用 `session.uts` 的结论——uvue 的 onLoad 参数是 UTSJSONObject，
+ * 跨端取值容易踩坑；这里只有一个主题 id，用模块级单例最稳。
+ */
+
+let activeThemeId: string = 'P1'
+let activeLevel: number = 1
+
+/** 当前进入的主题（默认 P1 认识情绪） */
+export function getActiveTheme(): string {
+	return activeThemeId
+}
+
+/** 从心情首页点某个岛时写入 */
+export function setActiveTheme(id: string): void {
+	activeThemeId = id
+}
+
+/**
+ * 当前要玩第几关
+ *
+ * 关卡进度存在 store 里（本机持久），这里只做"这次从哪一关进"的传递。
+ * 不放进主题 id 里拼字符串：拆字符串是各端最容易出岔子的地方。
+ */
+export function getActiveLevel(): number {
+	return activeLevel
+}
+
+export function setActiveLevel(level: number): void {
+	activeLevel = level < 1 ? 1 : level
+}
+
+/* ---------------- 心灵小剧场：待播放的短片 ---------------- */
+
+/**
+ * 为什么连 url 也要放单例、而不是页面传参：
+ * watch 页的 web-view 要求 src 在组件创建前就确定（创建后改绑定值不生效），
+ * 所以「放哪条」必须在 navigateTo 之前就写进模块变量，页面 setup 一进来就能读到。
+ *
+ * 四段拼成一个播放规格：id（清单里有就按清单取文案）+ url + title + fallbackUrl。
+ * 栏目兜底（去央视看更多）也走同一套：id 为空、url 指向栏目主页。
+ */
+let playId: string = ''
+let playUrl: string = ''
+let playTitle: string = ''
+let playFallback: string = ''
+
+/** 小剧场点卡后写入播放规格 */
+export function setVideoPlay(id: string, url: string, title: string, fallbackUrl: string): void {
+	playId = id
+	playUrl = url
+	playTitle = title
+	playFallback = fallbackUrl
+}
+
+/** 清单编号（栏目兜底时为空串） */
+export function getVideoPlayId(): string {
+	return playId
+}
+
+/** 要加载的地址 */
+export function getVideoPlayUrl(): string {
+	return playUrl
+}
+
+/** 顶栏标题 */
+export function getVideoPlayTitle(): string {
+	return playTitle
+}
+
+/** 单条失效时改投的地址 */
+export function getVideoPlayFallback(): string {
+	return playFallback
+}

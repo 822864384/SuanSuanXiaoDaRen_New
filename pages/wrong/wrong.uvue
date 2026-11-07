@@ -1,0 +1,341 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶栏：返回 / 当前孩子 / 说明 -->
+			<view class="wb-top">
+				<view class="chip" @click="goHome">
+					<text class="chip-text">← 回首页</text>
+				</view>
+				<view class="chip">
+					<text class="chip-text">{{ name }} · 错题库</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip">
+					<text class="chip-dim">做对一道就自动删掉一道</text>
+				</view>
+			</view>
+
+			<!-- 三科切换：数字是各科还有几道 -->
+			<view class="tab-row">
+				<view v-for="t in tabs" :key="t.id" class="tab"
+					:class="tab == t.id ? 'tab-on' : ''" @click="pickTab(t.id)">
+					<text class="tab-text" :class="tab == t.id ? 'tab-text-on' : ''">{{ t.label }}</text>
+					<text class="tab-num" :class="tab == t.id ? 'tab-num-on' : ''">{{ t.count }}</text>
+				</view>
+			</view>
+
+			<!-- 空态：不催、不评价 -->
+			<view v-if="rows.length == 0" class="empty">
+				<text class="empty-emoji">🌱</text>
+				<text class="empty-title">这一科还没有要再练的题</text>
+				<text class="empty-sub">没听出来、没做出来的题，会自动收到这里</text>
+			</view>
+
+			<!-- 列表：最多显示 6 道，多的用一行文字说明 -->
+			<view v-else class="list">
+				<view v-for="(r, i) in rows" :key="'w' + i" class="row">
+					<text class="row-idx">{{ i + 1 }}</text>
+					<view class="row-body">
+						<text class="row-q">{{ r.text }}</text>
+						<text class="row-meta">{{ r.meta }}</text>
+					</view>
+				</view>
+				<text v-if="moreText.length > 0" class="more">{{ moreText }}</text>
+			</view>
+
+			<view class="btns">
+				<view class="btn btn-gold" :class="rows.length == 0 ? 'btn-off' : ''" @click="startPractice">
+					<text class="btn-gold-text">▶ 开始再练一次</text>
+				</view>
+				<view class="btn" @click="clearOne">
+					<text class="btn-text">{{ clearArm ? '❗ 确定清空' : '🗑 清空这一科' }}</text>
+				</view>
+				<view class="btn" @click="goHome">
+					<text class="btn-text">🏠 回首页</text>
+				</view>
+			</view>
+
+			<text class="foot">一次最多 5 道 · 做对了立刻从库里消失</text>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { getCurrentProfile } from '@/common/store.uts'
+	import { safeBack } from '@/common/nav.uts'
+	import { wrongCount, getWrongItems, clearWrong, drillReady, WrongItem } from '@/common/wrongbook.uts'
+	import { startDrill } from '@/common/wrong-session.uts'
+	import { setStudyMode } from '@/common/study-session.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+
+	/** 列表一行（题面在进页面时截断，模板里只绑字段） */
+	class WbRow {
+		text: string = ''
+		meta: string = ''
+
+		constructor(text: string, meta: string) {
+			this.text = text
+			this.meta = meta
+		}
+	}
+
+	/** 顶部三科切换 */
+	class WbTab {
+		id: string = ''
+		label: string = ''
+		count: number = 0
+
+		constructor(id: string, label: string, count: number) {
+			this.id = id
+			this.label = label
+			this.count = count
+		}
+	}
+
+	const name = ref<string>('小朋友')
+	const tab = ref<string>('math')
+	const tabs = ref<Array<WbTab>>([])
+	const rows = ref<Array<WbRow>>([])
+	const moreText = ref<string>('')
+	/** 清空按钮的第一下只是"举起手"，第二下才真删 */
+	const clearArm = ref<boolean>(false)
+
+	/** 列表最多显示几行（再多会超出 stage 被裁掉） */
+	const SHOW_MAX: number = 6
+
+	onShow(() => {
+		name.value = getCurrentProfile().name
+		refresh()
+	})
+
+	/** 重算三个 tab 的数量 + 当前 tab 的列表 */
+	function refresh() {
+		const list: Array<WbTab> = []
+		list.push(new WbTab('math', '🧮 数学思维', wrongCount('math')))
+		list.push(new WbTab('cn', '📖 语文识字', wrongCount('cn')))
+		list.push(new WbTab('en', '🔤 英语单词', wrongCount('en')))
+		tabs.value = list
+		loadRows()
+	}
+
+	function pickTab(id: string) {
+		if (tab.value == id) return
+		tab.value = id
+		clearArm.value = false
+		loadRows()
+	}
+
+	function loadRows() {
+		const items: Array<WrongItem> = getWrongItems(tab.value)
+		const out: Array<WbRow> = []
+		for (let i = 0; i < items.length && i < SHOW_MAX; i++) {
+			const it: WrongItem = items[i]
+			out.push(new WbRow(shorten(it.prompt), '没做对 ' + it.misses.toString() + ' 次 · ' + it.date))
+		}
+		rows.value = out
+		moreText.value = items.length > SHOW_MAX ? '还有 ' + (items.length - SHOW_MAX).toString() + ' 道，练完这几道再显示' : ''
+	}
+
+	/** 题面太长会撑破一行：只留前 22 个字 */
+	function shorten(s: string): string {
+		if (s.length <= 22) return s
+		return s.substring(0, 22) + '…'
+	}
+
+	/** 开始重练：写单例 → 进对应答题页（数学 / 语文英语共用页） */
+	function startPractice() {
+		if (rows.value.length == 0) {
+			uni.showToast({ title: '这一科还没有要练的题', icon: 'none' })
+			return
+		}
+		if (!drillReady(tab.value)) {
+			// 题库改过导致老条目重建不出来：不把孩子送进空关卡
+			uni.showToast({ title: '这几道题已经练完啦', icon: 'none' })
+			clearWrong(tab.value)
+			refresh()
+			return
+		}
+		startDrill(tab.value)
+		if (tab.value == 'math') {
+			uni.navigateTo({ url: '/pages/math/math' })
+			return
+		}
+		setStudyMode(tab.value)
+		uni.navigateTo({ url: '/pages/study/study' })
+	}
+
+	/** 清空当前这一科（二次点击确认，避免孩子误触把记录清光） */
+	function clearOne() {
+		if (rows.value.length == 0) return
+		if (!clearArm.value) {
+			clearArm.value = true
+			uni.showToast({ title: '再点一下「确定清空」', icon: 'none' })
+			return
+		}
+		clearWrong(tab.value)
+		clearArm.value = false
+		refresh()
+		uni.showToast({ title: '已清空', icon: 'none' })
+	}
+
+	function goHome() {
+		safeBack()
+	}
+</script>
+
+<style>
+	.wb-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	.tab-row {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.tab {
+		flex-direction: row;
+		align-items: center;
+		height: 30rpx;
+		padding-left: 14rpx;
+		padding-right: 14rpx;
+		margin-right: 10rpx;
+		border-radius: 15rpx;
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.tab-on {
+		background-color: #ffd76e;
+	}
+
+	.tab-text {
+		color: #ffffff;
+		font-size: 13rpx;
+		font-weight: bold;
+	}
+
+	.tab-text-on {
+		color: #17204a;
+	}
+
+	.tab-num {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		margin-left: 7rpx;
+	}
+
+	.tab-num-on {
+		color: #17204a;
+	}
+
+	.empty {
+		flex: 1;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.empty-emoji {
+		font-size: 44rpx;
+	}
+
+	.empty-title {
+		color: #ffffff;
+		font-size: 16rpx;
+		font-weight: bold;
+		margin-top: 10rpx;
+	}
+
+	.empty-sub {
+		color: #9fb4ff;
+		font-size: 12rpx;
+		margin-top: 6rpx;
+	}
+
+	.list {
+		flex: 1;
+		margin-top: 12rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.row {
+		flex-direction: row;
+		align-items: center;
+		height: 40rpx;
+		margin-bottom: 6rpx;
+		padding-left: 12rpx;
+		padding-right: 12rpx;
+		border-radius: 10rpx;
+		background-color: rgba(255, 255, 255, 0.07);
+	}
+
+	.row-idx {
+		color: #ffd76e;
+		font-size: 12rpx;
+		font-weight: bold;
+		width: 20rpx;
+	}
+
+	.row-body {
+		flex: 1;
+		flex-direction: column;
+	}
+
+	.row-q {
+		color: #ffffff;
+		font-size: 12rpx;
+	}
+
+	.row-meta {
+		color: #9fb4ff;
+		font-size: 10rpx;
+		margin-top: 2rpx;
+	}
+
+	.more {
+		color: #9fb4ff;
+		font-size: 11rpx;
+		margin-top: 4rpx;
+	}
+
+	.btns {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		margin-top: 10rpx;
+	}
+
+	.btn {
+		margin-left: 6rpx;
+		margin-right: 6rpx;
+	}
+
+	.btn-off {
+		background-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.foot {
+		color: #7d90c9;
+		font-size: 10rpx;
+		text-align: center;
+		margin-top: 8rpx;
+		margin-bottom: 10rpx;
+	}
+</style>

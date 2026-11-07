@@ -1,0 +1,155 @@
+/**
+ * 算算小达人 · 心灵小剧场（心情小课堂的视频短片清单）
+ *
+ * 定位：给 4~5 岁看的「情绪 / 习惯 / 入园 / 轮流」类短片，全部来自央视少儿频道，
+ * 只做**外链跳转播放**，不下载、不转码、不剪辑、不去水印。
+ *
+ * 三条硬约束（改清单前先看）：
+ *  1. 只放央视官方页面（tv.cctv.com / cctv.com），不放二传、搬运、自媒体内容。
+ *  2. 一条视频配一句「看完可以聊什么」——短片本身不是教育，聊那两句才是。
+ *  3. 必须家长陪看：本模块所有播放入口都要过家长门（12+7），孩子单独点不开。
+ *
+ * 链接会失效。央视网改版时单条可能 404，所以每条都带 `channelUrl`（栏目主页）兜底，
+ * 见 `fallbackOf()`；watch 页加载不出来时改投栏目主页，而不是让孩子对着白屏。
+ */
+
+/* ---------------- 数据结构 ---------------- */
+
+/** 一条短片 */
+export class MindVideo {
+	/** 内部编号，如 V1 */
+	id: string = ''
+	/** 对应主题岛（P2 说出情绪 / P4 再试一次 / P6 一次做一件事） */
+	theme: string = ''
+	/** 卡片大图形 */
+	emoji: string = ''
+	/** 卡片标题（务必短，卡片一行放得下） */
+	title: string = ''
+	/** 来源标注，原样显示在卡片上 */
+	source: string = ''
+	/** 时长，如 01:26（取自央视网视频列表接口，不是估的） */
+	duration: string = ''
+	/** 看完可以聊什么（给家长的引导语，不朗读） */
+	talk: string = ''
+	/** 央视网视频详情页 */
+	url: string = ''
+	/** 同栏目主页，单条失效时改投这里 */
+	channelUrl: string = ''
+	/** 卡片配色档位 1~6，对应 cinema.uvue 里的 cv1~cv6（uvue 不能用动态渐变） */
+	skin: number = 1
+}
+
+/** 栏目入口（小剧场底部的「去央视看更多」） */
+export class VideoChannel {
+	id: string = ''
+	name: string = ''
+	url: string = ''
+
+	constructor(id: string, name: string, url: string) {
+		this.id = id
+		this.name = name
+		this.url = url
+	}
+}
+
+/** 构造一条短片（UTS 不允许对象字面量赋给 class，统一用工厂函数，与 mind.uts 的 card() 一致） */
+function mv(
+	id: string, theme: string, emoji: string, title: string, source: string,
+	duration: string, talk: string, url: string, channelUrl: string, skin: number
+): MindVideo {
+	const v = new MindVideo()
+	v.id = id
+	v.theme = theme
+	v.emoji = emoji
+	v.title = title
+	v.source = source
+	v.duration = duration
+	v.talk = talk
+	v.url = url
+	v.channelUrl = channelUrl
+	v.skin = skin
+	return v
+}
+
+/* ---------------- 栏目兜底 ---------------- */
+
+export const VIDEO_CHANNELS: Array<VideoChannel> = [
+	new VideoChannel('xxzhs', '小小智慧树', 'https://tv.cctv.com/lm/xxzhs/'),
+	new VideoChannel('zhs', '智慧树', 'https://tv.cctv.com/lm/zhs/'),
+	new VideoChannel('cctv14', '央视少儿频道', 'https://tv.cctv.com/cctv14/')
+]
+
+/* ---------------- 短片清单 ---------------- */
+
+/**
+ * 六条短片，2026-11-07 逐条实测可访问（HTTP 200）。
+ *
+ * 选片口径：单条 1~7 分钟（4~5 岁注意力上限约 8 分钟）、真人或玩偶、不依赖字幕、
+ * 无广告口播、主题能接到心情模块已有的岛上。
+ * 链接不要凭印象改：改完必须 `curl -o /dev/null -w "%{http_code}"` 验一遍。
+ */
+export const MIND_VIDEOS: Array<MindVideo> = [
+	mv('V1', 'P2', '🎒', '去幼儿园的第一天', '央视少儿 · 小小智慧树', '01:26',
+		'看完问一句：明天你想带什么去？让孩子自己说，不替他答。',
+		'https://tv.cctv.com/2026/11/02/VIDEmDQKDxsVEKb5RH8L0zPA261102.shtml',
+		'https://tv.cctv.com/lm/xxzhs/', 1),
+	mv('V2', 'P2', '📖', '绘本《幼儿园的一天》', '央视少儿 · 小小智慧树', '06:41',
+		'看完问：绘本里的小朋友早上和谁说了再见？把话题引到"分开还会见面"。',
+		'https://tv.cctv.com/2026/11/02/VIDEE1MLKv3WbzTsYwGn7C7a261102.shtml',
+		'https://tv.cctv.com/lm/xxzhs/', 2),
+	mv('V3', 'P4', '👟', '自己的事情自己做', '央视少儿 · 小小智慧树', '06:48',
+		'看完让孩子挑一件今天开始自己做的事（穿鞋、收玩具都算），只说一件。',
+		'https://tv.cctv.com/2026/11/06/VIDEZtxBj2phvQQwrc01efgo261106.shtml',
+		'https://tv.cctv.com/lm/xxzhs/', 3),
+	mv('V4', 'P2', '🗣️', '大声说：我最喜欢什么', '央视少儿 · 智慧树', '04:43',
+		'跟着问一遍"你最喜欢什么"。孩子说完先等三秒，不要马上接话。',
+		'https://tv.cctv.com/2026/10/29/VIDEFqRBYysYLgs7VSwHMOlh261029.shtml',
+		'https://tv.cctv.com/lm/zhs/', 4),
+	mv('V5', 'P6', '❄️', '大风吹雪球', '央视少儿 · 小小智慧树', '02:57',
+		'看完就地玩一次"轮到你、轮到我"，让孩子体验等一等也没关系。',
+		'https://tv.cctv.com/2026/11/06/VIDE7hS3HRlFKZT9eHXqyPCC261106.shtml',
+		'https://tv.cctv.com/lm/xxzhs/', 5),
+	mv('V6', 'P6', '🎣', '小猫钓鱼', '央视少儿 · 小小智慧树', '01:57',
+		'看完问：钓鱼的时候能不能跑开？不用讲道理，让孩子自己说出来。',
+		'https://tv.cctv.com/2026/11/03/VIDE1MmwkFqmPwgn69G8IKLB261103.shtml',
+		'https://tv.cctv.com/lm/xxzhs/', 6)
+]
+
+/* ---------------- 查询 ---------------- */
+
+/** 按 id 找短片（找不到返回第一条，页面不至于空白） */
+export function videoOf(id: string): MindVideo {
+	for (let i = 0; i < MIND_VIDEOS.length; i++) {
+		if (MIND_VIDEOS[i].id == id) return MIND_VIDEOS[i]
+	}
+	return MIND_VIDEOS[0]
+}
+
+/** 某主题岛关联的短片（主题页将来做"看个短片"入口用） */
+export function videosForTheme(themeId: string): Array<MindVideo> {
+	const out: Array<MindVideo> = []
+	for (let i = 0; i < MIND_VIDEOS.length; i++) {
+		if (MIND_VIDEOS[i].theme == themeId) out.push(MIND_VIDEOS[i])
+	}
+	return out
+}
+
+/** 短片总数（首页文案用，避免写死"6 个"、改清单后不同步） */
+export function videoCount(): number {
+	return MIND_VIDEOS.length
+}
+
+/**
+ * 单条失效时的兜底地址
+ * 央视网改版会撤掉单条视频页，但栏目主页基本长期在；改投栏目页，家长还能自己找。
+ */
+export function fallbackOf(v: MindVideo): string {
+	if (v.channelUrl.length > 0) return v.channelUrl
+	return 'https://tv.cctv.com/cctv14/'
+}
+
+/** 「看完聊什么」的兜底（清单漏写时不要显示空白行） */
+export function talkOf(v: MindVideo): string {
+	if (v.talk.length > 0) return v.talk
+	return '看完问一句：你最喜欢里面哪一段？'
+}

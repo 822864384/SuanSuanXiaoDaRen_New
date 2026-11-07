@@ -1,0 +1,8911 @@
+{
+ "generatedAt": "2026-11-07T08:19:17.736Z",
+ "count": 1484,
+ "chars": 32472,
+ "items": [
+  {
+   "text": "豆豆，请听题。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "豆豆，我们来看看这张图。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "豆豆，我们来看一个小故事。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "滔滔，请听题。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "滔滔，我们来看看这张图。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "滔滔，我们来看一个小故事。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "小朋友，请听题。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "小朋友，我们来看看这张图。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "小朋友，我们来看一个小故事。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "宝贝，请听题。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "宝贝，我们来看看这张图。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "宝贝，我们来看一个小故事。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "name-head"
+  },
+  {
+   "text": "再听一遍。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "generic-prefix"
+  },
+  {
+   "text": "再看一遍。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "generic-prefix"
+  },
+  {
+   "text": "数一数，一共有几个",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "拿",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "个",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "给我",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "左边一堆，右边一堆，哪边",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "更多呀？还是一样多？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "后面跟着的是几呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "前面一个是几呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "可以分成",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "和几呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "从左边数",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "，第",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "个是谁呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "从右边数",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "哪一堆",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "最多呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "最少呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "两根面条，哪一根更长呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "两座积木塔，哪一座更高呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "和",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "，哪个更重呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "哪一个不是",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "看一看，找一找规律，接下来应该出现哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "盘子里有",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "，又放进来",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "个，一共有几个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "有",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "，拿走",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "个，还剩几个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "math-fixed"
+  },
+  {
+   "text": "零",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "一",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "二",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "三",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "四",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "五",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "六",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "七",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "八",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "九",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十一",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十二",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十三",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十四",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十五",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十六",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十七",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十八",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "十九",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "二十",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "number"
+  },
+  {
+   "text": "苹果",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "香蕉",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "葡萄",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "草莓",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "橘子",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "西瓜",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "梨",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "桃子",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "小猫",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "小狗",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "小兔",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "熊猫",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "大象",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "小鱼",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "小鸟",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "乌龟",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "汽车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "公交车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "自行车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "飞机",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "火车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "轮船",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "救护车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "出租车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "足球",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "气球",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "滑板车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "画笔",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "保龄球",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "篮球",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "飞镖盘",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "骰子",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "thing"
+  },
+  {
+   "text": "水果",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cat"
+  },
+  {
+   "text": "动物",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cat"
+  },
+  {
+   "text": "交通工具",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cat"
+  },
+  {
+   "text": "玩具",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cat"
+  },
+  {
+   "text": "左边",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option"
+  },
+  {
+   "text": "右边",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option"
+  },
+  {
+   "text": "一样多",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option"
+  },
+  {
+   "text": "最长",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option"
+  },
+  {
+   "text": "最短",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option"
+  },
+  {
+   "text": "太棒了！",
+   "role": "cheer",
+   "lang": "zh-CN",
+   "tag": "praise"
+  },
+  {
+   "text": "真厉害！",
+   "role": "cheer",
+   "lang": "zh-CN",
+   "tag": "praise"
+  },
+  {
+   "text": "口算小神童！",
+   "role": "cheer",
+   "lang": "zh-CN",
+   "tag": "praise"
+  },
+  {
+   "text": "完全正确！",
+   "role": "cheer",
+   "lang": "zh-CN",
+   "tag": "praise"
+  },
+  {
+   "text": "你真聪明！",
+   "role": "cheer",
+   "lang": "zh-CN",
+   "tag": "praise"
+  },
+  {
+   "text": "没关系，再来一次！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "encourage"
+  },
+  {
+   "text": "差一点点哦！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "encourage"
+  },
+  {
+   "text": "继续加油！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "encourage"
+  },
+  {
+   "text": "图上是大人，选出大人的人字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念口，开口的口，哪张图是开口？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小手，选出小手的手字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念头，点头的头，哪张图是点头？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出人，大人的人",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是耳朵，选出耳朵的耳字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念大，大象的大，哪张图是大象？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小蚂蚁，选出小蚂蚁的小字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "耳朵的耳，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "图上是上面，选出上面的上字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念下，下面的下，哪张图是下面？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是我们，选出我们的我字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "上面的上，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出大，大象的大",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "下面的下，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出头，点头的头",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "补上缺的字，小手，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "我有大手",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "我有小手",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "大手小手",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "大人的人，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "图上是回家，选出回家的家字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念门，开门的门，哪张图是开门？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小床，选出小床的床字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念灯，台灯的灯，哪张图是台灯？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出家，回家的家",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是爸爸，选出爸爸的爸字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念妈，妈妈的妈，哪张图是妈妈？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是爷爷，选出爷爷的爷字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "爸爸的爸，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出灯，台灯的灯",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是奶奶，选出奶奶的奶字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念哥，哥哥的哥，哪张图是哥哥？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是姐姐，选出姐姐的姐字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "奶奶的奶，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，爷爷，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "哥哥的哥，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出爷，爷爷的爷",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "补上缺的字，妈妈，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "图上是台灯，选出台灯的灯字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念床，小床的床，哪张图是小床？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "我家有门",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "爸妈回家",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "我的小床",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "妈妈的妈，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出门，开门的门",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是大米，选出大米的米字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念饭，吃饭的饭，哪张图是吃饭？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是喝水，选出喝水的水字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念果，水果的果，哪张图是水果？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出米，大米的米",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是蔬菜，选出蔬菜的菜字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念肉，牛肉的肉，哪张图是牛肉？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是鸡蛋，选出鸡蛋的蛋字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "蔬菜的菜，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，水果，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "图上是小鱼，选出小鱼的鱼字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念甜，甜甜的甜，哪张图是甜甜？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是热汤，选出热汤的汤字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "小鱼的鱼，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出水，喝水的水",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "吃饭的饭，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，大米，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "我吃米饭",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "鱼和肉",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "汤甜甜",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "水果的果，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出鱼，小鱼的鱼",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是小猫，选出小猫的猫字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念狗，小狗的狗，哪张图是小狗？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小鸡，选出小鸡的鸡字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念鸭，小鸭的鸭，哪张图是小鸭？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出猫，小猫的猫",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是小羊，选出小羊的羊字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念牛，小牛的牛，哪张图是小牛？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小马，选出小马的马字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "小羊的羊，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出狗，小狗的狗",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是小鸟，选出小鸟的鸟字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念虫，小虫的虫，哪张图是小虫？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小兔，选出小兔的兔字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "小鸟的鸟，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "小牛的牛，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，小羊，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "图上是小鸭，选出小鸭的鸭字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "猫和狗",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "小鸡小鸭",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "小鸟飞",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "小马的马，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出虫，小虫的虫",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是日光，选出日光的日字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念月，月亮的月，哪张图是月亮？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是大山，选出大山的山字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念云，白云的云，哪张图是白云？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出日，日光的日",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是下雨，选出下雨的雨字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念花，小花的花，哪张图是小花？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小草，选出小草的草字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "下雨的雨，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "图上是大树，选出大树的树字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念火，大火的火，哪张图是大火？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是小河，选出小河的河字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "大树的树，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出花，小花的花",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "补上缺的字，白云，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "日月山河",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "花草树",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "下雨了",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "小草的草，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出雨，下雨的雨",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是汽车，选出汽车的车字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念船，小船的船，哪张图是小船？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是飞机，选出飞机的飞字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念走，走路的走，哪张图是走路？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "找出车，汽车的车",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "图上是跑步，选出跑步的跑字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念看，看看的看，哪张图是看看？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是听音乐，选出听音乐的听字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "跑步的跑，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，飞机，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "图上是说话，选出说话的说字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "这个字念开，打开的开，哪张图是打开？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "图上是关上，选出关上的关字",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn1"
+  },
+  {
+   "text": "说话的说，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "补上缺的字，看看，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "打开的开，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出关，关上的关",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "这个字念跑，跑步的跑，哪张图是跑步？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
+  },
+  {
+   "text": "我看鸟飞",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "我跑我走",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "开门关门",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn6"
+  },
+  {
+   "text": "找出听，听音乐的听",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "cat，小猫，哪个是cat？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是小狗，dog，哪个词是dog？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "duck，鸭子，哪个是duck？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是小鸟，bird，哪个词是bird？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "cat",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "fish，鱼，哪个是fish？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是猪，pig，哪个词是pig？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "cow，奶牛，哪个是cow？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "rabbit，兔子，哪个是rabbit？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是熊，bear，哪个词是bear？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "panda，熊猫，哪个是panda？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是兔子，rabbit，哪个词是rabbit？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "bird，小鸟，哪个是bird？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "fish 第一个音是 f，哪个词第一个音也是 f？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "dog，小狗，哪个是dog？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "panda 第一个音是 p，哪个词第一个音也是 p？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "three cat，几个呀？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen4"
+  },
+  {
+   "text": "apple，苹果，哪个是apple？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是香蕉，banana，哪个词是banana？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "egg，鸡蛋，哪个是egg？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是牛奶，milk，哪个词是milk？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "apple",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "rice，米饭，哪个是rice？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是蛋糕，cake，哪个词是cake？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "bread，面包，哪个是bread？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "water，水，哪个是water？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是糖果，candy，哪个词是candy？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "grape，葡萄，哪个是grape？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "egg",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "milk，牛奶，哪个是milk？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "water 第一个音是 w，哪个词第一个音也是 w？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "图上是苹果，apple，哪个词是apple？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "cake，蛋糕，哪个是cake？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是面包，bread，哪个词是bread？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "grape 第一个音是 g，哪个词第一个音也是 g？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "one milk，几个呀？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen4"
+  },
+  {
+   "text": "red，红色，哪个是red？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是黄色，yellow，哪个词是yellow？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "blue，蓝色，哪个是blue？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是绿色，green，哪个词是green？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "red",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "orange，橙色，哪个是orange？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是紫色，purple，哪个词是purple？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "pink，粉色，哪个是pink？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "brown，棕色，哪个是brown？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是黑色，black，哪个词是black？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "white，白色，哪个是white？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是橙色，orange，哪个词是orange？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "white 第一个音是 w，哪个词第一个音也是 w？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "green，绿色，哪个是green？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是粉色，pink，哪个词是pink？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "purple 第一个音是 p，哪个词第一个音也是 p？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "black",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "eye，眼睛，哪个是eye？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是耳朵，ear，哪个词是ear？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "nose，鼻子，哪个是nose？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是嘴巴，mouth，哪个词是mouth？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "eye",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "hand，手，哪个是hand？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是脚，foot，哪个词是foot？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "head，头，哪个是head？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "hair，头发，哪个是hair？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是手臂，arm，哪个词是arm？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "face，脸，哪个是face？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是手，hand，哪个词是hand？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "foot，脚，哪个是foot？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "eye 第一个音是 e，哪个词第一个音也是 e？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "arm，手臂，哪个是arm？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "ear，耳朵，哪个是ear？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "face 第一个音是 f，哪个词第一个音也是 f？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "four hair，几个呀？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen4"
+  },
+  {
+   "text": "mom，妈妈，哪个是mom？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是爸爸，dad，哪个词是dad？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "baby，宝宝，哪个是baby？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是爷爷，grandpa，哪个词是grandpa？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "mom",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "grandma，奶奶，哪个是grandma？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是姐姐，sister，哪个词是sister？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "brother，哥哥，哪个是brother？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是妈妈，mom，哪个词是mom？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "family，家人，哪个是family？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是家，home，哪个词是home？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "friend，朋友，哪个是friend？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "brother",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "grandpa，爷爷，哪个是grandpa？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是朋友，friend，哪个词是friend？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "home 第一个音是 h，哪个词第一个音也是 h？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "图上是奶奶，grandma，哪个词是grandma？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "mom 第一个音是 m，哪个词第一个音也是 m？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "five sister，几个呀？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen4"
+  },
+  {
+   "text": "ball，球，哪个是ball？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是小汽车，car，哪个词是car？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "book，书，哪个是book？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是飞机，plane，哪个词是plane？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "ball",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "train，火车，哪个是train？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是自行车，bike，哪个词是bike？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "balloon，气球，哪个是balloon？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "robot，机器人，哪个是robot？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "图上是鼓，drum，哪个词是drum？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "star，星星，哪个是star？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "bike",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen5"
+  },
+  {
+   "text": "图上是星星，star，哪个词是star？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen2"
+  },
+  {
+   "text": "car，小汽车，哪个是car？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen1"
+  },
+  {
+   "text": "drum 第一个音是 d，哪个词第一个音也是 d？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "car 第一个音是 c，哪个词第一个音也是 c？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen3"
+  },
+  {
+   "text": "four plane，几个呀？",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-qen4"
+  },
+  {
+   "text": "早上，糖豆来到幼儿园门口",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "老师笑着朝他挥挥手",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆低着头，没有说话",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆可以说什么呀？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆转过身，抬起头说：老师好！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "老师好",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "见到老师和小朋友的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "奶奶送给糖豆一盒新彩笔",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "奶奶笑着把彩笔递给他",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆抱着彩笔，愣住了",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆要说什么呀？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆跑过去抱住奶奶，说：谢谢奶奶！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "谢谢奶奶",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "别人给你东西的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "糖豆在走廊里跑得太快",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "不小心撞到了小朋友",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "小朋友坐在地上，揉着膝盖",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆走回去，伸出手说：对不起，我扶你起来。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "对不起",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "不小心碰到别人的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "糖豆一个人在玩小汽车",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "小伙伴走过来，想一起玩",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆把小汽车抱在怀里",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆把小汽车推过去，说：我们一起玩吧！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "一起玩",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "想和别人一起玩的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "游乐场的滑梯前，大家在排队",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "小朋友一个接一个地等着",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆想先滑，往前挤了挤",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "怎么才能大家都玩到滑梯？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆走到队尾站好，等着前面的小朋友滑完。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "我排队",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "很多人的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "教室的地上，玩具散了一地",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "老师蹲着，一块一块收积木",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆站在旁边看着",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆可以做点什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆蹲下来，把积木一块一块放进筐里。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "我来帮忙",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "看到别人在忙的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "糖豆快要把城堡搭好了",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "小伙伴跑过来，把城堡碰倒了",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆的拳头握得紧紧的",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆深吸一口气，说：你碰倒了我的城堡，我有点生气。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "我有点生气",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "心里冒火的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "糖豆和小伙伴比赛跑步",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "小伙伴先跑到了终点",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆最后一个到，喘着气",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆可以说什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆喘着气说：你跑得真快，我们再来一次！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "再来一次",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "没赢的时候说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "小伙伴手里拿着一个气球",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆看着气球，很想要",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆伸手就去拿",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆可以先说什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆问：我可以玩一下你的气球吗？",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "可以借我玩吗",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "想玩别人的东西时先问",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "糖豆在小区门口等妈妈",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "一位不认识的叔叔走过来",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "他拿出一颗糖，说要带糖豆去买",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆该怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆大声说：我不要，我要找妈妈！然后跑向保安叔叔。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "我不要",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "不认识的人给东西时说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "商场里人很多，糖豆在看玩具",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "他一回头，妈妈不见了",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆想往外跑",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆应该怎么办？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-ask"
+  },
+  {
+   "text": "糖豆站住不动，大声喊：妈妈，我在这里！",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "妈妈我在这里",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "找不到大人的时候喊",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "墙上有一个插座，上面有小洞",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆伸出手，想去摸一摸",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "旁边还有一根电线",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "so-beat"
+  },
+  {
+   "text": "糖豆把手收回来，转身去玩积木。",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-demo"
+  },
+  {
+   "text": "我不碰",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "so-phrase"
+  },
+  {
+   "text": "看到插座和电线时说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "so-tip"
+  },
+  {
+   "text": "小朋友把糖豆的小汽车抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩具被抢走，生气是很正常的感觉。可以这样做。先说一句：请还给我，我还在玩。他不还，就去找大人帮忙",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "小朋友把糖豆的积木抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的布娃娃抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的拼图抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的恐龙抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的皮球抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的绘本抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的贴纸抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的蜡笔抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的小水壶抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的小火车抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的陀螺抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的风车抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的望远镜抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的手偶抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的沙锤抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的套圈抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的串珠抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的小铲子抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "小朋友把糖豆的小鼓抢走了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的冰淇淋掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "好吃的东西掉了会难过，这很正常。可以这样做。难过可以说出来：我的东西掉了，我很难过。然后请大人帮忙一起收拾",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆的棒棒糖掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的小饼干掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的果冻掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的酸奶掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的小蛋糕掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的葡萄掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的橘子掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的棉花糖掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的布丁掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的蛋卷掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的巧克力掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的奶酪棒掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的山楂片掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的海苔掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的米饼掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的小番茄掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的香蕉掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的苹果块掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的玉米掉在地上了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被很响的雷声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "突然很响的声音会让人吓一跳，这是害怕。可以这样做。害怕的时候可以说：我刚才吓了一跳。然后走到大人身边，抱一下就好了",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆被呼呼的大风吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被噼里啪啦的鞭炮吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被汪汪叫的大狗吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被嗡嗡响的吸尘器吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被楼上钻墙的声音吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被汽车喇叭声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被炸开的烟花吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被破了的气球吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被掉在地上的锅盖吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被被风吹响的门吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被轰隆隆的飞机吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被鸣笛的消防车吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被哗哗的水声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被突然的敲门声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被咚咚的鼓声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被响起的闹钟吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被掉下的积木吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被吹风机的声音吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆被突然变大的电视声吓了一跳。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把积木塔搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "把东西搭好，会有很开心的感觉，这是非常开心。可以这样做。开心可以说出来：我搭好了，我好开心。也可以拉着大人来看一看",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆把城堡搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把大桥搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把火车站搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把动物园搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把停车场搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把大房子搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把城墙搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把滑梯搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把小花园搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把高塔搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把隧道搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把金字塔搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把围墙搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把飞机场搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把小船搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把钟楼搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把迷宫搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把吊桥搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆把小院子搭好了，笑得眼睛都弯了。糖豆是有一点点开心，还是非常开心？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了膝盖。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "摔疼了会难过，哭一下也没关系。可以这样做。摔倒了先看看有没有流血，再告诉大人：我这里疼。大人会帮你处理",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了手肘。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了手掌。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了屁股。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了额头。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了下巴。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了脚踝。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了手指。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了后背。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了肩膀。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了鼻子。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了脚趾。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了胳膊。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了脸蛋。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了小腿。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了手腕。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了头顶。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了肚子。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了腮帮。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跑的时候摔倒了，碰到了脚背。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩滑梯，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "和好朋友一起玩，会很开心。可以这样做。开心的时候可以说：和你一起玩真开心，下次还想一起玩",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆和好朋友一起玩秋千，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩捉迷藏，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩老鹰捉小鸡，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩搭积木，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩过家家，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩追泡泡，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩拍皮球，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩跳格子，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩丢手绢，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩跷跷板，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩挖沙子，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩小推车，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩跳绳，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩滚皮球，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩钻山洞，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩赛跑，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩扔沙包，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩吹泡泡，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆和好朋友一起玩骑小三轮，笑个不停。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，晚上才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "舍不得妈妈走，会难过，这很正常。可以这样做。难过可以说出来：妈妈，我舍不得你。再和妈妈约好：回来的时候抱一下",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "妈妈说要去上班，天黑才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，吃完饭才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，睡醒一觉才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，明天才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，下午才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，太阳下山才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，幼儿园放学才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，周末才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，星期天才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，洗完澡才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，吃完晚饭才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，做完饭才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，天亮才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，雨停了才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，爸爸回来才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，奶奶来了才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，第二天才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，中午才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈说要去上班，下班才回来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个小汽车做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "收到礼物会很开心。可以这样做。收到礼物可以说一句：谢谢，我很喜欢。这一句会让送礼物的人也很开心",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆收到一个布娃娃做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个绘本做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个拼图做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个蜡笔做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个皮球做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个小火车做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个贴纸做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个风车做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个手偶做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个积木做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个陀螺做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个望远镜做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个沙锤做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个串珠做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个小鼓做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个玩偶做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个拼装车做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个图画书做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆收到一个泡泡机做礼物，跑着去告诉爸爸。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的绘本被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "心爱的东西坏了会难过。可以这样做。难过可以说：我的书破了，我很难过。然后请大人帮忙一起粘好",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆最喜欢的图画书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的贴纸书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的故事书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的手工书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的画册被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的卡片被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的折纸书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的迷宫书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的儿歌书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的动物书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的汽车书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的恐龙书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的拼图书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的涂色书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的识图书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的翻翻书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的立体书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的小人书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆最喜欢的漫画书被撕破了。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩滑梯的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队被插队，会觉得不公平，生气很正常。可以这样做。可以说一句：我在排队，请到后面。或者告诉老师，请老师帮忙",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "排队玩秋千的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩跷跷板的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩摇摇马的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩小火车的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩旋转木马的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩蹦床的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩沙池的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩水池的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩小推车的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩木马的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩篮球架的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩攀爬架的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩小滑车的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩摇椅的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩滚筒的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩钻筒的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩爬网的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩摇摇船的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "排队玩滑板车的时候，有人插到糖豆前面。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在超市里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "找不到妈妈会害怕，这很正常。可以这样做。站在原地不要走开，大声叫妈妈。也可以找穿工作服的叔叔阿姨帮忙打电话",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "在商场里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在菜市场里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在公园里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在游乐场里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在车站里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在书店里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在医院里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在小区门口里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在动物园里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在夜市里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在广场里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在停车场里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在幼儿园门口里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在儿童乐园里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在水族馆里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在博物馆里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在游泳馆里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在大街里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "在集市里，糖豆一回头看不见妈妈了。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要新玩具车，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "想要的东西没得到，会难过，也会有点生气。可以这样做。可以说：我很喜欢那个玩具，我有点难过。再和妈妈约好：生日的时候来看看",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆想要那个大玩偶，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要会叫的恐龙，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要会亮的宝剑，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要遥控飞机，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要泡泡枪，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要扭蛋，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要贴纸，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要气球，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要风车，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要小鼓，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要新娃娃，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要大拼图，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要滑板车，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要水枪，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要大积木桶，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要发光的球，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要会唱歌的书，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要遥控车，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想要小帐篷，妈妈说今天不买。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的画真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被夸会开心，说明你做的事被看见了。可以这样做。被夸的时候可以说：谢谢。也可以告诉他：我练了好几次",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "老师夸糖豆：你的手工真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的积木城堡真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的歌声真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的被子叠得真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的桌子擦得真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的字真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的操真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的故事真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的舞跳得真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的拼图真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的折纸真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的剪纸真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的涂色真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的儿歌真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的排队真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的礼貌真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的值日真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的坐姿真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "老师夸糖豆：你的小花园真好。糖豆现在是什么心情？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去打针，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "没做过的事会让人害怕，害怕的时候可以说出来。可以这样做。可以说：我有点怕，能不能拉着我的手。说完深呼吸，慢慢数到 5",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "知道要去抽血，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去看牙，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去打疫苗，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去做雾化，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去吃药，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去看耳朵，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去看眼睛，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去验血，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去打点滴，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去拍片，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去拔牙，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去做检查，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去涂药，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去做 B 超，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去剪头发，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去洗鼻子，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去量血压，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去做理疗，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "知道要去看皮肤，糖豆躲在门后面不肯出来。糖豆心里是什么感觉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩具被抢走的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "心里不舒服的时候，说出来大人才能帮上忙。可以这样做。照这个样子讲：我不喜欢这样，我有点难过。讲完再说你想怎么办",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "没人跟他玩的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被大声说了的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "想玩的东西被拿走的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "答不上问题的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "画被弄脏的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "妈妈没来接的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "好朋友不理他的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩具被弄坏的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被推了一下的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "想哭又忍住的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被笑话的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "答应的事没做到的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "位置被抢了的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "想回家的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "肚子饿了的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "困得睁不开眼的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被拒绝了的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "游戏输了的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被人盯着看的时候，糖豆心里闷闷的。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为玩具被抢走生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "生气的时候把原因说出来，别人才知道怎么帮你。可以这样做。可以这样讲：我生气了，因为他抢我的玩具。说完把拳头松开，深呼吸三次",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆因为不能再看动画片生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为积木被推倒生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为画被涂了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为不让吃糖生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被喊了外号生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被插队生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为拼图拼不上生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为鞋带系不上生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为不能去公园生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为电视被关掉生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为想玩的东西被别人占着生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被大声吼生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为椅子被抢了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为游戏输了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为衣服穿反了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为饼干碎了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为水洒了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被推了一下生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为要回家了生气了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为妈妈要出门。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "说出\"我很难过\"，大人就知道要来陪你了。可以这样做。先说一句我很难过，再说想做什么：想抱一下，还是想安静一会儿",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆很难过，因为玩具坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为好朋友不理他。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为画被撕了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为摔疼了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为心爱的小车找不到。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为没人陪他玩。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为被说了重话。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为气球飞走了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为小狗走开了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为不能出去玩。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为积木被推倒。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为照片被弄湿了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为花被摘了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为鞋湿了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为糖果吃完了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为要搬家了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为被拒绝了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为答应了没做到。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，因为要分开了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕打雷。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "说一句\"我有点怕\"，大人就会牵住你的手。可以这样做。害怕时可以说：我有点怕。然后选一个办法：拉着大人的手，或者打开小夜灯",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆害怕黑黑的走廊。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕一个人睡。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕大狗。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕打针。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕坐电梯。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕放鞭炮。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕看医生。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕陌生的地方。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕很多人。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕上台说话。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕下水游泳。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕坐飞机。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕墙上的影子。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕吸尘器的声音。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕突然的响声。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕小虫子。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕下大雨。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕风把门吹响。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆害怕停电。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为收到礼物。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "把开心说出来，别人也会跟着开心。可以这样做。可以说：我今天特别开心，因为……。说完问一句：你想听我讲讲吗",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆今天很开心，因为和好朋友玩。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为搭好积木。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为吃了喜欢的饭。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为去了公园。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为被老师夸。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为学会了骑车。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为找到丢了的玩具。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为爸爸回来了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为画完成了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为拼图拼好了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为雨停了出太阳。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为看到小狗。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为唱歌唱得好。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为跑得最快。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为吃到西瓜。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为穿上新鞋。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为听到喜欢的歌。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为学会了新游戏。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆今天很开心，因为帮了别人。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的小汽车。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "先问再拿，别人会觉得被尊重。可以这样做。可以这样说：你在玩这个吗？你玩完可以借我玩一下吗？他不同意就先等等，换一个玩",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆很想玩别人的布娃娃。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的拼图。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的皮球。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的滑板车。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的泡泡机。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的恐龙。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的小铲子。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的水枪。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的陀螺。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的风筝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的小帐篷。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的跳跳球。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的摇摇马。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的望远镜。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的串珠。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的沙锤。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的小鼓。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的绘本。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩别人的积木。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想再吃一口，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "说出\"我不想\"，别人才知道你的想法。可以这样做。可以讲：我现在不想，等一下可以吗。也可以说：我不喜欢这样，请停下来",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆不想穿这件外套，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想和人打招呼，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想被抱一抱，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想再唱一首，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想把玩具让出去，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想现在就睡觉，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想再拍一张照片，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想喝这杯药，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想把头发剪短，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想关掉动画片，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想马上收拾，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想和别人握手，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想再抱一下，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想吃这个菜，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想换一件衣服，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想和阿姨说话，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想再练一遍，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想现在就回家，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不想把画送人，可大人还在劝。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把别人的积木弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "说了对不起，对方心里会舒服一点。可以这样做。可以这样讲：对不起，是我不小心。然后做一件事补救：一起修好，或者换一个新的",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆不小心把小朋友的画弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把同学的橡皮弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把绘本弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把玩具车弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把手工弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把贴纸弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把水杯弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把花盆弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把拼图弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把气球弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把折纸弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把小扇子弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把风车弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把沙堡弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把串珠弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把小船弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把泥人弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把书签弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心把相框弄坏了。糖豆可以怎么说？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为玩具被抢走气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "生气的时候慢慢呼吸，心跳会慢下来。可以这样做。先吸一口气数到 3，再慢慢呼出来数到 3，做三次。做完再想要不要说什么",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆因为积木被推倒气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为不让看动画片气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被插队气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为画被涂脏气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为拼图拼不上气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为饼干碎了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被大声说气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为游戏输了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为不能去公园气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为鞋带系不上气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为椅子被抢了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为水洒了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为衣服穿反了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被叫外号气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为要回家了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为玩具被藏起来气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被拒绝了气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为答应了没做到气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆因为被推了一下气得脸都红了。做什么能让心里慢慢平静下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为妈妈要出门。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "难过的时候被人抱着，心里的难受会轻一点。可以这样做。走到大人身边说：我想抱一下。抱着的时候可以什么都不说，抱一会儿就好",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为玩具坏了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为好朋友不理他。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为摔疼了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为气球飞走了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为心爱的小车找不到。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为没人陪他玩。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为被说了重话。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为冰淇淋掉了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为小狗走开了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为画被撕了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为答应了没做到。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为要搬家了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为鞋湿了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为花被摘了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为照片弄湿了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为被拒绝了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为积木倒了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为糖果吃完了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很难过，一直在哭，因为要分开了。可以找谁抱一抱？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为家里来了很多人。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "安静的地方能让心慢慢静下来。可以这样做。去自己的安静角，抱着软软的娃娃坐 3 分钟。想说话了再出来找大人",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为电视太吵。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为弟弟一直哭。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为刚吵完架。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为玩具被弄乱。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为声音太吵。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为被批评了。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为玩得太累。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为人太多挤来挤去。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为妈妈在打电话。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为外面在装修。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为刚打完针。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为没睡好。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为肚子饿。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为找不到人玩。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为刚哭过。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为被吓了一下。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为事情太多。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为要上台。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里乱乱的，因为刚搬新家。哪里可以让自己安静一会儿？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为玩具被抢走。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "数到 5，是让自己慢下来的小办法。可以这样做。在心里慢慢数 1 到 5，一边数一边呼气。数完常常就没那么气了",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被推了一下。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被插队。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为不让玩。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被大声吼。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为积木被踢倒。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被笑了。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为游戏输了。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为铅笔被抢。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为不能吃糖。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为电视被关。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被人插嘴。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为水洒在身上。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为衣服被拉扯。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为书被拿走。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为位置被占。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为饼干被吃掉。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为画画被打断。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为被拉住不让走。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得说不出话，因为玩具被扔了。可以先在心里数到几？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为刚吵完架。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "身体凉下来，心里的火也会小一点。可以这样做。去喝半杯水，用凉水洗一下脸，再做三次深呼吸",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为玩具被抢了。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为玩得太疯。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为太阳很大。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为刚哭过。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为被批评。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为跑得太快。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为很生气。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为很害怕。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为很紧张。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为没睡好。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为人太多。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为声音太吵。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为刚摔了一跤。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为肚子饿。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为口渴。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为等太久。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为要上台。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为做了个怪梦。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里烧烧的，因为被人推了。做什么能让身体先凉下来？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被小朋友推了。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "说出来大人才能帮你，也不用一个人难受。可以这样做。找一个信任的大人说：我有件事想告诉你。说完再讲发生了什么、你心里什么感觉",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被抢了东西。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被人说难听的话。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为看到别人打架。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被关在门外面。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为没人跟他玩。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被笑话。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为弄坏了别人的东西。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被冤枉了。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为偷偷哭了。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为怕被骂。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为把事办糟了不敢说。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被咬了一口。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被扯头发。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为东西被藏起来。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被赶出游戏。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为听到大人吵架。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为看到可怕的东西。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为被吓到了。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里压着一件事，因为有话不敢说。这件事可以告诉谁？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为很生气。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "动一动，身体里的那股劲就出去了。可以这样做。去阳台或院子里跑两圈、跳十下，或者抱着一床被子压一压，力气用完就好了",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为被抢了玩具。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为太兴奋了。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为等太久了。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为坐不住。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为刚吵完架。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为被批评。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为睡不着。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为很想出去玩。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为下雨不能出去。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为刚吃完糖。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为被拒绝了。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为玩了很久。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为被人笑。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为很紧张。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为刚哭过。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为很热。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为很想打人。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为心里堵得慌。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆身上像有一团火，因为被人推了。这股劲可以怎么用掉？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为妈妈不在身边。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "抱着软软的东西，身体会放松下来。可以这样做。抱着喜欢的娃娃或小毯子，靠着坐一会儿，也可以拉着大人的手",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆心里空空的，因为没人陪。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为刚吵完架。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为睡醒了找不到人。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为被拒绝了。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为很想爸爸。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为一个人在家。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为玩具被拿走。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为刚上幼儿园。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为要睡觉了。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为外面很黑。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为被批评。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为好朋友走了。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为生病了。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为刚打完针。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为搬家了。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为下雨天。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为很累。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为很想哭。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆心里空空的，因为肚子饿。抱着什么会好一点？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想打自己的头。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "生气可以，但不能伤到自己。可以这样做。把两只手交叠放在胸口，慢慢呼吸，告诉大人：我很生气，我需要帮忙",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆气得想咬自己的手。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想用头撞墙。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想抓自己的脸。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想扯自己的头发。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想摔自己的玩具。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想踢椅子。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想砸东西。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想扔书。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想撕纸。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推桌子。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想踢门。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想掐自己。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想撞柜子。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想扔鞋子。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想踩玩具。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想捶墙。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想摔门。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想咬衣服。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想踢自己的凳子。这时候可以先做什么？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推抢他玩具的小朋友。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "手放下来，事情就不会变大。可以这样做。把手放到身后，深吸一口气，说：我不喜欢这样，请停下来。他不听就去找大人",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆气得想推笑他的哥哥。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推推他的同学。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推弄坏他画的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推插队的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推抢他椅子的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推扯他衣服的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推藏他鞋的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推说他坏话的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推抢他饼干的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推弄乱他积木的弟弟。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推撞到他的小朋友。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推拿走他画笔的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推踩他脚的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推抢他位置的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推扔掉他书的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推泼他水的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推撕他贴纸的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推拉他头发的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆气得想推关他门的人。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆扣扣子总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "做不好是学会之前的必经一步。可以这样做。先停下来，把动作分成两小步，一步一步来。也可以请大人示范一次，再自己试",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆系鞋带总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆拼拼图总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆画圆圈总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆剪纸总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆叠被子总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆倒水总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆用筷子总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆跳绳总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆拍皮球总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆写自己的名字总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆搭高塔总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆穿袜子总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆拉拉链总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆剥鸡蛋总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆洗小手帕总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆整理书包总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆浇花总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆扫地总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆折纸总是做不好，想放弃了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩石头剪刀布输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "游戏有输有赢，输了不代表你不好。可以这样做。可以说：这局你赢了，我们再来一次。也可以问问对方：你是怎么做到的",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆玩赛跑输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩下棋输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩抢椅子输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩拍球输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩跳绳输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩拼图比赛输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩搭积木比赛输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩钓鱼玩具输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩套圈输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩投球输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩滚球输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩跳格子输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩丢手绢输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩老鹰捉小鸡输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩拔河输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩吹泡泡比赛输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩猜拳输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩找不同输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆玩翻牌配对输了。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的画做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "很多好看的东西，都是从做坏的那一次改出来的。可以这样做。先看看哪里不满意，能不能改一笔。改不了就换一张纸，重新来一次",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆的手工做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的折纸做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的泥人做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的剪纸做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的拼图做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的积木城堡做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的贴画做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的纸船做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的风车做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的贺卡做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的书签做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的串珠做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的小灯笼做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的沙堡做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的蜡笔画做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的水彩画做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的小房子做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的纸飞机做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的橡皮泥蛋糕做坏了，他想扔掉。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会系鞋带，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "不会的时候问一问，是最快的办法。可以这样做。走到大人或老师面前说：这个我不会，你能教我吗？学会以后再自己练两次",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆不会扣扣子，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会用筷子，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会写数字，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会拼图，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会剪纸，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会画小人，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会跳绳，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会用剪刀，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会倒水，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会穿外套，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会拉拉链，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会叠衣服，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会洗手帕，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会擦桌子，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会整理玩具，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会开包装袋，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会剥橘子，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会穿鞋子，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不会收拾书包，可他不敢问。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在穿鞋。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "做好了比做快更重要。可以这样做。告诉自己：我慢慢来。先把手上这一件事做完，再管下一件",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "别人都做好了，糖豆还在吃饭。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在收玩具。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在画画。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在拼图。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在穿外套。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在排队。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在洗手。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在上厕所。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在整理书包。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在叠被子。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在剪纸。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在写字。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在喝汤。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在剥鸡蛋。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在系扣子。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在装水壶。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在收画笔。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在背书包。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "别人都做好了，糖豆还在走楼梯。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的游戏，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "被拒绝一次，不等于一直不欢迎你。可以这样做。换一种问法：我可以在旁边看吗？或者先去找别的伙伴玩，过一会儿再来问",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆想加入他们的积木，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的球赛，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的过家家，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的捉迷藏，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的画画，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的拼图，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的跳绳，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的沙池，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的滑梯游戏，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的小队，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的搭建，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的表演，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的赛跑，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的棋局，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的读书，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的手工，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的音乐游戏，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的野餐，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想加入他们的小火车，小朋友说不要。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了同学的水杯，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "承认了，大人才知道怎么一起补救。可以这样做。走过去说：对不起，是我不小心弄坏的。然后问一句：我可以怎么补救",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆不小心弄坏了教室的花盆，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了爸爸的眼镜，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了妈妈的口红，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了绘本，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了玩具车，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了同桌的橡皮，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了家里的碗，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了遥控器，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了窗台上的花，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了小朋友的画，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了积木，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了贴纸本，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了爷爷的收音机，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了水彩笔，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了小台灯，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了相框，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了手表，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了雨伞，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆不小心弄坏了小风扇，他想藏起来。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆背心盖住的地方，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "身体是自己的，不舒服的时候可以拒绝。可以这样做。大声说：不要碰我。然后立刻走开，把这件事告诉爸爸妈妈或老师。说了没人理，就一直说",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "有人想碰糖豆短裤盖住的地方，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆胸口，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆屁股，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆小肚子，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆大腿，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆腿中间，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆内衣里面，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆嘴巴，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆脸，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆耳朵，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆脖子，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆手，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆胳膊，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆后背，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆膝盖，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆脚，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆腰，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆肩膀，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想碰糖豆肚子，糖豆心里不舒服。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的头一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "身体不舒服要早点说出来，才不会更难受。可以这样做。走到大人面前，指着疼的地方说：我这里疼。然后按大人说的休息或去看医生",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆的肚子一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的嗓子一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的耳朵一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的眼睛一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的牙一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的手一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的脚一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的胸口一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的后背一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的脖子一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的膝盖一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的皮肤一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的鼻子一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的嘴巴一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的腿一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的胳膊一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的腰一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的屁股一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆的脚趾一直不舒服，可他还在玩。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想抱一抱糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "亲一亲、抱一抱要两个人都愿意。可以这样做。可以说：我现在不想被抱。也可以伸出手说：我们握个手吧。大人应该听你的",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "有人想亲一下糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想举高高糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想挠痒痒糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想捏脸糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想摸头糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想拉着手糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想搂着肩糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想背起来糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想贴脸糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想摸头发糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想抱起来转圈糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想亲额头糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想抱着不放糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想拉进怀里糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想摸耳朵糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想拍后背糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想拉着坐腿上糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想捏鼻子糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人想抱在膝盖上糖豆，糖豆不想。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事是我们的秘密，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "大人不会让你保密的事才需要保密；让你保密，就要说出来。可以这样做。回家告诉爸爸妈妈：有人让我保密一件事。然后把发生的事讲清楚，大人不会怪你",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "有人对糖豆说：这件事只告诉你一个人，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不是好朋友了，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了大人会生气，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不跟你玩，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事别让别人知道，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事就我们两个知道，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就送你礼物，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了我就不理你，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不带你玩，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事记住了不要说，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事这是我们的小秘密，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就罚你，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就再也不来，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就收回礼物，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不喜欢你了，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不理你了，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就不来了，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事不能让别人知道，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "有人对糖豆说：这件事说了就取消约定，别告诉爸爸妈妈。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想摸插座，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "身体只有一个，先保护好它。可以这样做。把手收回来，离开那个地方，然后告诉大人：我想做这个，可以吗。让大人陪着一起做",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆想玩插头，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想爬窗台，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想站到阳台栏杆上，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想拿着剪刀跑，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把硬币放进嘴里，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想摸热水壶，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想玩打火机，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想拿着筷子跑，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把塑料袋套头上，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想玩电风扇，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把小零件塞鼻子，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想爬到柜子顶上，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把手伸进门缝，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想拿刀切东西，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想站在椅子扶手上，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想拉电线，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想玩开水龙头，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把手指伸进插座，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆想把豆子塞耳朵，这样会伤到自己。糖豆可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在看电视。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "一次做一件事，饭吃得快，也不容易噎着。可以这样做。把玩具放到一边，坐好，先吃五口，再说话。吃完就可以去玩",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩玩具。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在跑来跑去。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在看平板。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩小车。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在唱歌。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在说话说不停。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩勺子。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在站起来。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在看窗外。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩手指。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在爬上椅子。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在追小狗。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在翻书。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在摸玩具箱。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在跳舞。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩水杯。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在走来走去。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在玩积木。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "吃饭的时候，糖豆在看手机。吃饭的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的积木还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "东西回到自己的位置，下次一找就有。可以这样做。先分类：积木放一个箱，画笔放一个盒。收完再看一眼地上还有没有",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "玩完了，糖豆的小汽车还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的拼图还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的蜡笔还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的皮球还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的绘本还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的恐龙还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的贴纸还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的陀螺还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的串珠还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的沙子玩具还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的小鼓还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的手偶还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的风车还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的泡泡机还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的小铲子还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的拼图块还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的积木人还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的小火车还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "玩完了，糖豆的画笔还在地上。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想吃点心，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "会等一等，别人才愿意跟你一起做事。可以这样做。看一看还要等多久，然后找一件小事做：数 20 个数、唱一首歌。到时间大人会叫你",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆很想看动画片，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想去公园，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想拆礼物，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩新玩具，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想喝果汁，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想出门，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩滑梯，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想吃蛋糕，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想坐摇摇马，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩水，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想听故事，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想拿快递，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想吃水果，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想骑车，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想吹泡泡，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想开新书，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩沙子，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想去游泳，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想放烟花，可是要等一等。等的时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边画画，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "一次做一件，事情才做得完。可以这样做。把手上的事分成一小段：先做完这一小块。做完给自己一个小小的勾，再换别的",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆一边拼图，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边看书，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边吃饭，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边穿鞋，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边洗手，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边听故事，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边写字，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边搭积木，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边唱歌，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边做手工，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边刷牙，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边收拾书包，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边喝水，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边上厕所，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边穿外套，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边剪纸，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边拍球，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边浇花，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆一边擦桌子，一边又想玩别的。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩滑梯，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "轮流玩，大家都玩得到。可以这样做。站在队尾等，可以数一数前面还有几个人。轮到自己时玩一会儿就让给后面的",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "糖豆很想玩秋千，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩跷跷板，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩摇摇马，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩小推车，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩蹦床，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩旋转木马，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩沙池，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩水桌，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩滑板车，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩跳跳球，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩木马，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩攀爬架，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩小火车，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩滚筒，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩爬网，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩钻筒，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩摇椅，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩小三轮，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "糖豆很想玩滑板，可是有人在玩。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的书包还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "提前放好，第二天一早就能直接出门。可以这样做。把明天要用的东西一样一样放到门口，放一样说一句\"好了\"，全部放完再睡",
+   "role": "soothe",
+   "lang": "zh-CN",
+   "tag": "mind-solve"
+  },
+  {
+   "text": "要睡觉了，糖豆的明天穿的衣服还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的水壶还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的鞋子还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的手工作业还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的绘本还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的口罩还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的汗巾还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的小帽子还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的袜子还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的雨衣还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的画笔还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的小毯子还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的餐具还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的玩具还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的运动鞋还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的外套还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的毛巾还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的作业本还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  },
+  {
+   "text": "要睡觉了，糖豆的小书包还没准备好。这时候可以怎么做？",
+   "role": "story",
+   "lang": "zh-CN",
+   "tag": "mind-scene"
+  }
+ ]
+}

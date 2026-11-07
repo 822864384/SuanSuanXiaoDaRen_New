@@ -1,0 +1,319 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- ========== 专题列表 ========== -->
+			<view v-if="stage == 'list'" class="pt-wrap">
+				<view class="pt-top">
+					<view class="chip" @click="goHome">
+						<text class="chip-text">← 回首页</text>
+					</view>
+					<view class="chip">
+						<text class="chip-gold">🌱 家长课堂</text>
+					</view>
+					<view class="top-space"></view>
+					<view class="chip">
+						<text class="chip-dim">一次一段，按「下一段」往下看</text>
+					</view>
+				</view>
+
+				<view v-for="t in topics" :key="t.id" class="pt-item"
+					:class="t.ready ? 'pt-item-live' : 'pt-item-off'" @click="openTopic(t)">
+					<text class="pt-emoji">{{ t.emoji }}</text>
+					<view class="pt-item-body">
+						<text class="pt-item-title">{{ t.title }}</text>
+						<text class="pt-item-sub">{{ t.sub }}</text>
+					</view>
+					<text class="pt-arrow">{{ t.ready ? '›' : '' }}</text>
+				</view>
+			</view>
+
+			<!-- ========== 阅读：一块一屏，靠按钮翻，不依赖滚动（电视没有触摸） ========== -->
+			<view v-else class="pt-wrap">
+				<view class="pt-top">
+					<view class="chip" @click="backToList">
+						<text class="chip-text">← 专题列表</text>
+					</view>
+					<view class="chip">
+						<text class="chip-gold">{{ topic.emoji }} {{ topic.title }}</text>
+					</view>
+					<view class="top-space"></view>
+					<view class="chip">
+						<text class="chip-dim">{{ pageText }}</text>
+					</view>
+				</view>
+
+				<view class="pt-body">
+					<text class="pt-h">{{ block.title }}</text>
+					<text v-if="block.kind == 'text'" class="pt-p">{{ block.text }}</text>
+
+					<view v-if="block.kind == 'rows'" class="pt-rows">
+						<view v-for="(r, i) in block.rows" :key="'r' + i" class="pt-row">
+							<text class="pt-row-a">{{ r.a }}</text>
+							<text class="pt-row-b">{{ r.b }}</text>
+						</view>
+					</view>
+
+					<view v-if="block.kind == 'items'" class="pt-list">
+						<view v-for="(it, i) in block.items" :key="'i' + i" class="pt-li">
+							<text class="pt-li-num">{{ i + 1 }}</text>
+							<text class="pt-li-text">{{ it }}</text>
+						</view>
+					</view>
+				</view>
+
+				<text class="pt-disc">{{ disclaimer }}</text>
+
+				<view class="pt-btns">
+					<view class="btn pt-btn" :class="pageIdx == 0 ? 'btn-off' : ''" @click="prevBlock">
+						<text class="btn-text">上一段</text>
+					</view>
+					<view class="btn pt-btn btn-gold" @click="nextBlock">
+						<text class="btn-gold-text">{{ lastPage ? '看完了' : '下一段' }}</text>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		PARENT_TOPICS, PARENT_DISCLAIMER, topicOf, ParentTopic, ParentBlock
+	} from '@/common/parent-content.uts'
+	import { safeBack } from '@/common/nav.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	const topics: Array<ParentTopic> = PARENT_TOPICS
+	const disclaimer: string = PARENT_DISCLAIMER
+
+	const stage = ref<string>('list')
+	const topic = ref<ParentTopic>(topicOf('hw'))
+	const pageIdx = ref<number>(0)
+	const block = ref<ParentBlock>(new ParentBlock())
+
+	const pageText = computed((): string => {
+		const total: number = topic.value.blocks.length
+		if (total == 0) return ''
+		return (pageIdx.value + 1).toString() + ' / ' + total.toString()
+	})
+
+	const lastPage = computed((): boolean => {
+		return pageIdx.value >= topic.value.blocks.length - 1
+	})
+
+	function openTopic(t: ParentTopic) {
+		if (!t.ready) {
+			uni.showToast({ title: '这一篇还在整理', icon: 'none' })
+			return
+		}
+		topic.value = t
+		pageIdx.value = 0
+		syncBlock()
+		stage.value = 'read'
+	}
+
+	function syncBlock() {
+		const list: Array<ParentBlock> = topic.value.blocks
+		if (list.length == 0) return
+		block.value = list[pageIdx.value]
+	}
+
+	function prevBlock() {
+		if (pageIdx.value <= 0) return
+		pageIdx.value = pageIdx.value - 1
+		syncBlock()
+	}
+
+	function nextBlock() {
+		if (lastPage.value) {
+			backToList()
+			return
+		}
+		pageIdx.value = pageIdx.value + 1
+		syncBlock()
+	}
+
+	function backToList() {
+		stage.value = 'list'
+	}
+
+	function goHome() {
+		safeBack()
+	}
+</script>
+
+<style>
+	.pt-wrap {
+		flex: 1;
+		width: 100%;
+		flex-direction: column;
+	}
+
+	.pt-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 16rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	/* ---------- 列表 ---------- */
+	.pt-item {
+		flex-direction: row;
+		align-items: center;
+		height: 44rpx;
+		margin-top: 8rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+		padding-left: 14rpx;
+		padding-right: 14rpx;
+		border-radius: 11rpx;
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		background-color: rgba(255, 255, 255, 0.07);
+	}
+
+	.pt-item-live {
+		border-color: rgba(255, 215, 110, 0.5);
+	}
+
+	.pt-item-off {
+		opacity: 0.45;
+	}
+
+	.pt-emoji {
+		font-size: 20rpx;
+	}
+
+	.pt-item-body {
+		flex: 1;
+		flex-direction: column;
+		margin-left: 12rpx;
+	}
+
+	.pt-item-title {
+		color: #ffffff;
+		font-size: 15rpx;
+		font-weight: bold;
+	}
+
+	.pt-item-sub {
+		color: #9fb4ff;
+		font-size: 11rpx;
+		margin-top: 2rpx;
+	}
+
+	.pt-arrow {
+		color: #ffd76e;
+		font-size: 20rpx;
+	}
+
+	/* ---------- 阅读 ---------- */
+	.pt-body {
+		flex: 1;
+		justify-content: flex-start;
+		padding-left: 27rpx;
+		padding-right: 27rpx;
+		margin-top: 12rpx;
+	}
+
+	.pt-h {
+		color: #ffd76e;
+		font-size: 17rpx;
+		font-weight: bold;
+		margin-bottom: 8rpx;
+	}
+
+	.pt-p {
+		color: #dbe4ff;
+		font-size: 15rpx;
+		line-height: 25rpx;
+	}
+
+	.pt-rows {
+		flex-direction: column;
+	}
+
+	.pt-row {
+		flex-direction: row;
+		align-items: flex-start;
+		margin-top: 6rpx;
+		padding: 6rpx;
+		border-radius: 8rpx;
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.pt-row-a {
+		width: 148rpx;
+		color: #ffd76e;
+		font-size: 14rpx;
+		line-height: 22rpx;
+	}
+
+	.pt-row-b {
+		flex: 1;
+		color: #dbe4ff;
+		font-size: 14rpx;
+		line-height: 22rpx;
+	}
+
+	.pt-list {
+		flex-direction: column;
+	}
+
+	.pt-li {
+		flex-direction: row;
+		align-items: flex-start;
+		margin-top: 7rpx;
+	}
+
+	.pt-li-num {
+		width: 24rpx;
+		color: #ffd76e;
+		font-size: 13rpx;
+		font-weight: bold;
+		line-height: 22rpx;
+	}
+
+	.pt-li-text {
+		flex: 1;
+		color: #dbe4ff;
+		font-size: 14rpx;
+		line-height: 22rpx;
+	}
+
+	.pt-disc {
+		color: #7d90c9;
+		font-size: 10rpx;
+		line-height: 15rpx;
+		text-align: center;
+		padding-left: 27rpx;
+		padding-right: 27rpx;
+		margin-top: 6rpx;
+	}
+
+	.pt-btns {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 10rpx;
+		margin-bottom: 16rpx;
+	}
+
+	.pt-btn {
+		margin-left: 7rpx;
+		margin-right: 7rpx;
+	}
+
+	.btn-off {
+		opacity: 0.35;
+	}
+</style>

@@ -1,0 +1,110 @@
+{
+  "spec_version": "v2",
+  "source": {
+    "type": "text-brief",
+    "reference": "算算小达人-电视端儿童口算App设计文档.md（同工作区）",
+    "note": "用户未提供参考截图；本规格由设计文档文字需求推导，所有布局结论标注为「推断」，不声明截图还原。"
+  },
+  "target_device": {
+    "design_resolution": "1920x1080 (Android TV)",
+    "strategy": "舞台等比缩放适配任意窗口，无横向溢出",
+    "input": "语音为主（原型中以按钮/键盘/浏览器语音模拟），遥控器方向键+OK为辅"
+  },
+  "theme": {
+    "mode": "dark",
+    "colors": {
+      "bg1": "#141b3d", "bg2": "#1b2a5e", "bg3": "#233a7d",
+      "gold": "#ffd76e", "green": "#3ecf8e", "red": "#ff5c5c",
+      "orange": "#ff8a5c", "blueText": "#9fb4ff", "dim": "#7d90c9"
+    },
+    "focus_ring": "金色 6px 外发光（3米外可辨，推断值）"
+  },
+  "pages": [
+    {
+      "id": "pg-profile", "title": "选人页",
+      "regions": ["标题", "副标题提示", "档案卡片x3"],
+      "components": ["profile-card(可聚焦)", "foot-tip"],
+      "interactions": ["←→选择", "OK进入学科首页"],
+      "states": ["卡片: 默认/焦点/半透明(mock新建)"],
+      "provenance": "推断（依据设计文档'多孩子档案'）"
+    },
+    {
+      "id": "pg-home", "title": "学科首页",
+      "regions": ["顶部栏(档案/星星/糖果/家长门)", "学科卡片x4", "宠物栏"],
+      "components": ["chip", "subject-card(可聚焦)", "pet-bar", "chip[家长门]"],
+      "interactions": ["←→切换学科卡片", "OK进入模块", "OK家长门→弹出门禁", "投喂宠物"],
+      "states": ["学科卡片: 默认/焦点", "家长门: 关闭/打开/验证错误/验证成功"],
+      "provenance": "推断（依据设计文档'首页学科模块选择'）"
+    },
+    {
+      "id": "pg-math", "title": "数学思维答题页",
+      "regions": ["顶部栏(回首页/题号/连击/得分)", "题面展示区(算式/emoji图示/左右分组)", "提示条", "计时条", "作答区(数字垫或选项+语音+重听)"],
+      "components": ["chip", "q-question", "q-emojis", "q-groups", "mic-dot", "timer-bar", "ans-btn", "ans-btn.say"],
+      "interactions": ["数字键直答(0-9,数字题)", "点击答案按钮", "🎤语音识别(数字题)", "🔊再听一遍", "方向键聚焦选项朗读(选择题)"],
+      "question_types": {
+        "加法/减法": "10以内加减，数字作答（用户提供基础）",
+        "等分": "N颗糖果平均分给2个小朋友，每人几颗（N=4~8，每人2~4）——数字作答+TTS强调'平均分=每人一样多'",
+        "数数": "3~7个同款emoji点数——数字作答",
+        "比多少": "左右两组emoji，哪边更多——'左边/右边'选项",
+        "找规律": "ABAB排列下一个是什么——两个emoji选项",
+        "provenance": "用户提供（等分+更多思维题型）；题型集合与难度为推断（4~5岁认知水平：点数≤7、等分仅2人、规律仅ABAB）"
+      },
+      "states": {
+        "答案按钮": ["默认", "焦点", "正确(绿色放大)", "错误(红色)"],
+        "计时条": ["正常(绿→金渐变,25秒)", "最后5秒(红色+滴答音)", "超时(语音报答案)"],
+        "连击": ["隐藏(<2)", "显示火焰(≥2)"],
+        "防重入": ["作答后 mQuestion=null，忽略重复输入"]
+      },
+      "provenance": "推断（核心循环来自设计文档3.1/3.2节，文案按文档特效表）"
+    },
+    {
+      "id": "pg-cn", "title": "语文看图识字页",
+      "regions": ["顶部栏", "大图emoji", "汉字(隐藏→揭晓)+拼音", "词语选项区"],
+      "components": ["big-emoji", "q-word", "pinyin", "ans-btn"],
+      "interactions": ["点击词语模拟语音跟读", "答对揭晓汉字+pop动画(笔顺示意)"],
+      "states": ["词语按钮: 默认/焦点/正确/错误", "汉字: 隐藏(？)/揭晓(pop)"],
+      "provenance": "推断（设计文档4.1看图识字的简化：真实App为语音白名单匹配+Lottie笔顺动画）"
+    },
+    {
+      "id": "pg-en", "title": "英语看图说词页",
+      "regions": ["顶部栏", "大图emoji", "提问双语", "单词选项区"],
+      "components": ["big-emoji", "q-en-hint", "ans-btn"],
+      "interactions": ["点击单词模拟语音作答"],
+      "states": ["单词按钮: 默认/焦点/正确/错误"],
+      "provenance": "推断（设计文档5.1；宽判定策略在真实App实现，原型按钮即对/错）"
+    },
+    {
+      "id": "pg-so", "title": "人际交往情景页",
+      "regions": ["顶部栏", "情景动画区(角色+气泡)", "提问气泡", "答案选项区"],
+      "components": ["actor", "bubble", "q-bubble", "ans-btn"],
+      "interactions": ["选择答案→答对播好结局/答错先看另一种结果再回正确示范"],
+      "states": ["答错流程: '另一种结果'(无惩罚) → '正确示范' → 下一集", "交往之星计数"],
+      "provenance": "推断（设计文档6.1-6.3；情景动画以emoji+CSS动画示意，真实App为Lottie/序列帧）"
+    },
+    {
+      "id": "pg-result", "title": "结算页",
+      "regions": ["标题", "星级", "统计行x3", "操作按钮"],
+      "components": ["result-stars", "result-row", "btn.gold", "btn.ghost"],
+      "interactions": ["再玩一次(记忆lastMode)", "回首页"],
+      "states": ["星级1-3", "星星/糖果总数累加"],
+      "provenance": "推断"
+    },
+    {
+      "id": "pg-report", "title": "家长报告页",
+      "regions": ["标题", "四科进度条", "本周小结侧栏"],
+      "components": ["rbar(进度条)", "report-side", "btn.ghost"],
+      "interactions": ["回首页"],
+      "states": ["数据为 mock"],
+      "provenance": "推断（真实App为四科雷达图+SQLite统计，原型用进度条简化）"
+    }
+  ],
+  "global_components": [
+    { "name": "TTS 读题（语音优先，v2.1 新增）", "states": ["出题自动朗读(放慢语速0.85)", "🔊再听一遍按钮(每科答题页)", "方向键聚焦选项时朗读该选项", "结果语音反馈(答错读出正确答案)", "朗读中指示灯变金快闪"], "provenance": "用户提供（要求支持不认识数字的小朋友）；实现为浏览器本地 SpeechSynthesis，正式版对应设计文档的预录童声MP3+离线TTS" },
+    { "name": "feedback 浮层", "states": ["答对(绿罩+confetti+上行音)", "答错(暖棕罩+少量confetti+下行音)", "语音提示(绿罩)"] },
+    { "name": "家长门模态", "states": ["打开", "输入错误(红字提示)", "验证通过(进入报告)"], "provenance": "推断（设计文档'乘法门禁'简化为加法）" },
+    { "name": "焦点系统", "states": ["金色外发光", "OK键=Enter触发点击"], "provenance": "推断（模拟遥控器）" }
+  ],
+  "main_path": "选人 → 学科首页 → 数学口算 → 语音/按键作答×5 → 结算 → 回首页",
+  "mock_data": ["档案(2个+新建)", "词库(语文5字/英语5词)", "情景(2集)", "报告数据"],
+  "not_implemented": ["Vosk离线识别(浏览器Web Speech API仅演示)", "Lottie笔顺/情景动画(emoji示意)", "SQLite存储", "多视口独立布局(舞台整体缩放替代)"]
+}

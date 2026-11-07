@@ -1,0 +1,562 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 非 16:9 屏幕（手机/平板）时，上下弹簧把整块内容压到垂直居中 -->
+			<view v-if="centerMode" class="v-spacer"></view>
+
+			<!-- 顶部信息条：档案 / 星星 / 糖果 / 家长门 -->
+			<view class="home-top">
+				<view class="chip">
+					<!-- 头像：avatar 是路径就画照片，是 emoji 就画文字（豆豆 🐰 / 滔滔 🐳） -->
+					<image v-if="avatarIsImage(profile.avatar)" class="chip-face" :src="profile.avatar"
+						mode="aspectFill"></image>
+					<text v-else class="chip-face-emoji">{{ profile.avatar }}</text>
+					<text class="chip-text">{{ profile.name }}</text>
+				</view>
+				<view class="chip">
+					<text class="chip-gold">⭐ {{ profile.stars }}</text>
+				</view>
+				<view class="chip">
+					<text class="chip-gold">🍬 {{ profile.candy }}</text>
+				</view>
+				<view class="top-space"></view>
+				<view class="chip" @click="openGate">
+					<text class="chip-text">👨‍👩‍👧 家长门</text>
+				</view>
+			</view>
+
+			<!-- 四科入口：本阶段仅数学开放 -->
+			<view class="sub-row">
+				<view v-for="(s, i) in subjects" :key="s.id" class="subcard"
+					:class="(i == focusIdx ? 'subcard-on' : '') + (s.enabled ? '' : ' subcard-off')"
+					@click="openSubject(s.id, s.enabled)">
+					<text class="sub-emoji">{{ s.emoji }}</text>
+					<text class="sub-title">{{ s.title }}</text>
+					<text class="sub-desc">{{ s.desc }}</text>
+					<text v-if="!s.enabled" class="sub-badge">即将上线</text>
+					<text v-else class="sub-badge-on">第 {{ levelText }} 关</text>
+				</view>
+			</view>
+
+			<!-- 宠物栏 -->
+			<view class="pet-bar" @click="feedPet">
+				<text class="pet-face">🦕</text>
+				<text class="pet-name">糖豆 Lv.{{ petLevel }}</text>
+				<text class="pet-hint">答对一题喂一颗糖，点我可以喂它</text>
+			</view>
+
+			<view v-if="centerMode" class="v-spacer"></view>
+
+			<!-- 家长门：两位数乘法太慢，按原型用 12+7（正式版再升级） -->
+			<view v-if="gateOpen" class="mask">
+				<view class="panel">
+					<text class="panel-title">家长验证</text>
+					<text class="panel-q">12 + 7 = ?</text>
+					<text v-if="gateInput.length > 0" class="panel-ans">{{ gateInput }}</text>
+					<text v-else class="panel-ans-empty">请按数字</text>
+					<view class="keypad">
+						<view v-for="k in gateKeys" :key="k" class="key" @click="pressKey(k)">
+							<text class="key-text">{{ k }}</text>
+						</view>
+						<view class="key key-fn" @click="backspace">
+							<text class="key-text">⌫</text>
+						</view>
+					</view>
+					<text v-if="gateError" class="panel-err">不对哦，再算一次</text>
+					<view class="panel-btns">
+						<view class="btn" @click="closeGate">
+							<text class="btn-text">取消</text>
+						</view>
+						<view class="btn btn-gold" @click="submitGate">
+							<text class="btn-gold-text">确定</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<!-- 家长报告：本阶段先出文字版，正式版换四科雷达图 -->
+			<view v-if="reportOpen" class="mask">
+				<view class="panel">
+					<text class="panel-title">📊 {{ profile.name }} 的学习报告</text>
+					<view class="report-body">
+						<text v-for="(line, i) in reportLines" :key="i" class="report-line">{{ line }}</text>
+					</view>
+					<text class="report-tip">正式版将提供四科雷达图与错题分布</text>
+					<view class="btn btn-class" @click="openWrongBook">
+						<text class="btn-text">📕 错题库 · {{ wrongText }}</text>
+					</view>
+					<view class="btn btn-class" @click="openParent">
+						<text class="btn-text">🌱 家长课堂 · 写作业拖拉怎么办</text>
+					</view>
+					<view class="panel-btns">
+						<view class="btn" @click="resetAll">
+							<text class="btn-text">重置进度</text>
+						</view>
+						<view class="btn btn-gold" @click="closeReport">
+							<text class="btn-gold-text">知道了</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import {
+		getCurrentProfile, getLevel, getRightTotal, getWrongTotal, addCandy, resetProgress,
+		getMindDoneCount, getMoodLog, getSoDoneCount, getMindLevels, Profile, MoodEntry, ThemeLevel,
+		avatarIsImage
+	} from '@/common/store.uts'
+	import { setStudyMode } from '@/common/study-session.uts'
+	import { wrongCount, clearAllWrong } from '@/common/wrongbook.uts'
+
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度（时间/电量栏）：整页下移，避免顶部按钮被系统栏盖住点不到 */
+	const rootStyle: string = topInsetStyle()
+	/** 学科入口配置（顺序即首页展示顺序） */
+	class Subject {
+		id: string = ''
+		emoji: string = ''
+		title: string = ''
+		desc: string = ''
+		enabled: boolean = false
+
+		constructor(id: string, emoji: string, title: string, desc: string, enabled: boolean) {
+			this.id = id
+			this.emoji = emoji
+			this.title = title
+			this.desc = desc
+			this.enabled = enabled
+		}
+	}
+
+	const subjects: Array<Subject> = [
+		new Subject('math', '🧮', '数学思维', '加减 · 数数 · 比多少 · 找规律', true),
+		new Subject('mind', '🌈', '心情小课堂', '认心情 · 说感受 · 有办法', true),
+		new Subject('cn', '📖', '语文识字', '看图识字 · 找字 · 组词', true),
+		new Subject('en', '🔤', '英语单词', '听词选图 · 看图选词 · 跟读', true),
+		new Subject('so', '🤝', '交往剧场', '问好 · 分享 · 排队 · 安全', true)
+	]
+
+	// 占位值对齐默认档案（豆豆），onShow 里由 refresh() 用真实档案覆盖
+	const profile = ref<Profile>(new Profile('p2', '豆豆', '🐰', 0, 0))
+	const focusIdx = ref<number>(0)
+	const levelText = ref<number>(1)
+	const petLevel = ref<number>(1)
+
+	const gateOpen = ref<boolean>(false)
+	const gateInput = ref<string>('')
+	const gateError = ref<boolean>(false)
+	const gateKeys: Array<string> = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+	const reportOpen = ref<boolean>(false)
+	const reportLines = ref<Array<string>>([])
+	/** 错题库按钮上的数字（三科合计） */
+	const wrongText = ref<string>('暂无')
+
+	/** 非 16:9 屏幕（手机/平板）走垂直居中版式；电视按原型保持顶部布局 */
+	const centerMode = ref<boolean>(false)
+
+	onShow(() => {
+		detectLayout()
+		refresh()
+	})
+
+	/**
+	 * 判断屏幕比例：电视/投影是 16:9（1.778），手机横屏约 2.2、竖屏约 0.45、平板 1.33。
+	 * 偏离 16:9 超过 0.12 就认为不是电视，改为内容垂直居中，避免内容挤在顶部。
+	 */
+	function detectLayout() {
+		const info = uni.getWindowInfo()
+		const w: number = info.windowWidth
+		const h: number = info.windowHeight
+		if (h <= 0) {
+			// 取不到窗口尺寸时保持原型顶部布局（宁可不居中，也不要电视上误居中）
+			centerMode.value = false
+			return
+		}
+		const ratio: number = w / h
+		const diff: number = ratio - 16 / 9
+		centerMode.value = (diff > 0.12 || diff < -0.12)
+	}
+
+	function refresh() {
+		const p: Profile = getCurrentProfile()
+		profile.value = p
+		levelText.value = getLevel('math')
+		petLevel.value = Math.floor(p.candy / 5) + 1
+	}
+
+	function openSubject(id: string, enabled: boolean) {
+		if (!enabled) {
+			uni.showToast({ title: '这一科还在做，先玩数学吧', icon: 'none' })
+			return
+		}
+		if (id == 'mind') {
+			uni.navigateTo({ url: '/pages/mind/mind' })
+			return
+		}
+		if (id == 'so') {
+			uni.navigateTo({ url: '/pages/so/so' })
+			return
+		}
+		if (id == 'math') {
+			uni.navigateTo({ url: '/pages/math/math' })
+			return
+		}
+		// 语文与英语共用同一个答题页，靠单例区分（不用页面参数：uvue 传参取值容易踩坑）
+		if (id == 'cn' || id == 'en') {
+			setStudyMode(id)
+			uni.navigateTo({ url: '/pages/study/study' })
+			return
+		}
+		uni.showToast({ title: '这一科还在做', icon: 'none' })
+	}
+
+	function feedPet() {
+		addCandy(1)
+		refresh()
+		uni.showToast({ title: '糖豆吃得真开心！', icon: 'none' })
+	}
+
+	/* ---------- 家长门 ---------- */
+	function openGate() {
+		gateInput.value = ''
+		gateError.value = false
+		gateOpen.value = true
+	}
+
+	function closeGate() {
+		gateOpen.value = false
+	}
+
+	function pressKey(k: string) {
+		if (gateInput.value.length >= 3) return
+		gateInput.value = gateInput.value + k
+		gateError.value = false
+	}
+
+	function backspace() {
+		const s: string = gateInput.value
+		if (s.length == 0) return
+		gateInput.value = s.substring(0, s.length - 1)
+	}
+
+	function submitGate() {
+		if (gateInput.value == '19') {
+			gateOpen.value = false
+			buildReport()
+			reportOpen.value = true
+		} else {
+			gateError.value = true
+			gateInput.value = ''
+		}
+	}
+
+	/* ---------- 家长报告 ---------- */
+	function buildReport() {
+		const right: number = getRightTotal('math')
+		const wrong: number = getWrongTotal('math')
+		const total: number = right + wrong
+		const acc: string = total > 0 ? Math.round(right * 100 / total).toString() + '%' : '—'
+		const lines: Array<string> = []
+		lines.push('🧮 数学思维 · 当前第 ' + getLevel('math').toString() + ' 关')
+		lines.push('累计答对 ' + right.toString() + ' 题，答错 ' + wrong.toString() + ' 题')
+		lines.push('正确率 ' + acc)
+		lines.push('⭐ 累计星星 ' + profile.value.stars.toString() + ' 颗')
+
+		// 心情小课堂：只报"看了多少、过了几关、记了几天心情"，不打分（情绪能力没法量化）
+		const mindDone: number = getMindDoneCount()
+		const moods: Array<MoodEntry> = getMoodLog()
+		let passed: number = 0
+		const lvs: Array<ThemeLevel> = getMindLevels()
+		for (let i = 0; i < lvs.length; i++) {
+			if (lvs[i].level > 1) passed += lvs[i].level - 1
+		}
+		let moodLine: string = '🌈 心情小课堂 · 看过 ' + mindDone.toString() + ' 个情景'
+		if (passed > 0) moodLine += '，过了 ' + passed.toString() + ' 关'
+		if (moods.length > 0) {
+			moodLine += '，记了 ' + moods.length.toString() + ' 天心情'
+		}
+		lines.push(moodLine)
+		// 语文英语按"学会多少"报，不报正确率：这两科没有"答错"，只有"再看看"
+		lines.push('📖 语文识字 · 第 ' + getLevel('cn').toString() + ' 课，认得 ' +
+			getRightTotal('cn').toString() + ' 个字')
+		lines.push('🔤 英语单词 · 第 ' + getLevel('en').toString() + ' 课，听懂 ' +
+			getRightTotal('en').toString() + ' 个词')
+		// 交往剧场同样只报"演了几集"，不报对错：社交没有标准答案，只有试过没试过
+		lines.push('🤝 交往剧场 · 演过 ' + getSoDoneCount().toString() + ' 集，点亮 ' +
+			getSoDoneCount().toString() + ' 颗交往之星')
+		// 错题库：三科分开报，家长一眼看出哪一科还没消化
+		const wm: number = wrongCount('math')
+		const wc: number = wrongCount('cn')
+		const we: number = wrongCount('en')
+		const wt: number = wm + wc + we
+		lines.push('📕 错题库 · 数学 ' + wm.toString() + ' 道 / 语文 ' + wc.toString() +
+			' 道 / 英语 ' + we.toString() + ' 道')
+		wrongText.value = wt == 0 ? '暂无' : wt.toString() + ' 道待练'
+		reportLines.value = lines
+	}
+
+	/** 从报告直接进家长课堂（家长门已通过，不必再验一次） */
+	function openParent() {
+		reportOpen.value = false
+		uni.navigateTo({ url: '/pages/parent/parent' })
+	}
+
+	/** 从报告进错题库（同样已经过家长门） */
+	function openWrongBook() {
+		reportOpen.value = false
+		uni.navigateTo({ url: '/pages/wrong/wrong' })
+	}
+
+	function closeReport() {
+		reportOpen.value = false
+	}
+
+	function resetAll() {
+		resetProgress()
+		// 错题库按科目分片存在 store 之外，重置进度时必须一起清（否则"重置"看着没生效）
+		clearAllWrong()
+		refresh()
+		reportOpen.value = false
+		uni.showToast({ title: '进度已重置', icon: 'none' })
+	}
+</script>
+
+<style>
+	.home-top {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 17rpx;
+		margin-left: 27rpx;
+		margin-right: 27rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	/* 垂直弹簧：手机/平板下用来把内容推到屏幕中间 */
+	.v-spacer {
+		flex: 1;
+	}
+
+	.chip {
+		margin-right: 6rpx;
+	}
+
+	/* 头像照片：chip 内高 27rpx，照片取 21rpx 圆形，四周留 3rpx 呼吸 */
+	.chip-face {
+		width: 21rpx;
+		height: 21rpx;
+		border-radius: 11rpx;
+		margin-right: 5rpx;
+	}
+
+	/* 没有照片时的 emoji 头像：字号跟 text 走，别把 chip 撑高 */
+	.chip-face-emoji {
+		font-size: 12rpx;
+		margin-right: 5rpx;
+	}
+
+	.sub-row {
+		flex-direction: row;
+		justify-content: center;
+		margin-top: 23rpx;
+	}
+
+	/* 五张卡横排：5 ×（130 + 10）= 700rpx，留 50rpx 余量 */
+	.subcard {
+		width: 130rpx;
+		height: 152rpx;
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+		padding-left: 7rpx;
+		padding-right: 7rpx;
+		border-radius: 13rpx;
+		background-color: rgba(255, 255, 255, 0.08);
+		border-width: 2rpx;
+		border-color: rgba(255, 255, 255, 0);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.subcard-on {
+		border-color: #ffd76e;
+		background-color: rgba(255, 215, 110, 0.14);
+		transform: scale(1.04);
+	}
+
+	.subcard-off {
+		opacity: 0.45;
+	}
+
+	.sub-emoji {
+		font-size: 38rpx;
+	}
+
+	.sub-title {
+		color: #ffffff;
+		font-size: 14rpx;
+		font-weight: bold;
+		margin-top: 6rpx;
+	}
+
+	.sub-desc {
+		color: #9fb4ff;
+		font-size: 8rpx;
+		line-height: 12rpx;
+		text-align: center;
+		margin-top: 5rpx;
+	}
+
+	.sub-badge {
+		color: #ff8a5c;
+		font-size: 8rpx;
+		margin-top: 6rpx;
+	}
+
+	.sub-badge-on {
+		color: #3ecf8e;
+		font-size: 8rpx;
+		margin-top: 6rpx;
+	}
+
+	.pet-bar {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		margin-top: 25rpx;
+	}
+
+	.pet-face {
+		font-size: 34rpx;
+	}
+
+	.pet-name {
+		color: #ffffff;
+		font-size: 13rpx;
+		margin-left: 7rpx;
+	}
+
+	.pet-hint {
+		color: #7d90c9;
+		font-size: 9rpx;
+		margin-left: 10rpx;
+	}
+
+	/* ---------- 弹层 ---------- */
+	.mask {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(5, 7, 15, 0.84);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.panel {
+		width: 297rpx;
+		padding: 17rpx;
+		border-radius: 14rpx;
+		background-color: #1b2a5e;
+		align-items: center;
+	}
+
+	.panel-title {
+		color: #ffd76e;
+		font-size: 16rpx;
+		font-weight: bold;
+	}
+
+	.panel-q {
+		color: #ffffff;
+		font-size: 27rpx;
+		font-weight: bold;
+		margin-top: 9rpx;
+	}
+
+	.panel-ans {
+		color: #3ecf8e;
+		font-size: 22rpx;
+		margin-top: 5rpx;
+	}
+
+	.panel-ans-empty {
+		color: #7d90c9;
+		font-size: 12rpx;
+		margin-top: 9rpx;
+	}
+
+	.panel-err {
+		color: #ff5c5c;
+		font-size: 11rpx;
+		margin-top: 4rpx;
+	}
+
+	.keypad {
+		flex-direction: row;
+		flex-wrap: wrap;
+		width: 250rpx;
+		justify-content: center;
+		margin-top: 9rpx;
+	}
+
+	.key {
+		width: 51rpx;
+		height: 36rpx;
+		margin: 3rpx;
+		border-radius: 8rpx;
+		background-color: rgba(255, 255, 255, 0.12);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.key-fn {
+		background-color: rgba(255, 138, 92, 0.25);
+	}
+
+	.key-text {
+		color: #ffffff;
+		font-size: 16rpx;
+	}
+
+	.panel-btns {
+		flex-direction: row;
+		margin-top: 12rpx;
+	}
+
+	.btn {
+		margin-left: 5rpx;
+		margin-right: 5rpx;
+	}
+
+	.report-body {
+		margin-top: 10rpx;
+		align-items: flex-start;
+	}
+
+	.report-line {
+		color: #ffffff;
+		font-size: 12rpx;
+		line-height: 23rpx;
+	}
+
+	.report-tip {
+		color: #7d90c9;
+		font-size: 9rpx;
+		margin-top: 7rpx;
+	}
+
+	/* 家长课堂入口：单独一行，比"知道了"更显眼 */
+	.btn-class {
+		margin-top: 10rpx;
+	}
+</style>

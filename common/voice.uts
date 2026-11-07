@@ -1,0 +1,483 @@
+/**
+ * 算算小达人 · 真人语音包「播放层」
+ *
+ * 目标：孩子听到的是**真人级神经网络音色、带情绪起伏**，而不是机械的系统 TTS。
+ *
+ * 三级降级（上层只调 `tts.uts` 的 `speak()`，不关心走哪一级）：
+ *   ① 整句命中本地音频包        → 直接播（音质最好、零延迟）
+ *   ② 按题型模板拆成片段再拼     → 每段都在包里就顺序播（数学题靠这条全覆盖）
+ *   ③ 都没命中                   → 交回 tts.uts 走系统 TTS（兜底，保证一定有声音）
+ *
+ * 音频从哪来：`tools/voice-gen.py` 批量合成（微软神经网络音色，按语句类型调韵律），
+ * 产物放 `static/voice/<key>.mp3`；`tools/voice-index.mjs` 扫目录生成 `common/voice-index.uts`。
+ * 之后只要往目录里丢音频、重跑一次索引，代码不用改。
+ *
+ * ⚠️ 拼接的取舍：数学题干按「有 / 五 / 个 / 苹果 / ，拿走 / 二 / 个 / ，还剩几个呀？」分段落。
+ * 段与段之间有几十毫秒启动间隙——对 4~5 岁**反而是好事**（一个词一个词说清楚），
+ * 但不要在同一段里塞两个语义单元，否则听起来会是"卡住"而不是"放慢"。
+ *
+ * ⚠️⚠️ 段间切换是这条链路上唯一真正危险的环节（真机踩过）：
+ *   Android 的 InnerAudioContext 复用同一个实例换 src 时，`stop()` → `src=` → `play()`
+ *   这三步在同一帧里连续调用，播放器往往还停在 stopped/idle 状态没 reset 完，
+ *   `play()` 就被静默丢弃（更糟的是 setDataSource 抛错走 onError）。
+ *   现象极具迷惑性：**第一段（"豆豆，请听题。"）好好地念完，后面的题干一个音都没有**，
+ *   让人以为是文本没拼上。所以这里的推进**不靠一次 play() 成功**，而是：
+ *     换段 → 先 stop、留 90ms 让播放器复位 → 设 src → play
+ *           → 80~150ms 看有没有 onPlay；没有就重发 play（最多 6 次）
+ *           → 始终没起来就跳过这一段，**不要**把整句队列掐掉
+ *   onEnded 只是"加速信号"（能立刻接下一段），真正的推进由 150ms 的状态轮询兜底：
+ *   老电视盒子丢 onEnded 是常事，靠回调推进会出现"念完第一段就没了"。
+ */
+
+import { voiceKey, voiceSegments } from './voice-tpl.uts'
+import { VOICE_KEYS } from './voice-index.uts'
+
+/** 音频目录（App 端用绝对路径，不要写 ../static/） */
+const VOICE_DIR: string = '/static/voice/'
+
+/** 段间留白：仅给播放器复位，避免短语拼接听起来断续 */
+const SEG_GAP_MS: number = 25
+
+/** 状态轮询间隔（毫秒）：onEnded 丢了也靠它推进 */
+const TICK_MS: number = 150
+
+/** 单段最多重发几次 play()（src 未就绪时 play 会被丢弃，重发即可） */
+const MAX_TRY: number = 6
+
+/** 单段兜底时长基数：按 4 字/秒估算后再宽放（尾部余量，避免掐掉尾音） */
+const GUARD_TAIL_MS: number = 1000
+
+/**
+ * 真人音频倍速（1.0 = 原速）
+ *
+ * 语音包按正常语速录，听感比系统 TTS 慢一截；1.15 倍后节奏与 `SPEECH_RATE 0.82` 的系统 TTS
+ * 接近，孩子不用在两套声音之间来回换节奏。再快（>1.25）Android 上会明显变调。
+ */
+const VOICE_RATE: number = 1.15
+
+/** 倍速上限：再高就变调成"快进"，孩子听不清字 */
+const VOICE_RATE_MAX: number = 1.24
+
+/** 当前这条朗读要用的倍速（页面按"解读稍快"传 1.1 之类，这里换算成播放器倍速） */
+let curRate: number = VOICE_RATE
+
+/** 一段最长等多久（绝对上限）：播放器报的进度不可信时不能无限等 */
+const MAX_SEG_MS: number = 20000
+
+/** 一段彻底放不出来时，把"还剩下的文字"交回上层（tts.uts 用系统 TTS 补读） */
+export type VoiceMissHandler = (text: string) => void
+
+let ctx: InnerAudioContext | null = null
+let queue: Array<string> = []
+/** 每段的文字（与 queue 等长）：出问题时靠它把没念出来的字补读出去 */
+let queueText: Array<string> = []
+/** 每段预估时长（毫秒），与 queue 等长 */
+let queueMs: Array<number> = []
+let missHandler: VoiceMissHandler | null = null
+let qi: number = 0
+let playing: boolean = false
+/** 当前段是否已推进过（onEnded 与轮询可能撞在一起，用这个去重） */
+let segDone: boolean = true
+/** 当前段真正开始出声的时间戳；0 表示还没开始 */
+let segStartedAt: number = 0
+/** 当前段预期时长 */
+let segMs: number = 0
+/** 当前段已重发 play 的次数 */
+let tries: number = 0
+/** 当前段是否已经真的响过（onPlay 回执） */
+let started: boolean = false
+/** 是否已切换到"每段新建实例"模式（复用实例放不出第二段时的自救开关） */
+let useFresh: boolean = false
+/** 当前段是否已经用新建实例重试过（防止死循环） */
+let freshRetried: boolean = false
+
+let gapId: number = -1
+let tickId: number = -1
+
+/**
+ * 注册"某段彻底放不出来"的接盘人（tts.uts 用它把剩下的文字交给系统 TTS）
+ *
+ * 为什么要有这一环：mp3 坏一个文件、某些机型换 src 抛错，都会让某一段**永远**没声音。
+ * 以前的处理是"跳过这一段"——孩子听到的就是"豆豆，我们来看看这张图。"然后没了，
+ * 家长以为题目文字没接上。现在改成：剩下的文字立刻交给系统 TTS 念完，
+ * 音色会换一下，但**题一定念完整**。宁可音色断档，也不能把题目吃掉。
+ */
+export function setVoiceMissHandler(h: VoiceMissHandler): void {
+  missHandler = h
+}
+
+function clearGap(): void {
+  if (gapId >= 0) {
+    clearTimeout(gapId)
+    gapId = -1
+  }
+}
+
+/**
+ * 当前段救不活了：把"这一段 + 后面所有段"的文字交给上层补读。
+ *
+ * 只补"剩下的"、不补已经念过的，避免重复；并且先停掉真人通道，
+ * 否则 TTS 会和后面还没播的 mp3 一起出声（两条音轨叠在一起听着像故障）。
+ */
+function failRest(): void {
+  let rest: string = ''
+  for (let i = qi; i < queueText.length; i++) rest += queueText[i]
+  stopVoice()
+  const h = missHandler
+  if (h == null || rest.length == 0) return
+  console.log('[voice] 真人音频断了，剩下的交给系统 TTS：' + rest)
+  h(rest)
+}
+
+function clearTick(): void {
+  if (tickId >= 0) {
+    clearTimeout(tickId)
+    tickId = -1
+  }
+}
+
+/**
+ * 丢掉当前实例（"每段新建实例"模式用）
+ *
+ * 只从定时器里调用，不要从 onEnded / onError 回调里销毁自己——播放器在自己的回调里被
+ * destroy，部分机型会连带丢掉后续回调，甚至抛异常。
+ */
+function resetCtx(): void {
+  const c = ctx
+  if (c == null) return
+  try {
+    c.stop()
+  } catch (e) {
+    // 未播放时 stop 会抛
+  }
+  try {
+    c.destroy()
+  } catch (e) {
+    console.log('[voice] 释放实例失败')
+  }
+  ctx = null
+}
+
+/**
+ * 设置播放倍速
+ *
+ * `playbackRate` 是可选能力：老机型 / 部分平台会忽略甚至抛异常。
+ * 所以整段包 try——读得慢一点能忍，绝不能因为设倍速失败把整句朗读搞挂。
+ * （H5 上是否生效取决于底层实现，不生效就还是原速，不影响正确性。）
+ */
+function applyRate(c: InnerAudioContext): void {
+  try {
+    c.playbackRate = curRate
+  } catch (e) {
+    // 忽略：这台设备不支持倍速
+  }
+}
+
+/**
+ * 按语速倍率设置本句的播放倍速
+ *
+ * 页面传的 1.0 就是语音包的原节奏（1.15）；解读类文案传 1.1 → 约 1.26，
+ * 再往上会明显变调，所以夹在 VOICE_RATE_MAX。
+ */
+function useSpeed(speed: number): void {
+  let s: number = speed
+  if (s < 0.7) s = 0.7
+  let r: number = VOICE_RATE * s
+  if (r > VOICE_RATE_MAX) r = VOICE_RATE_MAX
+  curRate = r
+}
+
+function ensureCtx(): InnerAudioContext | null {
+  if (ctx != null) return ctx
+  try {
+    const c = uni.createInnerAudioContext()
+    c.volume = 1.0
+    c.autoplay = false
+    applyRate(c)
+    // 正常放完：马上接下一段，不留空档
+    c.onEnded(() => {
+      advance()
+    })
+    // 真的响了才记时间：估时长从"出声那一刻"算起，否则重发 play 会累积误差
+    c.onPlay(() => {
+      if (!playing || segDone) return
+      started = true
+      if (segStartedAt == 0) segStartedAt = Date.now()
+    })
+    // 单个片段出错：先判"是不是换 src 太急"，用新实例把这一段重来一次；
+    // 重来还不行才交给系统 TTS 把剩下的文字念完（绝不整句吞掉）
+    c.onError((e) => {
+      if (!playing || segDone) return
+      const file: string = qi < queue.length ? queue[qi] : ''
+      console.log('[voice] 片段播放失败：' + file)
+      if (!freshRetried) {
+        // 不能在自己的回调里 destroy 自己：交给定时器，稍后再换新实例重播这一段
+        freshRetried = true
+        useFresh = true
+        segDone = true
+        clearGap()
+        clearTick()
+        setTimeout(() => {
+          resetCtx()
+          playCurrent()
+        }, 120)
+        return
+      }
+      failRest()
+    })
+    ctx = c
+    return ctx
+  } catch (e) {
+    console.log('[voice] 创建音频上下文失败')
+    return null
+  }
+}
+
+/** 按 3.5 字/秒估一段的播放时长（真人包原速约 3 字/秒 × 1.15 倍速），再加尾部余量 */
+function estimateMs(text: string): number {
+  const n: number = text.length
+  return Math.round(n * 1000 / 3.5) + GUARD_TAIL_MS
+}
+
+/**
+ * 播放器是否还"确实在放"
+ *
+ * 只看估时会掐断长句（3 字/秒的估算对带停顿的陪伴语气偏短）。
+ * 这里读播放器自报的 currentTime / duration：还剩 0.35s 以上没放完就认为没放完。
+ * 读不到或报 0 时返回 false —— 不能因为拿不到进度就把整句卡死。
+ */
+function stillPlaying(c: InnerAudioContext | null): boolean {
+  if (c == null) return false
+  try {
+    const d: number = c.duration
+    const t: number = c.currentTime
+    if (d > 0 && t > 0 && t < d - 0.35) return true
+  } catch (e) {
+    // 部分机型读取会抛，按"放完了"处理
+  }
+  return false
+}
+
+/** 推进到下一段（onEnded / onError / 轮询超时 三个入口共用，靠 segDone 去重） */
+function advance(): void {
+  if (!playing || segDone) return
+  segDone = true
+  clearGap()
+  clearTick()
+  qi++
+  freshRetried = false
+  playCurrent()
+}
+
+/** 装载当前段：先复位播放器，留一个间隙再设 src，最后交给 kick 去重试 play */
+function playCurrent(): void {
+  clearGap()
+  clearTick()
+  if (!playing) return
+  if (qi >= queue.length) {
+    playing = false
+    segDone = true
+    return
+  }
+  const file: string = queue[qi]
+  // 自救模式：上一段的实例直接扔掉，这一段用全新的播放器，绕开复用状态机
+  if (useFresh) resetCtx()
+  const c = ensureCtx()
+  if (c == null) {
+    playing = false
+    return
+  }
+  segDone = false
+  started = false
+  tries = 0
+  segStartedAt = 0
+  segMs = qi < queueMs.length ? queueMs[qi] : GUARD_TAIL_MS
+  try {
+    c.stop()
+  } catch (e) {
+    // 未播放时 stop 会抛，忽略
+  }
+  gapId = setTimeout(() => {
+    gapId = -1
+    if (!playing || segDone) return
+    const c2 = ensureCtx()
+    if (c2 == null) {
+      playing = false
+      return
+    }
+    try {
+      c2.src = VOICE_DIR + file + '.mp3'
+    } catch (e) {
+      console.log('[voice] 设置音频源失败：' + file)
+      advance()
+      return
+    }
+    // 换 src 后部分机型会把倍速重置成 1.0，这里补一次
+    applyRate(c2)
+    kick()
+  }, SEG_GAP_MS) as number
+}
+
+/** 发一次 play，并排一个 150ms 后的状态检查 */
+function kick(): void {
+  if (!playing || segDone) return
+  const c = ensureCtx()
+  if (c == null) {
+    playing = false
+    return
+  }
+  tries++
+  try {
+    c.play()
+  } catch (e) {
+    // 未就绪时 play 可能抛，靠后面的重发兜
+  }
+  clearTick()
+  tickId = setTimeout(() => {
+    tickId = -1
+    checkSeg()
+  }, TICK_MS) as number
+}
+
+/** 状态轮询：没开始就重发，开始了就等它放完 */
+function checkSeg(): void {
+  if (!playing || segDone) return
+  if (!started) {
+    if (segStartedAt == 0) {
+      // 还没出声：先看超时，再重发
+      if (tries >= MAX_TRY) {
+        // 这一段怎么也放不出来。先怀疑"复用实例换 src"这件事本身：切到每段新建实例，
+        // 把这一段重来一次；还是不出声才跳过，让后面的题干继续念。
+        if (!freshRetried) {
+          freshRetried = true
+          useFresh = true
+          console.log('[voice] 复用播放器放不出声音，改为每段新建实例')
+          resetCtx()
+          playCurrent()
+          return
+        }
+        console.log('[voice] 片段静默，交给系统 TTS 补读：' + (qi < queue.length ? queue[qi] : ''))
+        failRest()
+        return
+      }
+      kick()
+      return
+    }
+  }
+  // 已经出声：优先用播放器报的真实时长（onEnded 常丢，按字数估会留一长段空白）
+  const c = ensureCtx()
+  if (c != null) {
+    const d: number = c.duration
+    if (d > 0) {
+      const need: number = Math.round(d * 1000) + 300
+      if (need < segMs) segMs = need
+    }
+  }
+  const el: number = Date.now() - segStartedAt
+  if (el >= segMs) {
+    // 估时到点了，但播放器说它还在放（currentTime 没到 duration）→ 再等一轮。
+    // 这一步专治"长句被掐断"：心情/交往剧场的长句 7 秒上下，按字数估很容易估短。
+    if (el < MAX_SEG_MS && stillPlaying(c)) {
+      clearTick()
+      tickId = setTimeout(() => {
+        tickId = -1
+        checkSeg()
+      }, TICK_MS) as number
+      return
+    }
+    advance()
+    return
+  }
+  clearTick()
+  tickId = setTimeout(() => {
+    tickId = -1
+    checkSeg()
+  }, TICK_MS) as number
+}
+
+/**
+ * 播一句话（可能由多段拼成）
+ * @param text 要读的文字
+ * @param speed 语速倍率（1.0 = 语音包原节奏）
+ * @returns true=已交给真人音频；false=包里没有，调用方应退回系统 TTS
+ */
+export function playVoiceText(text: string, speed: number = 1.0): boolean {
+  // 语音包没装（索引为空）时直接让路，避免每句话都白跑一遍模板匹配
+  if (VOICE_KEYS.length == 0) return false
+  const segs: Array<string> = voiceSegments(text)
+  if (segs.length == 0) return false
+  const files: Array<string> = []
+  const texts: Array<string> = []
+  const ms: Array<number> = []
+  for (let i = 0; i < segs.length; i++) {
+    const k: string = voiceKey(segs[i])
+    let hit: boolean = false
+    for (let j = 0; j < VOICE_KEYS.length; j++) {
+      if (VOICE_KEYS[j] == k) {
+        hit = true
+        break
+      }
+    }
+    if (!hit) {
+      // 任意一段缺失就整句退回 TTS：宁可整句机械，也不要一句里两种音色来回跳
+      return false
+    }
+    files.push(k)
+    texts.push(segs[i])
+    ms.push(estimateMs(segs[i]))
+  }
+  stopVoice()
+  useSpeed(speed)
+  queue = files
+  queueText = texts
+  queueMs = ms
+  qi = 0
+  playing = true
+  segDone = false
+  freshRetried = false
+  console.log('[voice] 真人音频 ' + files.length + ' 段：' + segs.join(' | '))
+  playCurrent()
+  return true
+}
+
+/** 真人音频是否正在播 */
+export function isVoicePlaying(): boolean {
+  return playing
+}
+
+/** 立即停（切页 / 作答 / 用户点了别的 / 开始播系统 TTS 前） */
+export function stopVoice(): void {
+  clearGap()
+  clearTick()
+  playing = false
+  segDone = true
+  started = false
+  segStartedAt = 0
+  freshRetried = false
+  queue = []
+  queueText = []
+  queueMs = []
+  qi = 0
+  const c = ctx
+  if (c != null) {
+    try {
+      c.stop()
+    } catch (e) {
+      // 未播放时 stop 会抛
+    }
+  }
+}
+
+/** 页面卸载释放（文档要求 InnerAudioContext 必须 destroy，否则反复进出会泄漏） */
+export function releaseVoice(): void {
+  stopVoice()
+  const c = ctx
+  if (c != null) {
+    try {
+      c.destroy()
+    } catch (e) {
+      console.log('[voice] 释放失败')
+    }
+    ctx = null
+  }
+}

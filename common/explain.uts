@@ -1,0 +1,87 @@
+/**
+ * 算算小达人 · 小黑板讲解（答错后「一边写一边讲」）
+ *
+ * 定位：答错不是终点，是教学点。孩子答错后，不立刻甩一句"正确答案是 7"，
+ * 而是把小黑板推出来，小老师陪着他，一步一步把这道题重新想一遍。
+ *
+ * 三层结构：
+ *   黑板（板书）—— 短，能看见的"画"。数字、图形、算式，一行一行往上加。
+ *   老师说     —— 长，口语。一句一步，慢，不堆术语。
+ *   表情       —— 老师这一步在想 / 在笑，让孩子知道"老师在陪我"。
+ *
+ * 四条硬约束（改文案前先看）：
+ *  1. 不讲"你错了"：讲解开头永远从"我们一起看看"起步，不评价孩子。
+ *  2. 一步一件事：每步只推进一个动作（看第一行 → 数出来 → 加起来），
+ *     不在一句话里塞两个新信息，4~5 岁接不住。
+ *  3. 每步都有停顿：页面侧按"打完字再停 1.8 秒"推进，最后一步停 8 秒，
+ *     孩子不点也可以一直看（`pages/math/math.uvue` 的 tryAdvance）。
+ *  4. 板书 ≤ 22 字、口述 ≤ 40 字：板书是一行粉笔字，超出就换行成两行，看着乱。
+ *
+ * 讲解在 `math-engine.uts` 各 genXxx 里就地生成——生成题目时手里有全部数字
+ * （n1/n2/a/b/目标堆），反推容易算错，就地写最省事也最不容易错。
+ */
+
+/** 讲解的一步 */
+export class ExplainLine {
+	/** 黑板上这一行的文字（粉笔字） */
+	board: string = ''
+	/** 跟着这一行一起画上黑板的图形（emoji / ●●●，空串表示纯文字行） */
+	icon: string = ''
+	/** 老师说的这句话（口语，会被逐字打出来 + 朗读） */
+	say: string = ''
+	/** 老师这一步的表情 */
+	face: string = '🤔'
+
+	constructor(board: string, icon: string, say: string, face: string) {
+		this.board = board
+		this.icon = icon
+		this.say = say
+		this.face = face
+	}
+}
+
+/** 一道题的小黑板讲解 */
+export class Explain {
+	/** 黑板顶上的标题，如「数一数」「比多少」 */
+	title: string = ''
+	/** 板书步骤（3~4 步） */
+	lines: Array<ExplainLine> = []
+
+	/** 有没有讲解（false 时页面回退到"正确答案是 X"） */
+	has(): boolean {
+		return this.lines.length > 0
+	}
+}
+
+/** 造一行板书：board 写黑板上，icon 一起画上去，say 老师说的，face 老师表情 */
+export function el(board: string, icon: string, say: string, face: string): ExplainLine {
+	return new ExplainLine(board, icon, say, face)
+}
+
+/** 把若干行组装成一份讲解 */
+export function makeExplain(title: string, lines: Array<ExplainLine>): Explain {
+	const e = new Explain()
+	e.title = title
+	e.lines = lines
+	return e
+}
+
+/**
+ * 数字序列文案：4 → "1 2 3 4"
+ * 板书上要让孩子看见"一个一个数"的过程，不是看见一个结论。
+ */
+export function countSeq(n: number): string {
+	let s: string = ''
+	for (let i = 1; i <= n; i++) {
+		if (i > 1) s += ' '
+		s += i.toString()
+	}
+	return s
+}
+
+/** 重复一个字符 n 次（板书上的 ●●●●） */
+export function dots(ch: string, n: number): string {
+	let s: string = ''
+	for (let i = 0; i < n; i++) s += ch
+	return s
+}

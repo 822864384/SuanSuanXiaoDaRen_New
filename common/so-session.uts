@@ -1,0 +1,28 @@
+/**
+ * 算算小达人 · 交往剧场的跨页会话状态
+ *
+ * 与 mind-session.uts 同一套理由：uvue 的 onLoad 参数是 UTSJSONObject，
+ * 跨端取值容易踩坑；这里只需要一个剧集 id + 一个类别 id，用模块级单例最稳。
+ */
+
+/** 大厅里当前选中的类别（默认 S1 礼貌用语） */
+let activeThemeId: string = 'S1'
+
+/** 要演的那一集 */
+let activeEpisodeId: string = 'S1-1'
+
+export function getSoTheme(): string {
+	return activeThemeId
+}
+
+export function setSoTheme(id: string): void {
+	activeThemeId = id
+}
+
+export function getActiveEpisode(): string {
+	return activeEpisodeId
+}
+
+export function setActiveEpisode(id: string): void {
+	activeEpisodeId = id
+}

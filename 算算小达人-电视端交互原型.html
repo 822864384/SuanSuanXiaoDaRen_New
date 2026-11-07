@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>算算小达人 · 电视端交互原型</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+  html,body { width:100%; height:100%; background:#0b1026; overflow:hidden;
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif; }
+  /* ===== 16:9 舞台，1920x1080 设计稿等比缩放 ===== */
+  #stage { position:absolute; left:50%; top:50%; width:1920px; height:1080px;
+    transform-origin:center center;
+    background:linear-gradient(160deg,#141b3d 0%,#1b2a5e 55%,#233a7d 100%);
+    border-radius:24px; overflow:hidden; box-shadow:0 0 80px rgba(0,0,0,.6); }
+  .stars-bg { position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(2px 2px at 8% 12%,#fff8 60%,transparent),
+    radial-gradient(2px 2px at 22% 32%,#fff5 60%,transparent),
+    radial-gradient(3px 3px at 45% 8%,#fff6 60%,transparent),
+    radial-gradient(2px 2px at 68% 18%,#fff5 60%,transparent),
+    radial-gradient(2px 2px at 85% 30%,#fff6 60%,transparent),
+    radial-gradient(2px 2px at 92% 70%,#fff5 60%,transparent),
+    radial-gradient(3px 3px at 12% 78%,#fff5 60%,transparent); }
+  .page { display:none; position:absolute; inset:0; padding:50px 70px; }
+  .page.active { display:flex; flex-direction:column; }
+  h1.pg-title { color:#ffd76e; font-size:52px; text-align:center; margin-bottom:8px; text-shadow:0 3px 0 #0006; }
+  p.pg-sub { color:#9fb4ff; font-size:28px; text-align:center; margin-bottom:24px; }
+  /* ===== 焦点系统（模拟遥控器） ===== */
+  .fx { outline:none; transition:transform .12s, box-shadow .12s; cursor:pointer; }
+  .fx.focused { transform:scale(1.06); box-shadow:0 0 0 6px #ffd76e, 0 12px 40px #ffd76e55; z-index:5; }
+  /* ===== 顶部栏 ===== */
+  .topbar { display:flex; align-items:center; gap:24px; margin-bottom:20px; }
+  .chip { background:#ffffff14; border-radius:40px; padding:12px 30px; color:#fff; font-size:30px; display:flex; align-items:center; gap:12px; }
+  .spacer { flex:1; }
+  /* ===== 选人页 ===== */
+  .profile-row { display:flex; gap:80px; justify-content:center; align-items:center; flex:1; }
+  .profile-card { width:420px; height:520px; background:#ffffff12; border-radius:36px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+  .profile-card .face { font-size:150px; }
+  .profile-card .name { font-size:44px; color:#fff; }
+  .profile-card .lvl { font-size:28px; color:#9fb4ff; }
+  /* ===== 学科首页 ===== */
+  .subject-row { display:flex; gap:44px; justify-content:center; flex:1; align-items:center; }
+  .subject-card { width:360px; height:460px; border-radius:36px; padding:40px 24px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; color:#fff; }
+  .subject-card .icon { font-size:130px; }
+  .subject-card .t { font-size:42px; font-weight:bold; }
+  .subject-card .s { font-size:26px; opacity:.85; }
+  .subject-card .st { font-size:30px; color:#ffd76e; letter-spacing:4px; }
+  .c-math { background:linear-gradient(160deg,#4a7dff,#2c4fd6); }
+  .c-cn { background:linear-gradient(160deg,#ff8a5c,#e05a3a); }
+  .c-en { background:linear-gradient(160deg,#3ecf8e,#1da06a); }
+  .c-so { background:linear-gradient(160deg,#c77dff,#8a3fd0); }
+  .pet-bar { display:flex; align-items:center; gap:26px; background:#ffffff10; border-radius:40px;
+    padding:18px 40px; margin:0 auto; width:fit-content; }
+  .pet { font-size:76px; animation:bounce 1.6s infinite ease-in-out; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+  .pet-bar .info { color:#fff; font-size:30px; line-height:1.5; }
+  /* ===== 答题页通用 ===== */
+  .quiz-top { display:flex; align-items:center; gap:28px; margin-bottom:10px; }
+  .score-chip { font-size:34px; color:#ffd76e; }
+  .combo-chip { font-size:34px; color:#ff8a5c; display:none; }
+  .q-main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px; }
+  .q-question { font-size:120px; color:#fff; font-weight:bold; letter-spacing:14px;
+    background:#ffffff10; border-radius:40px; padding:40px 90px; }
+  .q-question .blank { color:#ffd76e; border-bottom:10px dashed #ffd76e; padding:0 30px; }
+  .q-hint { font-size:34px; color:#9fb4ff; display:flex; align-items:center; gap:16px; }
+  .mic-dot { width:22px; height:22px; border-radius:50%; background:#3ecf8e; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:.4; transform:scale(.8)} 50%{opacity:1; transform:scale(1.3)} }
+  .timer-bar { width:640px; height:16px; background:#ffffff18; border-radius:10px; overflow:hidden; }
+  .timer-fill { height:100%; width:100%; background:linear-gradient(90deg,#3ecf8e,#ffd76e); border-radius:10px; }
+  .ans-pad { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; padding:10px 0 4px; }
+  .ans-btn { min-width:130px; height:104px; border-radius:26px; border:none; background:#ffffff16;
+    color:#fff; font-size:52px; font-weight:bold; }
+  .ans-btn:hover { background:#ffffff2a; }
+  .ans-btn.ok { background:#3ecf8e; color:#06341f; }
+  .ans-btn.say { background:#ffd76e33; color:#ffd76e; font-size:38px; min-width:auto; padding:0 34px; }
+  /* 反馈浮层 */
+  .feedback { position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:20px; z-index:20; pointer-events:none; }
+  .feedback .fb-icon { font-size:220px; }
+  .feedback .fb-text { font-size:72px; color:#fff; font-weight:bold; text-shadow:0 4px 0 #0007; }
+  .feedback .fb-sub { font-size:44px; color:#ffd76e; }
+  .shake { animation:shake .5s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-26px)}
+    40%{transform:translateX(26px)} 60%{transform:translateX(-16px)} 80%{transform:translateX(16px)} }
+  .pop { animation:pop .45s cubic-bezier(.2,2.2,.4,1); }
+  @keyframes pop { 0%{transform:scale(.4)} 100%{transform:scale(1)} }
+  .confetti { position:absolute; width:20px; height:20px; z-index:30; pointer-events:none;
+    font-size:26px; animation:fly 1.4s ease-out forwards; }
+  @keyframes fly { 0%{transform:translate(0,0) scale(1); opacity:1}
+    100%{transform:translate(var(--dx),var(--dy)) scale(.4) rotate(360deg); opacity:0} }
+  /* ===== 情景动画（交往模块） ===== */
+  .scene { flex:1; display:flex; align-items:flex-end; justify-content:center; gap:130px; padding-bottom:120px; position:relative; }
+  .actor { font-size:150px; position:relative; }
+  .actor.walk { animation:walkin 1.4s ease-out both; }
+  @keyframes walkin { 0%{transform:translateX(-500px)} 100%{transform:translateX(0)} }
+  .bubble { position:absolute; top:-150px; left:50%; transform:translateX(-50%);
+    background:#fff; color:#333; font-size:32px; padding:16px 28px; border-radius:24px; white-space:nowrap; }
+  .bubble:after { content:''; position:absolute; left:50%; bottom:-14px; transform:translateX(-50%);
+    border:14px solid transparent; border-top-color:#fff; border-bottom:0; }
+  .q-bubble { text-align:center; font-size:56px; color:#ffd76e; font-weight:bold; margin:10px 0 20px; }
+  /* ===== 结算 ===== */
+  .result-stars { font-size:130px; letter-spacing:20px; }
+  .result-rows { display:flex; flex-direction:column; gap:18px; align-items:center; margin:30px 0; }
+  .result-row { font-size:38px; color:#fff; }
+  /* ===== 家长报告 ===== */
+  .report-wrap { flex:1; display:flex; gap:60px; margin-top:20px; }
+  .report-bars { flex:1.2; display:flex; flex-direction:column; gap:34px; justify-content:center; }
+  .rbar .label { color:#fff; font-size:32px; margin-bottom:10px; display:flex; justify-content:space-between; }
+  .rbar .track { height:30px; border-radius:16px; background:#ffffff14; overflow:hidden; }
+  .rbar .fill { height:100%; border-radius:16px; }
+  .report-side { flex:1; background:#ffffff10; border-radius:32px; padding:44px; color:#fff; font-size:30px; line-height:2; }
+  /* ===== 模态（家长门） ===== */
+  .modal-mask { position:absolute; inset:0; background:#000a; display:none;
+    align-items:center; justify-content:center; z-index:50; }
+  .modal-mask.show { display:flex; }
+  .modal { width:760px; background:#1b2a5e; border:4px solid #ffd76e; border-radius:36px;
+    padding:60px; text-align:center; }
+  .modal .m-t { font-size:44px; color:#ffd76e; margin-bottom:24px; }
+  .modal .m-q { font-size:60px; color:#fff; margin-bottom:30px; }
+  .modal input { width:280px; height:90px; font-size:48px; text-align:center; border-radius:20px;
+    border:none; outline:none; }
+  .modal .m-btns { margin-top:36px; display:flex; gap:30px; justify-content:center; }
+  .btn { border:none; border-radius:24px; padding:20px 60px; font-size:36px; cursor:pointer; }
+  .btn.gold { background:#ffd76e; color:#5a3b00; }
+  .btn.ghost { background:#ffffff1c; color:#fff; }
+  .foot-tip { text-align:center; color:#7d90c9; font-size:24px; padding:16px 0 4px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="stars-bg"></div>
+
+  <!-- ============ P1 选人页 ============ -->
+  <div class="page active" id="pg-profile">
+    <h1 class="pg-title">🐾 算算小达人 · 谁来学习呀？</h1>
+    <p class="pg-sub">按 ←→ 选择，按 OK 进入（鼠标点击也可以）</p>
+    <div class="profile-row">
+      <div class="profile-card fx" data-act="enter-home"><div class="face">🐼</div>
+        <div class="name">糖糖</div><div class="lvl">⭐ 128 · Lv.3</div></div>
+      <div class="profile-card fx" data-act="enter-home"><div class="face">🐰</div>
+        <div class="name">跳跳</div><div class="lvl">⭐ 56 · Lv.2</div></div>
+      <div class="profile-card fx" data-act="enter-home" style="opacity:.6"><div class="face">➕</div>
+        <div class="name">新建档案</div><div class="lvl">最多 3 个</div></div>
+    </div>
+    <div class="foot-tip">原型提示：本页模拟开机选人，真实 App 中每个档案独立进度</div>
+  </div>
+
+  <!-- ============ P2 学科首页 ============ -->
+  <div class="page" id="pg-home">
+    <div class="topbar">
+      <div class="chip">🐼 糖糖</div>
+      <div class="chip">⭐ <span id="total-stars">128</span></div>
+      <div class="chip">🍬 <span id="candy">6</span></div>
+      <div class="spacer"></div>
+      <div class="chip fx" data-act="parent-gate">🔐 家长门</div>
+    </div>
+    <div class="subject-row">
+      <div class="subject-card c-math fx" data-act="go-math"><div class="icon">🧮</div>
+        <div class="t">数学口算</div><div class="s">10以内加减法</div><div class="st">★★★☆☆</div></div>
+      <div class="subject-card c-cn fx" data-act="go-cn"><div class="icon">📖</div>
+        <div class="t">语文启蒙</div><div class="s">识字 · 拼音 · 古诗</div><div class="st">★★☆☆☆</div></div>
+      <div class="subject-card c-en fx" data-act="go-en"><div class="icon">🔤</div>
+        <div class="t">英语单词</div><div class="s">看图说英语</div><div class="st">★★★★☆</div></div>
+      <div class="subject-card c-so fx" data-act="go-so"><div class="icon">🤝</div>
+        <div class="t">交往乐园</div><div class="s">情景动画小剧场</div><div class="st">★★★★★</div></div>
+    </div>
+    <div class="pet-bar">
+      <div class="pet">🦕</div>
+      <div class="info">小恐龙「糖豆」Lv.3 · 答对喂糖，帮我长大吧！</div>
+      <div class="chip fx" data-act="feed" style="font-size:28px">🍬 投喂</div>
+    </div>
+    <div class="foot-tip">遥控器：←→↑↓ 移动焦点，OK 确认，返回键退出模块</div>
+  </div>
+
+  <!-- ============ P3 数学答题 ============ -->
+  <div class="page" id="pg-math">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home">🏠 回首页</div>
+      <div class="chip">🧮 第 <span id="m-idx">1</span>/5 题</div>
+      <div class="spacer"></div>
+      <div class="combo-chip" id="m-combo">🔥 连击 ×<span id="m-combo-n">0</span></div>
+      <div class="score-chip">⭐ <span id="m-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div class="q-question" id="m-q">3 + 5 = <span class="blank">□</span></div>
+      <div class="q-hint"><div class="mic-dot"></div>正在听你说话… 说出 0~10 的答案</div>
+      <div class="timer-bar"><div class="timer-fill" id="m-timer"></div></div>
+    </div>
+    <div class="ans-pad" id="m-pad"></div>
+    <div class="foot-tip">按数字键或点击作答；🎤 按钮可尝试浏览器真实语音识别</div>
+  </div>
+
+  <!-- ============ P4 语文 ============ -->
+  <div class="page" id="pg-cn">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home">🏠 回首页</div>
+      <div class="chip">📖 看图识字 · 第 <span id="c-idx">1</span>/5 个</div>
+      <div class="spacer"></div>
+      <div class="score-chip">⭐ <span id="c-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div style="font-size:200px" id="c-emoji">🍎</div>
+      <div class="q-question" style="font-size:80px; letter-spacing:6px"><span id="c-word">？</span>
+        <span style="font-size:36px;color:#9fb4ff" id="c-pinyin"></span></div>
+      <div class="q-hint"><div class="mic-dot"></div>它叫什么名字？大声说出来（点击词语模拟）</div>
+    </div>
+    <div class="ans-pad" id="c-pad"></div>
+    <div class="foot-tip">答对后会播放笔顺动画（原型中以放大高亮表示）</div>
+  </div>
+
+  <!-- ============ P5 英语 ============ -->
+  <div class="page" id="pg-en">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home">🏠 回首页</div>
+      <div class="chip">🔤 看图说英语 · 第 <span id="e-idx">1</span>/5 个</div>
+      <div class="spacer"></div>
+      <div class="score-chip">⭐ <span id="e-score">0</span></div>
+    </div>
+    <div class="q-main">
+      <div style="font-size:200px" id="e-emoji">🐱</div>
+      <div class="q-hint" style="font-size:44px;color:#fff">这是……? <span style="color:#ffd76e">What's this?</span></div>
+    </div>
+    <div class="ans-pad" id="e-pad"></div>
+    <div class="foot-tip">宽判定：发音不准也算对，保护开口意愿 😊</div>
+  </div>
+
+  <!-- ============ P6 交往乐园 ============ -->
+  <div class="page" id="pg-so">
+    <div class="quiz-top">
+      <div class="chip fx" data-act="go-home">🏠 回首页</div>
+      <div class="chip">🤝 情景剧场 ·《打招呼》</div>
+      <div class="spacer"></div>
+      <div class="score-chip">🌟 交往之星 <span id="s-star">0</span></div>
+    </div>
+    <div class="scene" id="so-scene">
+      <div class="actor walk" id="so-kid">🦕<div class="bubble">（不敢说话…）</div></div>
+      <div class="actor" style="animation-delay:.4s">👩‍🏫<div class="bubble">早上好呀，糖豆！</div></div>
+    </div>
+    <div class="q-bubble" id="so-q">糖豆应该说什么呀？</div>
+    <div class="ans-pad" id="so-pad"></div>
+    <div class="foot-tip">选错没有惩罚，会看到"另一种结果"，最后一定回到正确示范</div>
+  </div>
+
+  <!-- ============ P7 结算页 ============ -->
+  <div class="page" id="pg-result">
+    <h1 class="pg-title" id="r-title">🎉 太棒啦！</h1>
+    <div class="q-main">
+      <div class="result-stars" id="r-stars">⭐⭐⭐</div>
+      <div class="result-rows">
+        <div class="result-row" id="r-stat1">答对 4 题 · 答错 1 题</div>
+        <div class="result-row" id="r-stat2">获得 ⭐ ×4 · 糖果 🍬 ×1</div>
+        <div class="result-row" style="color:#ffd76e" id="r-praise">口算小神童就是你！</div>
+      </div>
+      <div style="display:flex; gap:40px">
+        <div class="btn gold fx" data-act="replay">🔁 再玩一次</div>
+        <div class="btn ghost fx" data-act="go-home">🏠 回首页</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ P8 家长报告 ============ -->
+  <div class="page" id="pg-report">
+    <h1 class="pg-title">📊 家长报告中心 · 糖糖</h1>
+    <p class="pg-sub">本周学习概况（原型数据）</p>
+    <div class="report-wrap">
+      <div class="report-bars">
+        <div class="rbar"><div class="label"><span>🧮 数学口算</span><span>正确率 86%</span></div>
+          <div class="track"><div class="fill" style="width:86%;background:linear-gradient(90deg,#4a7dff,#7aa5ff)"></div></div></div>
+        <div class="rbar"><div class="label"><span>📖 语文启蒙</span><span>识字量 62 字</span></div>
+          <div class="track"><div class="fill" style="width:62%;background:linear-gradient(90deg,#ff8a5c,#ffb89c)"></div></div></div>
+        <div class="rbar"><div class="label"><span>🔤 英语单词</span><span>词汇量 45 词</span></div>
+          <div class="track"><div class="fill" style="width:45%;background:linear-gradient(90deg,#3ecf8e,#8fe8c2)"></div></div></div>
+        <div class="rbar"><div class="label"><span>🤝 人际交往</span><span>交往之星 12 颗</span></div>
+          <div class="track"><div class="fill" style="width:75%;background:linear-gradient(90deg,#c77dff,#e2b8ff)"></div></div></div>
+      </div>
+      <div class="report-side">
+        <b style="color:#ffd76e;font-size:34px">📌 本周小结</b><br>
+        · 数学：退位减法正确率偏低，建议加练<br>
+        · 语文：古诗接句进步明显 📈<br>
+        · 英语：动物主题单词已全部点亮<br>
+        · 交往：《分享玩具》完成 2 遍<br>
+        · 本周学习时长：1 小时 40 分<br><br>
+        <div class="btn ghost fx" data-act="go-home">🏠 回首页</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 反馈浮层 & 家长门 ============ -->
+  <div class="feedback" id="feedback">
+    <div class="fb-icon" id="fb-icon">🎉</div>
+    <div class="fb-text" id="fb-text">答对啦！</div>
+    <div class="fb-sub" id="fb-sub">+1 ⭐</div>
+  </div>
+  <div class="modal-mask" id="gate-mask">
+    <div class="modal">
+      <div class="m-t">🔐 家长验证</div>
+      <div class="m-q">12 + 7 = ?</div>
+      <input id="gate-input" type="number" inputmode="numeric">
+      <div class="m-btns">
+        <div class="btn gold fx" data-act="gate-ok">确认</div>
+        <div class="btn ghost fx" data-act="gate-cancel">取消</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 舞台缩放 ================= */
+const stage = document.getElementById('stage');
+function fit(){ const s = Math.min(innerWidth/1920, innerHeight/1080) * 0.97;
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`; }
+addEventListener('resize', fit); fit();
+
+/* ================= 简易音效（WebAudio） ================= */
+let AC=null; function beep(type){
+  try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const t=AC.currentTime, o=AC.createOscillator(), g=AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    if(type==='ok'){ o.frequency.setValueAtTime(660,t); o.frequency.exponentialRampToValueAtTime(1320,t+.18);
+      g.gain.setValueAtTime(.12,t); g.gain.exponentialRampToValueAtTime(.001,t+.3); o.start(t); o.stop(t+.3); }
+    else { o.type='sine'; o.frequency.setValueAtTime(220,t); o.frequency.exponentialRampToValueAtTime(140,t+.25);
+      g.gain.setValueAtTime(.1,t); g.gain.exponentialRampToValueAtTime(.001,t+.3); o.start(t); o.stop(t+.3); }
+  }catch(e){} }
+
+/* ================= 页面 & 焦点管理（模拟遥控器） ================= */
+let curPage='pg-profile', focusList=[], focusIdx=0;
+function showPage(id, firstSel){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  curPage=id;
+  focusList=[...document.querySelectorAll('#'+id+' .fx')];
+  focusIdx=0; if(firstSel){ const i=focusList.findIndex(f=>f.matches(firstSel)); if(i>=0) focusIdx=i; }
+  updateFocus();
+}
+function updateFocus(){ focusList.forEach((f,i)=>f.classList.toggle('focused', i===focusIdx)); }
+addEventListener('keydown', e=>{
+  if(document.getElementById('gate-mask').classList.contains('show')){
+    if(e.key==='Enter') act('gate-ok'); return; }
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){ focusIdx=(focusIdx+1)%focusList.length; updateFocus(); e.preventDefault(); }
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ focusIdx=(focusIdx-1+focusList.length)%focusList.length; updateFocus(); e.preventDefault(); }
+  else if(e.key==='Enter'){ const el=focusList[focusIdx]; if(el) el.click(); e.preventDefault(); }
+  else if(e.key==='Escape'||e.key==='Backspace'){ if(curPage!=='pg-profile') act('go-home'); }
+});
+
+/* ================= 特效 ================= */
+const EMOJIS=['⭐','✨','🌟','🎊','💛','🍬'];
+function confetti(x,y,n=36){
+  for(let i=0;i<n;i++){ const s=document.createElement('div'); s.className='confetti';
+    s.textContent=EMOJIS[Math.random()*EMOJIS.length|0];
+    const a=Math.random()*Math.PI*2, d=180+Math.random()*260;
+    s.style.cssText=`left:${x}px;top:${y}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-120}px`;
+    stage.appendChild(s); setTimeout(()=>s.remove(),1500); } }
+function feedback(icon,text,sub,good){
+  const fb=document.getElementById('feedback');
+  document.getElementById('fb-icon').textContent=icon;
+  document.getElementById('fb-text').textContent=text;
+  document.getElementById('fb-sub').textContent=sub;
+  fb.style.display='flex'; fb.style.background = good?'rgba(30,120,70,.45)':'rgba(120,60,30,.45)';
+  fb.querySelector('.fb-icon').classList.add('pop');
+  confetti(960,480, good?42:10);
+  beep(good?'ok':'bad');
+  setTimeout(()=>{ fb.style.display='none'; fb.querySelector('.fb-icon').classList.remove('pop'); }, 1400);
+}
+
+/* ================= 数学模块 ================= */
+const PRAISE=['太棒了！','真厉害！','口算小神童！','完全正确！','你真聪明！'];
+const ENC=['没关系，再来一次！','差一点点哦！','继续加油！'];
+let mq=null, mIdx=0, mScore=0, mRight=0, mWrong=0, mCombo=0, timerId=null;
+function genMath(){ const add=Math.random()<0.6; let a,b;
+  if(add){ a=1+Math.random()*8|0; b=1+Math.random()*(9-a)|0; return {q:`${a} + ${b}`,ans:a+b}; }
+  a=2+Math.random()*8|0; b=1+Math.random()*(a-1)|0; return {q:`${a} − ${b}`,ans:a-b}; }
+function buildPad(el, items, cb){ el.innerHTML='';
+  items.forEach(it=>{ const b=document.createElement('button'); b.className='ans-btn fx';
+    b.textContent=it.label; b.dataset.value=it.value;
+    b.onclick=()=>cb(it.value,b); el.appendChild(b); }); }
+function nextMath(){
+  if(mIdx>=5){ showResult('math'); return; }
+  mq=genMath(); mIdx++;
+  document.getElementById('m-idx').textContent=mIdx;
+  document.getElementById('m-q').innerHTML=`${mq.q} = <span class="blank">□</span>`;
+  const qEl=document.getElementById('m-q'); qEl.classList.remove('shake'); void qEl.offsetWidth;
+  const vals=[mq.ans]; while(vals.length<6){ const v=Math.random()*10|0; if(!vals.includes(v)) vals.push(v); }
+  vals.sort((a,b)=>a-b);
+  const items=vals.map(v=>({label:v,value:v}));
+  buildPad(document.getElementById('m-pad'), items, answerMath);
+  const mic=document.createElement('button'); mic.className='ans-btn say fx'; mic.textContent='🎤 语音说答案';
+  mic.onclick=()=>voiceAnswer(mq.ans); document.getElementById('m-pad').appendChild(mic);
+  refreshFocus();
+  /* 倒计时 */
+  let t=20; const fill=document.getElementById('m-timer'); fill.style.transition='none';
+  fill.style.width='100%'; void fill.offsetWidth; fill.style.transition='width 20s linear';
+  fill.style.width='0%'; clearInterval(timerId);
+  timerId=setInterval(()=>{ t--; if(t<=0){ clearInterval(timerId); mCombo=0; updCombo(); mWrong++;
+    feedback('⏰','时间到啦',`正确答案是 ${mq.ans}`,false); setTimeout(nextMath,1600); } },1000);
+}
+function answerMath(v,btn){
+  clearInterval(timerId);
+  if(v===mq.ans){ mRight++; mScore++; mCombo++; updCombo();
+    feedback('🎉', PRAISE[Math.random()*PRAISE.length|0], '+1 ⭐', true); feedPet();
+    setTimeout(nextMath,1600);
+  } else { mWrong++; mCombo=0; updCombo();
+    feedback('🤔', ENC[Math.random()*ENC.length|0], `正确答案是 ${mq.ans}`, false);
+    document.getElementById('m-q').classList.add('shake');
+    setTimeout(nextMath,2000); } }
+function updCombo(){ const c=document.getElementById('m-combo');
+  c.style.display=mCombo>=2?'block':'none'; document.getElementById('m-combo-n').textContent=mCombo; }
+
+/* ================= 浏览器语音识别（可选彩蛋） ================= */
+function voiceAnswer(ans){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ feedback('🎤','这个浏览器不支持语音','用数字按钮也一样哦',false); return; }
+  const rec=new SR(); rec.lang='zh-CN'; rec.interimResults=false; rec.maxAlternatives=5;
+  feedback('🎙️','请说话…','说出 0~10 的答案',true);
+  rec.onresult=e=>{ const txt=e.results[0][0].transcript;
+    const map={'零':0,'〇':0,'一':1,'幺':1,'二':2,'两':2,'俩':2,'三':3,'仨':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,
+      '0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10};
+    let got=null; for(const ch of txt){ if(map[ch]!==undefined) got=map[ch]; }
+    if(got===null){ feedback('🎤',`听到了「${txt}」`,`再说一遍试试`,false); }
+    else answerMath(got); };
+  rec.onerror=()=>feedback('🎤','没听清','靠近一点再说一次',false);
+  rec.start(); }
+
+/* ================= 语文模块 ================= */
+const CN_WORDS=[{e:'🍎',w:'苹果',p:'píng guǒ',ops:['苹果','香蕉','西瓜']},
+  {e:'🐘',w:'大象',p:'dà xiàng',ops:['小猫','大象','老虎']},
+  {e:'☀️',w:'太阳',p:'tài yáng',ops:['月亮','星星','太阳']},
+  {e:'🐟',w:'小鱼',p:'xiǎo yú',ops:['小鱼','小鸟','小马']},
+  {e:'🌸',w:'花朵',p:'huā duǒ',ops:['花朵','小草','大树']}];
+let cIdx=0,cScore=0;
+function nextCn(){ if(cIdx>=5){ showResult('cn'); return; }
+  const w=CN_WORDS[cIdx]; cIdx++;
+  document.getElementById('c-idx').textContent=cIdx;
+  document.getElementById('c-emoji').textContent=w.e;
+  document.getElementById('c-word').textContent='？';
+  document.getElementById('c-pinyin').textContent=w.p;
+  buildPad(document.getElementById('c-pad'), w.ops.map(o=>({label:o,value:o})), (v,btn)=>{
+    if(v===w.w){ cScore++; document.getElementById('c-word').textContent=w.w;
+      document.getElementById('c-word').classList.add('pop');
+      feedback('✍️','会写啦！笔顺跟上来','+1 ⭐',true); feedPet(); setTimeout(nextCn,1700); }
+    else { feedback('🌱',`这个是「${v}」哦`,`${w.w} 是哪一个？`,false); setTimeout(nextCn,1800); } });
+  refreshFocus(); }
+
+/* ================= 英语模块 ================= */
+const EN_WORDS=[{e:'🐱',en:'cat',zh:'猫',ops:['cat','dog','pig']},
+  {e:'🐶',en:'dog',zh:'狗',ops:['cat','dog','duck']},
+  {e:'🍎',en:'apple',zh:'苹果',ops:['egg','apple','banana']},
+  {e:'🐟',en:'fish',zh:'鱼',ops:['fish','bird','cow']},
+  {e:'🌙',en:'moon',zh:'月亮',ops:['sun','star','moon']}];
+let eIdx=0,eScore=0;
+function nextEn(){ if(eIdx>=5){ showResult('en'); return; }
+  const w=EN_WORDS[eIdx]; eIdx++;
+  document.getElementById('e-idx').textContent=eIdx;
+  document.getElementById('e-emoji').textContent=w.e;
+  const items=w.ops.map(o=>({label:o,value:o}));
+  buildPad(document.getElementById('e-pad'), items, (v)=>{
+    if(v===w.en){ eScore++; feedback('🙋','Great job!',`${w.en} · ${w.zh} +1 ⭐`,true); feedPet();
+      setTimeout(nextEn,1700); }
+    else { feedback('😊','Try again!',`听：${w.en}～`,false); setTimeout(nextEn,1800); } });
+  refreshFocus(); }
+
+/* ================= 交往模块 ================= */
+const SO_SCENES=[{title:'《打招呼》',kid:'🦕',other:'👩‍🏫',bubble:'早上好呀，糖豆！',
+  q:'糖豆应该说什么呀？',ops:['老师好','不理她','快跑'],ok:'老师好',
+  good:'糖豆大声说「老师好！」老师和糖豆都笑了 😄',bad:'糖豆低下头没说话——没关系，看，大胆说出来就好！'},
+  {title:'《分享玩具》',kid:'🦕',other:'🐣',bubble:'我可以玩小汽车吗？',
+  q:'糖豆应该怎么做？',ops:['抱住不给','一起玩','把它藏起来'],ok:'一起玩',
+  good:'「我们一起玩吧！」两个好朋友玩得开心极了 🎈',bad:'糖豆抱住小汽车，小伙伴难过地走了…换一种方式试试？'}];
+let soIdx=0, soStar=0;
+function nextScene(){ const s=SO_SCENES[soIdx%SO_SCENES.length];
+  document.querySelector('#pg-so .chip:nth-child(2)').textContent=`🤝 情景剧场 · ${s.title}`;
+  document.getElementById('so-kid').firstChild.textContent=s.kid;
+  document.getElementById('so-scene').children[1].firstChild.textContent=s.other;
+  document.getElementById('so-scene').children[1].children[0].textContent='';
+  document.getElementById('so-scene').children[1].children[1].textContent=s.bubble;
+  document.getElementById('so-q').textContent=s.q;
+  const ops=s.ops.slice().sort(()=>Math.random()-.5);
+  buildPad(document.getElementById('so-pad'), ops.map(o=>({label:o,value:o})), (v)=>{
+    if(v===s.ok){ soStar++; document.getElementById('s-star').textContent=soStar;
+      feedback('🌟','太棒啦！',s.good,true); feedPet(); soIdx++; setTimeout(nextScene,2600); }
+    else { feedback('💡','看看另一种结果…',s.bad,false); setTimeout(()=>{
+        feedback('🌟','跟糖豆一起说',`正确示范：${s.ok}`,true); soIdx++; setTimeout(nextScene,2400); },2600); } });
+  refreshFocus(); }
+
+/* ================= 结算 ================= */
+let lastMode='math';
+function showResult(mode){ lastMode=mode;
+  const names={math:'🧮 数学口算',cn:'📖 语文识字',en:'🔤 英语单词',so:'🤝 交往剧场'};
+  let right,score,stars,praise;
+  if(mode==='math'){ right=mRight; score=mScore; }
+  else if(mode==='cn'){ right=cScore; score=cScore; }
+  else if(mode==='en'){ right=eScore; score=eScore; }
+  else { right=soStar; score=soStar; }
+  stars=right>=5?3:right>=3?2:right>=1?1:0;
+  praise=stars===3?'你就是传说中的小神童！':stars===2?'进步飞快，继续保持！':'今天也很棒，明天再来！';
+  document.getElementById('r-title').textContent='🎉 '+names[mode]+' 完成！';
+  document.getElementById('r-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('r-stat1').textContent=`答对 ${right} 题 · 答错 ${5-right} 题`;
+  document.getElementById('r-stat2').textContent=`获得 ⭐ ×${score} · 糖果 🍬 ×1`;
+  document.getElementById('r-praise').textContent=praise;
+  document.getElementById('total-stars').textContent=+(document.getElementById('total-stars').textContent)+score;
+  document.getElementById('candy').textContent=+(document.getElementById('candy').textContent)+1;
+  confetti(960,400,80); beep('ok');
+  showPage('pg-result','.btn.gold'); }
+
+/* ================= 宠物 & 家长门 ================= */
+function feedPet(){ const c=document.getElementById('candy');
+  c.textContent=Math.max(0,+c.textContent+1); }
+function gateShow(ok){ document.getElementById('gate-mask').classList.toggle('show',ok);
+  if(ok) setTimeout(()=>document.getElementById('gate-input').focus(),50); }
+
+/* ================= 动作路由 ================= */
+function act(a){
+  if(a==='enter-home'){ showPage('pg-home','.c-math'); }
+  else if(a==='go-math'){ mIdx=0;mScore=0;mRight=0;mWrong=0;mCombo=0;updCombo();
+    document.getElementById('m-score').textContent=0; showPage('pg-math'); nextMath(); }
+  else if(a==='go-cn'){ cIdx=0;cScore=0; showPage('pg-cn'); nextCn(); }
+  else if(a==='go-en'){ eIdx=0;eScore=0; showPage('pg-en'); nextEn(); }
+  else if(a==='go-so'){ soIdx=0;soStar=0; document.getElementById('s-star').textContent=0;
+    showPage('pg-so'); nextScene(); }
+  else if(a==='go-home'){ clearInterval(timerId); showPage('pg-home','.c-math'); }
+  else if(a==='replay'){ act(lastMode==='math'?'go-math':lastMode==='cn'?'go-cn':lastMode==='en'?'go-en':'go-so'); }
+  else if(a==='parent-gate'){ document.getElementById('gate-input').value=''; gateShow(true); }
+  else if(a==='gate-ok'){ const v=+document.getElementById('gate-input').value;
+    if(v===19){ gateShow(false); showPage('pg-report','.btn.ghost'); }
+    else { document.getElementById('gate-input').value=''; document.getElementById('gate-input').placeholder='不对哦，再算算'; } }
+  else if(a==='gate-cancel'){ gateShow(false); }
+  else if(a==='feed'){ feedback('🍬','糖豆吃到了！','开心地转了个圈',true); }
+}
+/* fx 点击统一走 data-act */
+function refreshFocus(){ focusList=[...document.querySelectorAll('#'+curPage+' .fx')];
+  focusIdx=Math.min(focusIdx,Math.max(0,focusList.length-1)); updateFocus(); }
+stage.addEventListener('click',e=>{ const t=e.target.closest('[data-act]'); if(t) act(t.dataset.act); });
+
+/* 启动 */
+showPage('pg-profile','.profile-card');
+</script>
+</body>
+</html>

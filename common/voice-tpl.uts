@@ -1,0 +1,281 @@
+/**
+ * 算算小达人 · 真人语音包「文本层」
+ *
+ * 这里只做纯字符串运算：文本 → 音频 key、文本 → 片段序列。
+ * 不碰播放、不碰 UI，所以可以被 Node 测试与音频生成脚本直接 import
+ * （`tools/voice-script.mjs` 靠它枚举出"应该合成哪些句子"）。
+ *
+ * 与之配套：
+ * - `common/voice.uts` 播放层（InnerAudioContext）
+ * - `tools/voice-gen.py` 合成（神经网络音色，按语句类型调韵律）
+ * - `tools/voice-index.mjs` 扫目录生成 `common/voice-index.uts`
+ */
+
+import { VOICE_KEYS } from './voice-index.uts'
+
+/**
+ * 文本 → 音频 key
+ *
+ * 纯算术 hash（乘 131 + 加码，模 2147483647）而不是位运算：
+ * UTS 跨端编译后位运算的 32 位截断行为不一致，`>>>` 在部分目标端还会直接报错。
+ * 这条链路上只需要"同文本同 key"，不需要密码学强度。
+ *
+ * **改了这里必须同步改 `tools/voice-lib.mjs` 的 voiceKey**，否则全部音频失配。
+ */
+export function voiceKey(text: string): string {
+  let h: number = 5381
+  for (let i = 0; i < text.length; i++) {
+    h = (h * 131 + text.charCodeAt(i)) % 2147483647
+  }
+  let hex: string = h.toString(16)
+  while (hex.length < 8) hex = '0' + hex
+  return 'v' + hex
+}
+
+/** 这段文本有没有对应的真人音频 */
+export function hasVoice(text: string): boolean {
+  const k: string = voiceKey(text)
+  for (let i = 0; i < VOICE_KEYS.length; i++) {
+    if (VOICE_KEYS[i] == k) return true
+  }
+  return false
+}
+
+/* ---------------- 数字转中文（音频包里数字按汉字录） ---------------- */
+
+const CN_DIGITS: Array<string> = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+
+/**
+ * 阿拉伯数字 → 中文读法（0~99，数学题只用到 0~20）
+ * 非纯数字原样返回：模板变量有时已经是汉字（"第五个"里的"五"）。
+ */
+export function numToCnText(raw: string): string {
+  const s: string = raw.trim()
+  if (s.length == 0) return s
+  let allDigit: boolean = true
+  for (let i = 0; i < s.length; i++) {
+    const c: number = s.charCodeAt(i)
+    if (c < 48 || c > 57) {
+      allDigit = false
+      break
+    }
+  }
+  if (!allDigit) return s
+  const n: number = parseInt(s) as number
+  if (n < 0 || n > 99) return s
+  if (n <= 10) return CN_DIGITS[n]
+  if (n < 20) return '十' + CN_DIGITS[n - 10]
+  const t: number = Math.floor(n / 10)
+  const o: number = n % 10
+  if (o == 0) return CN_DIGITS[t] + '十'
+  return CN_DIGITS[t] + '十' + CN_DIGITS[o]
+}
+
+/* ---------------- 题型模板（数学题干靠它拆段） ---------------- */
+
+/**
+ * 模板：固定串与占位符交替
+ * 占位符：{d}=数字（自动转中文） / {n}=名词 / {c}=类别名
+ *
+ * 这些串必须与 `common/math-engine.uts` 里 `q.prompt` 的字面完全一致，
+ * 差一个字就匹配不上、退回 TTS——不会出错，只是那句没有真人音。
+ * `tests/voice.test.mts` 会把 14 个题型的题干全过一遍，漏了就报。
+ */
+export class VoiceTpl {
+  parts: Array<string> = []
+  constructor(parts: Array<string>) {
+    this.parts = parts
+  }
+}
+
+export const MATH_TPLS: Array<VoiceTpl> = [
+  new VoiceTpl(['数一数，一共有几个', '{n}', '呀？']),
+  new VoiceTpl(['拿', '{d}', '个', '{n}', '给我']),
+  new VoiceTpl(['左边一堆，右边一堆，哪边', '{n}', '更多呀？还是一样多？']),
+  new VoiceTpl(['{d}', '后面跟着的是几呀？']),
+  new VoiceTpl(['{d}', '前面一个是几呀？']),
+  new VoiceTpl(['{d}', '可以分成', '{d}', '和几呀？']),
+  new VoiceTpl(['从左边数', '，第', '{d}', '个是谁呀？']),
+  new VoiceTpl(['从右边数', '，第', '{d}', '个是谁呀？']),
+  new VoiceTpl(['哪一堆', '{n}', '最多呀？']),
+  new VoiceTpl(['哪一堆', '{n}', '最少呀？']),
+  new VoiceTpl(['两根面条，哪一根更长呀？']),
+  new VoiceTpl(['两座积木塔，哪一座更高呀？']),
+  new VoiceTpl(['{n}', '和', '{n}', '，哪个更重呀？']),
+  new VoiceTpl(['哪一个不是', '{c}', '呀？']),
+  new VoiceTpl(['看一看，找一找规律，接下来应该出现哪一个呀？']),
+  new VoiceTpl(['盘子里有', '{d}', '个', '{n}', '，又放进来', '{d}', '个，一共有几个呀？']),
+  new VoiceTpl(['有', '{d}', '个', '{n}', '，拿走', '{d}', '个，还剩几个呀？'])
+]
+
+/** 所有模板里的固定串（生成脚本据此枚举要录哪些短句） */
+export function tplFixedParts(): Array<string> {
+  const out: Array<string> = []
+  for (let i = 0; i < MATH_TPLS.length; i++) {
+    const p: Array<string> = MATH_TPLS[i].parts
+    for (let j = 0; j < p.length; j++) {
+      if (p[j].substring(0, 1) != '{') out.push(p[j])
+    }
+  }
+  return out
+}
+
+/** 模板里用到的占位符种类 */
+export function tplVars(): Array<string> {
+  const out: Array<string> = []
+  for (let i = 0; i < MATH_TPLS.length; i++) {
+    const p: Array<string> = MATH_TPLS[i].parts
+    for (let j = 0; j < p.length; j++) {
+      const s: string = p[j]
+      if (s.substring(0, 1) == '{' && out.indexOf(s) < 0) out.push(s)
+    }
+  }
+  return out
+}
+
+/**
+ * 叫名字开场（读题模板的前半句）
+ * 名字只有 2~3 种，单独录一条接在后面，比给每道题录 N 个版本省得多。
+ *
+ * 加角色必做两件事：① 这个数组加名字；② 重跑
+ *   node --experimental-strip-types tools/voice-script.mjs
+ *   python tools/voice-gen.py
+ * 否则新角色的话音包里没有"名字 + 开场"这几条，读题会整句退回系统 TTS（机械音）。
+ */
+export const NAME_HEADS: Array<string> = ['豆豆', '滔滔', '小朋友', '宝贝']
+export const ASK_HEAD: string = '，请听题。'
+export const MIND_HEAD: string = '，我们来看看这张图。'
+export const STORY_HEAD: string = '，我们来看一个小故事。'
+
+/** 名字 + 三种开场，生成脚本要用 */
+export function nameHeadList(): Array<string> {
+  const out: Array<string> = []
+  const tails: Array<string> = [ASK_HEAD, MIND_HEAD, STORY_HEAD]
+  for (let i = 0; i < NAME_HEADS.length; i++) {
+    for (let j = 0; j < tails.length; j++) {
+      out.push(NAME_HEADS[i] + tails[j])
+    }
+  }
+  return out
+}
+
+/**
+ * 模板匹配：把一句自由文本拆成片段数组
+ * 匹配不上返回空数组（调用方退回 TTS，不静默吞音）。
+ */
+export function matchTpl(text: string, tpl: VoiceTpl): Array<string> {
+  const out: Array<string> = []
+  let pos: number = 0
+  for (let i = 0; i < tpl.parts.length; i++) {
+    const p: string = tpl.parts[i]
+    if (p.substring(0, 1) == '{') {
+      // 变量段：一直吃到「下一个固定串」出现的位置
+      let nextFixed: string = ''
+      for (let j = i + 1; j < tpl.parts.length; j++) {
+        if (tpl.parts[j].substring(0, 1) != '{') {
+          nextFixed = tpl.parts[j]
+          break
+        }
+      }
+      let end: number = -1
+      if (nextFixed.length == 0) {
+        end = text.length
+      } else {
+        end = text.indexOf(nextFixed, pos)
+      }
+      if (end < 0) return []
+      const raw: string = text.substring(pos, end)
+      if (raw.length == 0) return []
+      out.push(p == '{d}' ? numToCnText(raw) : raw)
+      pos = end
+    } else {
+      if (text.indexOf(p, pos) != pos) return []
+      out.push(p)
+      pos += p.length
+    }
+  }
+  if (pos != text.length) return []
+  return out
+}
+
+/**
+ * 通用句首：这类前缀自己成一句（有独立音频），后面再接正文
+ *
+ * 「再听一遍」是孩子最常点的按钮，如果它走 TTS 而正文走真人，
+ * 一句话里会出现两个人——比整句都用 TTS 还难受。
+ */
+const GENERIC_PREFIXES: Array<string> = ['再听一遍。', '再看一遍。']
+
+/** 这些前缀会被单独念，正文再按自己的流程拆 */
+export function genericPrefixes(): Array<string> {
+  return GENERIC_PREFIXES
+}
+
+/**
+ * 整句或模板 → 片段文本数组；都不命中返回空数组
+ *
+ * 顺序有讲究：先整句（最自然），再剥前缀，最后才按题型拆。
+ * 拆段是"没有整句录音时的退路"，能整句就别拆。
+ */
+export function voiceSegments(text: string): Array<string> {
+  const t: string = text.trim()
+  if (t.length == 0) return []
+  // ① 整句
+  if (hasVoice(t)) {
+    const one: Array<string> = []
+    one.push(t)
+    return one
+  }
+  // ② 尾部句号：剧本旁白念的时候会补「。」，而枚举用的是原文（无句号）
+  if (t.substring(t.length - 1) == '。') {
+    const noDot: Array<string> = voiceSegments(t.substring(0, t.length - 1))
+    if (noDot.length > 0) return noDot
+  }
+  // ③ 通用句首：「再听一遍。」+ 正文
+  for (let i = 0; i < GENERIC_PREFIXES.length; i++) {
+    const g: string = GENERIC_PREFIXES[i]
+    if (t.indexOf(g) == 0) {
+      const rest: Array<string> = voiceSegments(t.substring(g.length))
+      if (rest.length == 0) return []
+      const all: Array<string> = []
+      all.push(g)
+      for (let m = 0; m < rest.length; m++) all.push(rest[m])
+      return all
+    }
+  }
+  // ④ 叫名字开场：剥掉「豆豆，请听题。」再拆剩下的，第一段单独查
+  for (let i = 0; i < NAME_HEADS.length; i++) {
+    const who: string = NAME_HEADS[i]
+    const heads: Array<string> = [
+      who + ASK_HEAD, who + MIND_HEAD, who + STORY_HEAD
+    ]
+    for (let k = 0; k < heads.length; k++) {
+      const h: string = heads[k]
+      if (t.indexOf(h) == 0) {
+        const rest: Array<string> = voiceSegments(t.substring(h.length))
+        if (rest.length == 0) return []
+        const all: Array<string> = []
+        all.push(h)
+        for (let m = 0; m < rest.length; m++) all.push(rest[m])
+        return all
+      }
+    }
+  }
+  // ⑤ 光叫名字：「糖豆，{提问}」——名字本身不单独成段（念半句更怪），直接念正文
+  for (let i = 0; i < NAME_HEADS.length; i++) {
+    const call: string = NAME_HEADS[i] + '，'
+    if (t.indexOf(call) == 0) {
+      return voiceSegments(t.substring(call.length))
+    }
+  }
+  // ⑥ 题型模板
+  for (let i = 0; i < MATH_TPLS.length; i++) {
+    const seg: Array<string> = matchTpl(t, MATH_TPLS[i])
+    if (seg.length > 0) {
+      // 随机长题干由真人短片段拼接会产生明显断点，交给系统 TTS 一口气读完整句。
+      if (seg.length > 5) return []
+      return seg
+    }
+  }
+  return []
+}

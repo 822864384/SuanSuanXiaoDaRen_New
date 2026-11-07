@@ -1,0 +1,402 @@
+/**
+ * 语文识字 · 出题引擎
+ *
+ * 题型（对应 `三科课程内容方案-v1.md` 第五节）：
+ *   CN1 pic2char    看图选字  —— 图 → 义 → 字
+ *   CN2 char2pic    看字选图  —— 字 → 义 → 图
+ *   CN3 listen2char 听音找字  —— 音 → 形（干扰项优先用形近字）
+ *   CN4 findChar    找字      —— 形 → 形（目标字可见，练字形辨认）
+ *   CN5 fillChar    填字      —— 词境中认字（"水__"补"果"）
+ *   CN6 story       字卡小故事 —— 第 5 课，3 句 + 2 题复习
+ *
+ * 两条必须守住的设计：
+ * 1. **CN1 与 CN2 是同一个字的两个方向**。只做"看图选字"，孩子会"认得图不认字"；
+ *    两条通路都要走，才算真的建立了 字↔图↔音 的联结。
+ * 2. **CN3 的干扰项优先用 near（形近字）**。不加形近干扰，孩子会靠"哪个不一样"蒙对，
+ *    看着像会了，其实没在认字形。
+ *
+ * 免罚口径：语文所有题 soft=true —— 认不出不计分、不断连击。4 岁认不出字是正常状态。
+ */
+
+import {
+	CnWord, cnWordOf, cnCharsOfUnit, cnThemeOfUnit, cnStoryOf, cnThemeName, CN_WORDS
+} from './cn-words.uts'
+import {
+	StudyQuestion, studyShuffle, studyShuffleDifferent, studyPick, studyRandInt, studyRandIndex,
+	lessonIndex, unitOfLesson, lessonOfUnit, STUDY_ROUND_SIZE
+} from './quiz.uts'
+import { rngState } from './rng.uts'
+
+/* ---------------- 内部工具 ---------------- */
+
+/** 数组切片（不用 slice：UTS 各端对切片方法支持不一致） */
+function cut(arr: Array<string>, from: number, to: number): Array<string> {
+	const out: Array<string> = []
+	const end: number = to > arr.length ? arr.length : to
+	for (let i = from; i < end; i++) out.push(arr[i])
+	return out
+}
+
+/** 某单元全部字的 emoji（看图题的干扰池） */
+function emojisOfUnit(unit: number): Array<string> {
+	const chars: Array<string> = cnCharsOfUnit(unit)
+	const out: Array<string> = []
+	for (let i = 0; i < chars.length; i++) {
+		const w: CnWord = cnWordOf(chars[i])
+		if (w.emoji.length > 0) out.push(w.emoji)
+	}
+	return out
+}
+
+/** 全字表的 emoji（同单元池不够 3 个时兜底） */
+function allEmojis(): Array<string> {
+	const out: Array<string> = []
+	for (let i = 0; i < CN_WORDS.length; i++) out.push(CN_WORDS[i].emoji)
+	return out
+}
+
+/** 这个字符串是不是字表里的真词（填字题防多解用） */
+function isRealWord(s: string): boolean {
+	for (let i = 0; i < CN_WORDS.length; i++) {
+		if (CN_WORDS[i].word == s) return true
+	}
+	return false
+}
+
+/** 干扰字：先同单元、再形近、最后全表 */
+function distractorChars(ch: string, unit: number, need: number): Array<string> {
+	const w: CnWord = cnWordOf(ch)
+	const out: Array<string> = []
+	// 1. 同单元的其他字（最像真的干扰：孩子正在学这一批）
+	const unitChars: Array<string> = cnCharsOfUnit(unit)
+	const same: Array<string> = studyPick(unitChars, [ch], need)
+	for (let i = 0; i < same.length; i++) out.push(same[i])
+	// 2. 形近字（听音找字用，形近比陌生更有杀伤力）
+	if (out.length < need && w.near.length > 0) {
+		const near: Array<string> = studyPick(w.near, [ch], need - out.length)
+		for (let i = 0; i < near.length; i++) {
+			if (out.indexOf(near[i]) < 0) out.push(near[i])
+		}
+	}
+	// 3. 全表兜底
+	if (out.length < need) {
+		const all: Array<string> = []
+		for (let i = 0; i < CN_WORDS.length; i++) all.push(CN_WORDS[i].ch)
+		const rest: Array<string> = studyPick(all, [ch], need - out.length)
+		for (let i = 0; i < rest.length; i++) {
+			if (out.indexOf(rest[i]) < 0) out.push(rest[i])
+		}
+	}
+	return out
+}
+
+/* ---------------- CN1 看图选字 ---------------- */
+
+function genPic2Char(ch: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: CnWord = cnWordOf(ch)
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn1'
+	q.layout = 'bigemoji'
+	q.mainEmoji = w.emoji
+	// 副标题**不能出现答案字**：否则认字的孩子直接抄。图 + 读题已经给足线索
+	q.subText = '图上是什么？选出它的字'
+	q.prompt = '图上是' + w.word + '，选出' + w.word + '的' + ch + '字'
+	q.hint = '👀 先看图，再找字'
+	q.optionType = 'char'
+	q.answer = ch
+	q.options = studyShuffleDifferent([ch].concat(distractorChars(ch, unit, 3)))
+	q.explain = '这是' + ch + '，' + w.word + '的' + ch
+	q.seed = seed
+	q.src = ch
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- CN2 看字选图 ---------------- */
+
+function genChar2Pic(ch: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: CnWord = cnWordOf(ch)
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn2'
+	q.layout = 'bigchar'
+	q.mainText = ch
+	q.subText = '这个字是哪张图？'
+	// 读题念"水果的果"，孩子不需要知道拼音，但必须听到读音才能对上形
+	q.prompt = '这个字念' + ch + '，' + w.word + '的' + ch + '，哪张图是' + w.word + '？'
+	q.hint = '🖼️ 想想这个字说的是什么'
+	q.optionType = 'emoji'
+	q.answer = w.emoji
+	const pool: Array<string> = emojisOfUnit(unit)
+	let others: Array<string> = studyPick(pool, [w.emoji], 3)
+	if (others.length < 3) {
+		// 同单元的图不够（理论上不会，每单元 10 个都有 emoji），用全表补，且排除已取的
+		const exclude: Array<string> = [w.emoji]
+		for (let i = 0; i < others.length; i++) exclude.push(others[i])
+		others = others.concat(studyPick(allEmojis(), exclude, 3 - others.length))
+	}
+	q.options = studyShuffleDifferent([w.emoji].concat(others))
+	q.explain = '对啦，' + w.word + '的' + ch
+	q.seed = seed
+	q.src = ch
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- CN3 听音找字 ---------------- */
+
+function genListen2Char(ch: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: CnWord = cnWordOf(ch)
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn3'
+	q.layout = 'none'
+	q.subText = '听一听，选出听到的字'
+	q.prompt = w.word + '的' + ch + '，是哪个字？'
+	q.hint = '👂 先听清楚，再看字'
+	q.optionType = 'char'
+	q.answer = ch
+	// 形近字放在最前（distractorChars 的顺序就是优先级）
+	q.options = studyShuffleDifferent([ch].concat(distractorChars(ch, unit, 3)))
+	q.explain = '这个字是' + ch + '，' + w.word + '的' + ch
+	q.seed = seed
+	q.src = ch
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- CN4 找字 ---------------- */
+
+function genFindChar(ch: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	const w: CnWord = cnWordOf(ch)
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn4'
+	q.layout = 'bigchar'
+	// 目标字必须可见：这题练的是"在长得像的字里挑出这一个"，不是听音
+	q.mainText = ch
+	q.subText = '找出这个字'
+	q.prompt = '找出' + ch + '，' + w.word + '的' + ch
+	q.hint = '🔍 看清楚，别着急'
+	q.optionType = 'char'
+	q.answer = ch
+	q.options = studyShuffleDifferent([ch].concat(distractorChars(ch, unit, 3)))
+	q.explain = '找到了，' + w.word + '的' + ch
+	q.seed = seed
+	q.src = ch
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- CN5 填字 ---------------- */
+
+/**
+ * 这几个字不做填字题，改用找字题
+ *
+ * 「大/小」「上/下」「开/关」是反义/对举字，填进词里常常两边都读得通
+ * （大老鼠/小老鼠、上面/下面、打开/关上），程序只靠词库判断不出唯一性。
+ * 与其让孩子看到"两个都能填"，不如换一种题。
+ */
+const SKIP_FILL: Array<string> = ['大', '小', '上', '下', '开', '关']
+
+function genFillChar(ch: string, unit: number): StudyQuestion {
+	// 记下生成前的随机状态：错题库 setRngState(seed) 后重跑本函数，得到同一道题
+	const seed: number = rngState()
+	if (SKIP_FILL.indexOf(ch) >= 0) return genFindChar(ch, unit)
+	const w: CnWord = cnWordOf(ch)
+	const idx: number = w.word.indexOf(ch)
+	const left: string = idx > 0 ? w.word.substring(0, idx) : ''
+	const right: string = idx >= 0 ? w.word.substring(idx + 1) : ''
+
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn5'
+	q.layout = 'bigchar'
+	q.mainText = (left.length > 0 ? left : '') + '（ ）' + (right.length > 0 ? right : '')
+	q.subText = '补上缺的字'
+	q.prompt = '补上缺的字，' + w.word + '，缺的是哪个字？'
+	q.hint = '🧩 想想这个词怎么读'
+	q.optionType = 'char'
+	q.answer = ch
+
+	// 干扰字必须保证"补进去读不通"，否则会有多个正确答案（如 大__ + 山 = 大山）
+	const cands: Array<string> = distractorChars(ch, unit, 6)
+	const valid: Array<string> = []
+	for (let i = 0; i < cands.length && valid.length < 3; i++) {
+		const c: string = cands[i]
+		if (isRealWord(left + c + right)) continue
+		valid.push(c)
+	}
+	let guard: number = 0
+	while (valid.length < 3 && guard < 60) {
+		guard++
+		const all: Array<string> = []
+		for (let i = 0; i < CN_WORDS.length; i++) all.push(CN_WORDS[i].ch)
+		const c: string = all[studyRandIndex(all.length)]
+		if (c == ch || valid.indexOf(c) >= 0) continue
+		if (isRealWord(left + c + right)) continue
+		valid.push(c)
+	}
+	q.options = studyShuffleDifferent([ch].concat(valid))
+	q.explain = '对啦，是' + w.word
+	q.seed = seed
+	q.src = ch
+	q.unitNo = unit
+	return q
+}
+
+/* ---------------- CN6 字卡小故事 ---------------- */
+
+/**
+ * 一句字卡：`我|有|大|手`
+ * `|` 只是分隔符，每个字单独渲染；带括号标记的是"大人念"的字（灰字）。
+ * 这里用 `word` 字段承载"是否需要大人念"的信息：格式为 `字` 或 `(字)`。
+ */
+function genStory(sentence: string): StudyQuestion {
+	const raw: Array<string> = sentence.split('|')
+	const parts: Array<string> = []
+	const greys: Array<boolean> = []
+	let sayText: string = ''
+	for (let i = 0; i < raw.length; i++) {
+		const one: string = raw[i]
+		if (one.length == 0) continue
+		const isGrey: boolean = one.substring(0, 1) == '('
+		// 注意：故事数据里用的是 `我|有|大|手` 形式，灰字用 `(有)` 包起来
+		const clean: string = isGrey ? one.substring(1, one.length - 1) : one
+		parts.push(clean)
+		greys.push(isGrey)
+		sayText += clean
+	}
+
+	const q = new StudyQuestion()
+	q.mode = 'cn'
+	q.kind = 'cn6'
+	q.layout = 'sentence'
+	q.mainText = sentence
+	q.storyParts = parts
+	q.storyGreys = greys
+	q.subText = '跟着读一读'
+	q.prompt = sayText
+	q.hint = '📖 灰灰的字请爸爸妈妈念'
+	q.optionType = 'self'
+	q.answer = '我说好了'
+	q.options = ['我说好了']
+	q.explain = '读完啦'
+	return q
+}
+
+/* ---------------- 课内字池 ---------------- */
+
+/** 本课新字：第 1 课 4 个，第 2/3 课各 3 个，第 4/5 课全部 */
+function charsOfLesson(unit: number, lesson: number): Array<string> {
+	const all: Array<string> = cnCharsOfUnit(unit)
+	if (lesson <= 1) return cut(all, 0, 4)
+	if (lesson == 2) return cut(all, 4, 7)
+	if (lesson == 3) return cut(all, 7, 10)
+	return all
+}
+
+/** 本课之前学过的字（用于第 5 题复习） */
+function learnedChars(unit: number, lesson: number): Array<string> {
+	const all: Array<string> = cnCharsOfUnit(unit)
+	if (lesson <= 1) return []
+	if (lesson == 2) return cut(all, 0, 4)
+	if (lesson == 3) return cut(all, 0, 7)
+	return all
+}
+
+/* ---------------- 组卷 ---------------- */
+
+/**
+ * 组一关（5 题）
+ * @param level 关卡号（1 起）
+ */
+export function buildCnRound(level: number): Array<StudyQuestion> {
+	const lessonNo: number = lessonIndex(level)
+	const unit: number = unitOfLesson(lessonNo)
+	const lesson: number = lessonOfUnit(lessonNo)
+	const all: Array<string> = cnCharsOfUnit(unit)
+	const pool: Array<string> = all
+	const out: Array<StudyQuestion> = []
+
+	// 第 5 课：3 句字卡小故事 + 2 题复习（字卡读物的最小可行形态）
+	if (lesson == 5) {
+		const story: Array<string> = cnStoryOf(unit)
+		for (let i = 0; i < story.length; i++) out.push(genStory(story[i]))
+		const review: Array<string> = studyShuffle(all)
+		if (review.length > 0) out.push(genListen2Char(review[0], unit))
+		if (review.length > 1) out.push(genFindChar(review[1], unit))
+		while (out.length < STUDY_ROUND_SIZE) out.push(genPic2Char(all[0], unit))
+		return out
+	}
+
+	// 第 4 课：整单元复习，题型最全（听音、找字、填字各来一道）
+	if (lesson == 4) {
+		const order: Array<string> = studyShuffle(all)
+		const kinds: Array<string> = ['listen', 'find', 'fill', 'pic', 'char2pic']
+		for (let i = 0; i < STUDY_ROUND_SIZE; i++) {
+			const ch: string = order[i % order.length]
+			const k: string = kinds[i % kinds.length]
+			if (k == 'listen') out.push(genListen2Char(ch, unit))
+			else if (k == 'find') out.push(genFindChar(ch, unit))
+			else if (k == 'fill') out.push(genFillChar(ch, unit))
+			else if (k == 'pic') out.push(genPic2Char(ch, unit))
+			else out.push(genChar2Pic(ch, unit))
+		}
+		return out
+	}
+
+	// 第 1~3 课：新字逐个出（图→字 / 字→图 交替，两条通路都要走）
+	const fresh: Array<string> = charsOfLesson(unit, lesson)
+	for (let i = 0; i < fresh.length && out.length < 4; i++) {
+		const ch: string = fresh[i]
+		if (i % 2 == 0) out.push(genPic2Char(ch, unit))
+		else out.push(genChar2Pic(ch, unit))
+	}
+	// 新字不够 4 个时（第 2/3 课只有 3 个），用听音找字补一道
+	let guard: number = 0
+	while (out.length < 4 && guard < 20) {
+		guard++
+		const ch: string = fresh[out.length % fresh.length]
+		out.push(genListen2Char(ch, unit))
+	}
+
+	// 第 5 题：复习本单元已学；第 1 课没有已学，就用新字里最难的"找字"收尾
+	const learned: Array<string> = learnedChars(unit, lesson)
+	if (learned.length > 0) {
+		const pick: string = learned[studyRandIndex(learned.length)]
+		out.push(studyRandInt(0, 1) == 0 ? genFillChar(pick, unit) : genFindChar(pick, unit))
+	} else {
+		out.push(genFindChar(fresh[0], unit))
+	}
+
+	while (out.length < STUDY_ROUND_SIZE) out.push(genPic2Char(all[0], unit))
+	return out
+}
+
+/** 单向生成（测试与将来"错题重现"用） */
+export function genCnByKind(kind: string, ch: string, unit: number): StudyQuestion {
+	if (kind == 'cn2') return genChar2Pic(ch, unit)
+	if (kind == 'cn3') return genListen2Char(ch, unit)
+	if (kind == 'cn4') return genFindChar(ch, unit)
+	if (kind == 'cn5') return genFillChar(ch, unit)
+	return genPic2Char(ch, unit)
+}
+
+/** 课标题：给顶栏和结算页用，如「第 1 单元 · 动物 · 第 2 课」 */
+export function cnLessonTitle(level: number): string {
+	const lessonNo: number = lessonIndex(level)
+	const unit: number = unitOfLesson(lessonNo)
+	const lesson: number = lessonOfUnit(lessonNo)
+	return '第 ' + unit.toString() + ' 单元 · ' + cnThemeName(cnThemeOfUnit(unit)) +
+		' · 第 ' + lesson.toString() + ' 课'
+}
