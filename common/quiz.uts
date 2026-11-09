@@ -17,16 +17,18 @@ export const STUDY_ROUND_SIZE: number = 5
 /**
  * 单题计时（秒）
  *
- * 数学是 120 秒（要数、要比、要想），语文英语是"看一眼就认得"的任务，
- * 60 秒足够，也正好让"一课 5 分钟"成立（5 × 60 = 5 分钟，对齐斑马/叽里呱啦的单课时长）。
- * 超时不罚：语文英语的超时走 soft 分支，只报答案、不计分。
+ * 数学与语文英语都是 5 分钟（用户 2026-11-09 指定）：不识字的孩子听题、观察、思考
+ * 都要时间，宁可富余也不能催。超时不罚：语文英语的超时走 soft 分支，只报答案、不计分。
  */
-export const STUDY_SECONDS: number = 60
+/** 语文英语单题也是 5 分钟（用户 2026-11-09 指定）：超时不罚，语文英语的超时走 soft 分支，只报答案、不计分 */
+export const STUDY_SECONDS: number = 300
 /** 最后几秒转红 */
 export const STUDY_URGENT: number = 10
 
-/** 一科的总课数：6 单元 × 5 课 */
+/** 英语一科的总课数：6 单元 × 5 课（英语词表 60 词，语文扩表后英语不变） */
 export const TOTAL_LESSONS: number = 30
+/** 语文一科的总课数：20 单元 × 5 课 = 100 课，对应 200 个常用字 */
+export const CN_TOTAL_LESSONS: number = 100
 /** 一单元几课 */
 export const LESSONS_PER_UNIT: number = 5
 
@@ -173,9 +175,19 @@ export function isCorrectStudy(q: StudyQuestion, picked: string): boolean {
  * 孩子会发现自己认识了很多字，比"这科已经学完"更有成就感。
  */
 export function lessonIndex(level: number): number {
+	return lessonIndexOf(level, TOTAL_LESSONS)
+}
+
+/**
+ * 关卡号 → 课序号（按给定总课数循环）
+ *
+ * 语文用 `CN_TOTAL_LESSONS`（100 课），英语仍用 `TOTAL_LESSONS`（30 课）：
+ * 两科词表规模不同，关卡循环边界必须分开——否则英语第 31 关会落到不存在的第 7 单元。
+ */
+export function lessonIndexOf(level: number, totalLessons: number): number {
 	let lv: number = level
 	if (lv < 1) lv = 1
-	return (lv - 1) % TOTAL_LESSONS + 1
+	return (lv - 1) % totalLessons + 1
 }
 
 /** 课序号 → 单元号（1~6） */

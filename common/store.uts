@@ -184,6 +184,89 @@ export function setLevel(mode: string, level: number): void {
   writeNum(profileKey(id, 'level.' + mode), level < 1 ? 1 : level)
 }
 
+/* ---------------- 开场白（黑板规则页） ---------------- */
+
+/**
+ * 开场规则页看过没有：**第一次打开程序**进学习模块时放一次（每个档案各一次），
+ * 之后直接进答题页。不参与「重置进度」——规则讲过就是讲过，重置不重讲。
+ */
+export function getIntroDone(): boolean {
+  const id: string = getCurrentId()
+  return readNum(profileKey(id, 'intro.done'), 0) == 1
+}
+
+/** 标记开场规则页已看过 */
+export function setIntroDone(): void {
+  const id: string = getCurrentId()
+  writeNum(profileKey(id, 'intro.done'), 1)
+}
+
+/* ---------------- 做对题目记账（防重复出题） ---------------- */
+
+/**
+ * 每种题型最多记多少个"做对的种子"。
+ * 满了就从最旧的开始丢：孩子隔很久再玩，旧题早就忘了，重复出现反而是复习。
+ * 按"每关 5 题"算，60 个 ≈ 某题型最近 60 次做对（十来关之内不重复）。
+ */
+const SEEN_CAP: number = 60
+
+/**
+ * 读出某科目某题型"最近做对过"的种子列表（旧→新）。
+ * 存储：整个科目一条记录 `seen.<mode>`，形如 "count:123,add:456"；
+ * 种子 = 生成这道题时的随机状态，同一题型同一种子 ⇒ 同一道题。
+ */
+export function getSeenSeeds(mode: string, kind: string): Array<number> {
+  const id: string = getCurrentId()
+  const s: string = readStr(profileKey(id, 'seen.' + mode), '')
+  if (s.length == 0) return []
+  const out: Array<number> = []
+  const parts: Array<string> = s.split(',')
+  const head: string = kind + ':'
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].indexOf(head) != 0) continue
+    const v: string = parts[i].substring(head.length)
+    const n: number = parseInt(v, 10)
+    // 可还原校验：和 readNum 一样的口径，脏数据直接跳过
+    if (n.toString() == v) out.push(n)
+  }
+  return out
+}
+
+/** 记一次"做对"：去重后追加到队尾，该题型超过上限就丢掉最旧的 */
+export function addSeenSeed(mode: string, kind: string, seed: number): void {
+  const id: string = getCurrentId()
+  const key: string = profileKey(id, 'seen.' + mode)
+  const head: string = kind + ':' + seed.toString()
+  const s: string = readStr(key, '')
+  const parts: Array<string> = s.length == 0 ? [] : s.split(',')
+  // 已记过就不再记（同一道题做对两次只算一次）
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i] == head) return
+  }
+  parts.push(head)
+  // 按题型封顶：超过上限时直接移除**该题型**最旧的一条，不动其他题型的记录
+  let over: number = 0
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].indexOf(kind + ':') == 0) over++
+  }
+  while (over > SEEN_CAP) {
+    let dropped: boolean = false
+    const kept: Array<string> = []
+    for (let i = 0; i < parts.length; i++) {
+      if (!dropped && parts[i].indexOf(kind + ':') == 0) {
+        dropped = true
+        continue
+      }
+      kept.push(parts[i])
+    }
+    for (let i = 0; i < kept.length; i++) parts[i] = kept[i]
+    while (parts.length > kept.length) parts.pop()
+    if (!dropped) break
+    over--
+  }
+  writeStr(key, parts.join(','))
+}
+
 /** 累计答对题数（家长报告的原始数据） */
 export function getRightTotal(mode: string): number {
   const id: string = getCurrentId()
@@ -212,6 +295,8 @@ export function resetProgress(): void {
     writeNum(profileKey(id, 'level.' + modes[i]), 1)
     writeNum(profileKey(id, 'right.' + modes[i]), 0)
     writeNum(profileKey(id, 'wrong.' + modes[i]), 0)
+    // 防重复的"做对记账"也一起清：重置进度 = 从头闯，旧题可以重新见
+    writeStr(profileKey(id, 'seen.' + modes[i]), '')
   }
   writeNum(profileKey(id, 'stars'), 0)
   writeNum(profileKey(id, 'candy'), 0)

@@ -1,7 +1,7 @@
 {
- "generatedAt": "2026-11-07T08:19:17.736Z",
- "count": 1484,
- "chars": 32472,
+ "generatedAt": "2026-11-09T08:34:40.413Z",
+ "count": 1769,
+ "chars": 32273,
  "items": [
   {
    "text": "豆豆，请听题。",
@@ -640,6 +640,1176 @@
    "tag": "option"
   },
   {
+   "text": "人",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "口",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "手",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "头",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "耳",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "大",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "小",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "上",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "下",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "我",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "家",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "门",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "床",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "灯",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "爸",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "妈",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "爷",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "奶",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "哥",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "姐",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "米",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "饭",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "水",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "果",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "菜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "肉",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蛋",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鱼",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "甜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "汤",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "猫",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "狗",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鸡",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鸭",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "羊",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "牛",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "马",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鸟",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "虫",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "兔",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "日",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "月",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "山",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "云",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "雨",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "花",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "草",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "树",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "火",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "河",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "车",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "船",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "飞",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "走",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "跑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "看",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "听",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "说",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "开",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "关",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "红",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "黄",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蓝",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "绿",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "紫",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "棕",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "黑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "白",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "粉",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "彩",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "瓜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "桃",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "橙",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "糖",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "饼",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "面",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "包",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "盐",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蜜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蛇",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蛙",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蜂",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蝶",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "熊",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "虎",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "狮",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "龟",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "狼",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鸽",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "叶",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "苗",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "松",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "竹",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "椰",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "蘑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "菊",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "枫",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "豆",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "茄",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "书",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "笔",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "纸",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "画",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "读",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "写",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "球",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "歌",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "舞",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "棋",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "桥",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "路",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "站",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "机",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "帆",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "城",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "停",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "摩",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "洞",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "骑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "目",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "足",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "牙",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "舌",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "心",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "发",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "指",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "掌",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "拳",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "泪",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "椅",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "钟",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "被",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "碗",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "杯",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "壶",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "锅",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "篮",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "镜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "伞",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "衣",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "裤",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "鞋",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "帽",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "袜",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "裙",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "套",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "围",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "靴",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "扣",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "积",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "筝",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "玩",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "娃",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "滑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "拼",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "气",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "拍",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "抱",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "铃",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "石",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "沙",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "贝",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "岛",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "洋",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "地",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "田",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "冰",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "泉",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "星",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "坐",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "跳",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "睡",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "吃",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "喝",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "洗",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "笑",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "哭",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "给",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "左",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "右",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "前",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "后",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "中",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "高",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "轻",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "重",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "快",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "慢",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "cn-char"
+  },
+  {
+   "text": "第一个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "第二个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "第三个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "第四个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "第五个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "第六个，",
+   "role": "num",
+   "lang": "zh-CN",
+   "tag": "option-ord"
+  },
+  {
+   "text": "你想选哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "option-ask"
+  },
+  {
    "text": "太棒了！",
    "role": "cheer",
    "lang": "zh-CN",
@@ -742,6 +1912,12 @@
    "tag": "cn-qcn3"
   },
   {
+   "text": "补上缺的字，大人，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
    "text": "图上是上面，选出上面的上字",
    "role": "teach",
    "lang": "zh-CN",
@@ -766,28 +1942,34 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出大，大象的大",
+   "text": "找出小，小蚂蚁的小",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
   },
   {
-   "text": "下面的下，是哪个字？",
+   "text": "大象的大，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出头，点头的头",
+   "text": "找出我，我们的我",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
   },
   {
-   "text": "补上缺的字，小手，缺的是哪个字？",
+   "text": "找出上，上面的上",
    "role": "teach",
    "lang": "zh-CN",
-   "tag": "cn-qcn5"
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "这个字念人，大人的人，哪张图是大人？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
   },
   {
    "text": "我有大手",
@@ -806,12 +1988,6 @@
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn6"
-  },
-  {
-   "text": "大人的人，是哪个字？",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn3"
   },
   {
    "text": "图上是回家，选出回家的家字",
@@ -868,7 +2044,7 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出灯，台灯的灯",
+   "text": "找出门，开门的门",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
@@ -898,37 +2074,19 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "补上缺的字，爷爷，缺的是哪个字？",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn5"
-  },
-  {
-   "text": "哥哥的哥，是哪个字？",
+   "text": "回家的家，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出爷，爷爷的爷",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn4"
-  },
-  {
-   "text": "补上缺的字，妈妈，缺的是哪个字？",
+   "text": "补上缺的字，奶奶，缺的是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn5"
   },
   {
-   "text": "图上是台灯，选出台灯的灯字",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn1"
-  },
-  {
-   "text": "这个字念床，小床的床，哪张图是小床？",
+   "text": "这个字念姐，姐姐的姐，哪张图是姐姐？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn2"
@@ -952,13 +2110,13 @@
    "tag": "cn-qcn6"
   },
   {
-   "text": "妈妈的妈，是哪个字？",
+   "text": "开门的门，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出门，开门的门",
+   "text": "找出爸，爸爸的爸",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
@@ -1018,7 +2176,7 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "补上缺的字，水果，缺的是哪个字？",
+   "text": "补上缺的字，大米，缺的是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn5"
@@ -1048,22 +2206,28 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出水，喝水的水",
+   "text": "找出菜，蔬菜的菜",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
   },
   {
-   "text": "吃饭的饭，是哪个字？",
+   "text": "水果的果，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "补上缺的字，大米，缺的是哪个字？",
+   "text": "补上缺的字，吃饭，缺的是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn5"
+  },
+  {
+   "text": "这个字念鱼，小鱼的鱼，哪张图是小鱼？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn2"
   },
   {
    "text": "我吃米饭",
@@ -1084,13 +2248,13 @@
    "tag": "cn-qcn6"
   },
   {
-   "text": "水果的果，是哪个字？",
+   "text": "热汤的汤，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出鱼，小鱼的鱼",
+   "text": "找出水，喝水的水",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
@@ -1180,19 +2344,25 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "小牛的牛，是哪个字？",
+   "text": "找出牛，小牛的牛",
    "role": "teach",
    "lang": "zh-CN",
-   "tag": "cn-qcn3"
+   "tag": "cn-qcn4"
   },
   {
-   "text": "补上缺的字，小羊，缺的是哪个字？",
+   "text": "找出鸡，小鸡的鸡",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "补上缺的字，小马，缺的是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn5"
   },
   {
-   "text": "图上是小鸭，选出小鸭的鸭字",
+   "text": "图上是小狗，选出小狗的狗字",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn1"
@@ -1216,7 +2386,7 @@
    "tag": "cn-qcn6"
   },
   {
-   "text": "小马的马，是哪个字？",
+   "text": "小鸡的鸡，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
@@ -1306,7 +2476,19 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出花，小花的花",
+   "text": "找出月，月亮的月",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "小草的草，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出雨，下雨的雨",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
@@ -1336,13 +2518,13 @@
    "tag": "cn-qcn6"
   },
   {
-   "text": "小草的草，是哪个字？",
+   "text": "白云的云，是哪个字？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn3"
   },
   {
-   "text": "找出雨，下雨的雨",
+   "text": "找出河，小河的河",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
@@ -1402,12 +2584,6 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "补上缺的字，飞机，缺的是哪个字？",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn5"
-  },
-  {
    "text": "图上是说话，选出说话的说字",
    "role": "teach",
    "lang": "zh-CN",
@@ -1432,25 +2608,31 @@
    "tag": "cn-qcn3"
   },
   {
-   "text": "补上缺的字，看看，缺的是哪个字？",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn5"
-  },
-  {
-   "text": "打开的开，是哪个字？",
-   "role": "teach",
-   "lang": "zh-CN",
-   "tag": "cn-qcn3"
-  },
-  {
-   "text": "找出关，关上的关",
+   "text": "找出船，小船的船",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn4"
   },
   {
-   "text": "这个字念跑，跑步的跑，哪张图是跑步？",
+   "text": "听音乐的听，是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn3"
+  },
+  {
+   "text": "找出看，看看的看",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn4"
+  },
+  {
+   "text": "补上缺的字，跑步，缺的是哪个字？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "cn-qcn5"
+  },
+  {
+   "text": "这个字念说，说话的说，哪张图是说话？",
    "role": "teach",
    "lang": "zh-CN",
    "tag": "cn-qcn2"
@@ -1480,646 +2662,1144 @@
    "tag": "cn-qcn4"
   },
   {
-   "text": "cat，小猫，哪个是cat？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
-  },
-  {
-   "text": "图上是小狗，dog，哪个词是dog？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
-  },
-  {
-   "text": "duck，鸭子，哪个是duck？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
-  },
-  {
-   "text": "图上是小鸟，bird，哪个词是bird？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
-  },
-  {
    "text": "cat",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "fish，鱼，哪个是fish？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "小猫，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是猪，pig，哪个词是pig？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是小猫，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "cow，奶牛，哪个是cow？",
+   "text": "dog",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "rabbit，兔子，哪个是rabbit？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "小狗，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是熊，bear，哪个词是bear？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是小狗，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "panda，熊猫，哪个是panda？",
+   "text": "duck",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是兔子，rabbit，哪个词是rabbit？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "鸭子，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "bird，小鸟，哪个是bird？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是鸭子，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "fish 第一个音是 f，哪个词第一个音也是 f？",
+   "text": "bird",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "dog，小狗，哪个是dog？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "小鸟，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "panda 第一个音是 p，哪个词第一个音也是 p？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen3"
+   "text": "图上是小鸟，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "three cat，几个呀？",
+   "text": "fish",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen4"
+   "tag": "en-line-en"
   },
   {
-   "text": "apple，苹果，哪个是apple？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "鱼，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是香蕉，banana，哪个词是banana？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是鱼，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "egg，鸡蛋，哪个是egg？",
+   "text": "pig",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是牛奶，milk，哪个词是milk？",
+   "text": "猪，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是猪，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "cow",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "奶牛，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是奶牛，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "rabbit",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "兔子，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是兔子，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "bear",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "熊，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是熊，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "panda",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "熊猫，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是熊猫，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "apple",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "rice，米饭，哪个是rice？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "苹果，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是蛋糕，cake，哪个词是cake？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是苹果，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "bread，面包，哪个是bread？",
+   "text": "banana",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "water，水，哪个是water？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "香蕉，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是糖果，candy，哪个词是candy？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
-  },
-  {
-   "text": "grape，葡萄，哪个是grape？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是香蕉，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "egg",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "milk，牛奶，哪个是milk？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "鸡蛋，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "water 第一个音是 w，哪个词第一个音也是 w？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen3"
+   "text": "图上是鸡蛋，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是苹果，apple，哪个词是apple？",
+   "text": "milk",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
   },
   {
-   "text": "cake，蛋糕，哪个是cake？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "牛奶，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是面包，bread，哪个词是bread？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是牛奶，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "grape 第一个音是 g，哪个词第一个音也是 g？",
+   "text": "rice",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "one milk，几个呀？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen4"
+   "text": "米饭，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "red，红色，哪个是red？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是米饭，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是黄色，yellow，哪个词是yellow？",
+   "text": "cake",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
   },
   {
-   "text": "blue，蓝色，哪个是blue？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "蛋糕，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是绿色，green，哪个词是green？",
+   "text": "图上是蛋糕，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "bread",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "面包，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是面包，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "water",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "水，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是水，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "candy",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "糖果，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是糖果，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "grape",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "葡萄，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是葡萄，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "red",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "orange，橙色，哪个是orange？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "红色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是紫色，purple，哪个词是purple？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是红色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "pink，粉色，哪个是pink？",
+   "text": "yellow",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "brown，棕色，哪个是brown？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "黄色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是黑色，black，哪个词是black？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是黄色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "white，白色，哪个是white？",
+   "text": "blue",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是橙色，orange，哪个词是orange？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "蓝色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "white 第一个音是 w，哪个词第一个音也是 w？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen3"
+   "text": "图上是蓝色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "green，绿色，哪个是green？",
+   "text": "green",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是粉色，pink，哪个词是pink？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "绿色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "purple 第一个音是 p，哪个词第一个音也是 p？",
+   "text": "图上是绿色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "orange",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "橙色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是橙色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "purple",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "紫色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是紫色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "pink",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "粉色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是粉色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "brown",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "棕色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是棕色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "black",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "eye，眼睛，哪个是eye？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "黑色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是耳朵，ear，哪个词是ear？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是黑色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "nose，鼻子，哪个是nose？",
+   "text": "white",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是嘴巴，mouth，哪个词是mouth？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "白色，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是白色，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "eye",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "hand，手，哪个是hand？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "眼睛，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是脚，foot，哪个词是foot？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是眼睛，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "head，头，哪个是head？",
+   "text": "ear",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "hair，头发，哪个是hair？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "耳朵，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是手臂，arm，哪个词是arm？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是耳朵，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "face，脸，哪个是face？",
+   "text": "nose",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是手，hand，哪个词是hand？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "鼻子，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "foot，脚，哪个是foot？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是鼻子，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "eye 第一个音是 e，哪个词第一个音也是 e？",
+   "text": "mouth",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "arm，手臂，哪个是arm？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "嘴巴，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "ear，耳朵，哪个是ear？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是嘴巴，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "face 第一个音是 f，哪个词第一个音也是 f？",
+   "text": "hand",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "four hair，几个呀？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen4"
+   "text": "手，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "mom，妈妈，哪个是mom？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是手，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是爸爸，dad，哪个词是dad？",
+   "text": "foot",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
   },
   {
-   "text": "baby，宝宝，哪个是baby？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "脚，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是爷爷，grandpa，哪个词是grandpa？",
+   "text": "图上是脚，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "head",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "头，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是头，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "hair",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "头发，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是头发，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "arm",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "手臂，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是手臂，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "face",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "脸，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是脸，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "mom",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "grandma，奶奶，哪个是grandma？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "妈妈，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是姐姐，sister，哪个词是sister？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是妈妈，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "brother，哥哥，哪个是brother？",
+   "text": "dad",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是妈妈，mom，哪个词是mom？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "爸爸，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "family，家人，哪个是family？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是爸爸，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是家，home，哪个词是home？",
+   "text": "baby",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen2"
+   "tag": "en-line-en"
   },
   {
-   "text": "friend，朋友，哪个是friend？",
+   "text": "宝宝，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是宝宝，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "grandpa",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "爷爷，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是爷爷，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "grandma",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "奶奶，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是奶奶，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "sister",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "姐姐，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是姐姐，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "brother",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "grandpa，爷爷，哪个是grandpa？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "哥哥，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是朋友，friend，哪个词是friend？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是哥哥，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "home 第一个音是 h，哪个词第一个音也是 h？",
+   "text": "family",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是奶奶，grandma，哪个词是grandma？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "家人，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "mom 第一个音是 m，哪个词第一个音也是 m？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen3"
+   "text": "图上是家人，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "five sister，几个呀？",
+   "text": "home",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen4"
+   "tag": "en-line-en"
   },
   {
-   "text": "ball，球，哪个是ball？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "家，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是小汽车，car，哪个词是car？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是家，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "book，书，哪个是book？",
+   "text": "friend",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是飞机，plane，哪个词是plane？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "朋友，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是朋友，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "ball",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "train，火车，哪个是train？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "球，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是自行车，bike，哪个词是bike？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是球，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "balloon，气球，哪个是balloon？",
+   "text": "car",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
   },
   {
-   "text": "robot，机器人，哪个是robot？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "小汽车，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "图上是鼓，drum，哪个词是drum？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "图上是小汽车，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "star，星星，哪个是star？",
+   "text": "book",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen1"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "书，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是书，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "plane",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "飞机，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是飞机，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "train",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "火车，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是火车，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "bike",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen5"
+   "tag": "en-line-en"
   },
   {
-   "text": "图上是星星，star，哪个词是star？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen2"
+   "text": "自行车，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "car，小汽车，哪个是car？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen1"
+   "text": "图上是自行车，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "drum 第一个音是 d，哪个词第一个音也是 d？",
+   "text": "balloon",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen3"
+   "tag": "en-line-en"
   },
   {
-   "text": "car 第一个音是 c，哪个词第一个音也是 c？",
-   "role": "en",
-   "lang": "en-US",
-   "tag": "en-qen3"
+   "text": "气球，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
-   "text": "four plane，几个呀？",
+   "text": "图上是气球，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "robot",
    "role": "en",
    "lang": "en-US",
-   "tag": "en-qen4"
+   "tag": "en-line-en"
+  },
+  {
+   "text": "机器人，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是机器人，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "drum",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "鼓，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是鼓，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "star",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "星星，是哪一个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "图上是星星，英文读",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "zero",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "one",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "two",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "three",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "four",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "five",
+   "role": "en",
+   "lang": "en-US",
+   "tag": "en-line-en"
+  },
+  {
+   "text": "哪个词和它开头一样呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "数一数，有几个呀？",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "跟我说一说",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
+  },
+  {
+   "text": "下方选出正确答案。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "en-line-zh"
   },
   {
    "text": "早上，糖豆来到幼儿园门口",
@@ -8906,6 +10586,36 @@
    "role": "story",
    "lang": "zh-CN",
    "tag": "mind-scene"
+  },
+  {
+   "text": "豆豆，接下来是学习时间。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "intro"
+  },
+  {
+   "text": "请在沙发上坐好，弟弟保持安静。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "intro"
+  },
+  {
+   "text": "没错，就是你，桂允滔小朋友，保持安静。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "intro"
+  },
+  {
+   "text": "姐姐要学习了。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "intro"
+  },
+  {
+   "text": "在答题时间内，有什么疑问，可以向爸爸妈妈寻求帮助。",
+   "role": "teach",
+   "lang": "zh-CN",
+   "tag": "intro"
   }
  ]
 }

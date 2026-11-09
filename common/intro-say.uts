@@ -1,0 +1,59 @@
+/**
+ * 算算小达人 · 模块开场白（开场包）
+ *
+ * 进「数学思维 / 语文识字 / 英语单词」任何一个学习模块时，先放一遍这段话再出题。
+ * 口径由用户 2026-11-09 指定（"做好"按语义写作"坐好"）：
+ *   豆豆，接下来是学习时间。请在沙发上坐好，弟弟保持安静。
+ *   没错，就是你，桂允滔小朋友，保持安静。姐姐要学习了。
+ *   在答题时间内，有什么疑问，可以向爸爸妈妈寻求帮助。
+ *
+ * 说明：
+ *  - 台词是**固定文案**，不走语音模板（里面有真名"桂允滔"，随档案换名字反而驴唇不对马嘴）；
+ *  - **五句全部用真人语音包**（static/voice/<voiceKey>.mp3），改台词必须重跑
+ *    `node --experimental-strip-types tools/voice-script.mjs` + `python tools/voice-gen.py`，
+ *    否则缺的那句会退回系统朗读；`tests/intro.test.mts` 会直接报红提醒；
+ *  - 只在第一次打开程序进模块时放一次（黑板规则页），之后的答题页不再重放；
+ *  - 三个模块共用同一份。
+ */
+
+/** 每行之间的留白（毫秒）：开场白是嘱咐话，一行一顿孩子才听得清 */
+export const INTRO_LINE_GAP_MS: number = 350
+
+/**
+ * 开场白语速倍率（真人音频再乘 1.15 基准，1.2 → 实际约 1.38 倍）
+ *
+ * 用户 2026-11-09 反馈原速（1.15 倍）读得太慢，要求读快一点。
+ * 开场白不含题目内容，听漏了也不影响做题，所以放宽到默认上限（1.24）之上；
+ * 念题目、念选项仍守 1.24，不跟着变快。
+ */
+export const INTRO_SPEED: number = 1.2
+
+/** 开场白放宽后的倍速上限（传给 voice.setVoiceRateCap，离开页面复位为 0） */
+export const INTRO_RATE_CAP: number = 1.45
+
+export const INTRO_LINES: Array<string> = [
+	'豆豆，接下来是学习时间。',
+	'请在沙发上坐好，弟弟保持安静。',
+	'没错，就是你，桂允滔小朋友，保持安静。',
+	'姐姐要学习了。',
+	'在答题时间内，有什么疑问，可以向爸爸妈妈寻求帮助。'
+]
+
+/* ---------------- 目标模块中转 ----------------
+ * uvue 页面传参容易踩坑（工程惯例：不用页面参数），所以首页点哪个模块
+ * 就把目标存在这里，规则页点「确定」后取走并按目标跳转。
+ */
+
+let pendingTarget: string = ''
+
+/** 首页进规则页前调用：记下这次要去的模块（math / cn / en） */
+export function setIntroTarget(t: string): void {
+	pendingTarget = t
+}
+
+/** 规则页点「确定」后调用：取走目标（取完即清空） */
+export function takeIntroTarget(): string {
+	const t: string = pendingTarget
+	pendingTarget = ''
+	return t
+}

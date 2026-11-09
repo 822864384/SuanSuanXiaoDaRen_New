@@ -7,10 +7,22 @@
  *
  * 与 tts.uts 的分工：
  *  - 本模块只管"顺序 + 节奏 + 通知"，不关心声音从哪来（真人包 / 系统 TTS 都一样）；
- *  - 每条之间留 `gap` 毫秒，让孩子有时间把视线挪到下一格。
+ *  - 每条之间留一段毫秒数，让孩子有时间把视线挪到下一格。
+ *
+ * ⚠️ 语言与留白是**每条各一份**（`sayStepsRich`）：英语单词模块一句中文引导、一句英文单词，
+ *    两行必须交给不同音色；"整题读两遍、中间停 1 秒"也只是把第一遍最后一行的留白改成 1000。
+ *    旧的单一 `lang` / `gap` 版本表达不了这件事，硬塞的结果是中文被英文音色吞掉（真机踩过）。
  *
  * ⚠️ 原生 TTS 没有"读完"回调，只能按字数估时（estimateSpeakMs）。
  *    所以这里宁可**估长一点**：估短了会提前掐断，孩子听到半句就跳下一格，比多等半秒糟得多。
+ *
+ * ⚠️⚠️ 真人语音包的时长**不能**只按字数估（真机踩过）：语音包是逐段 mp3 拼的，
+ *    每段首尾都有静音，实测比 `estimateSpeakMs` 长 0.3~0.7 秒。语文识字这类
+ *    「豆豆，请听题。图上是大人，选出大人的人字」估算 5.5s、实际念 5.9s，
+ *    按估算推进就会在"人字"还没出口时开始念"第一个，人"——听起来像题目被选项截断。
+ *    所以：**只要这一句真的交给了真人音频，就以播放器的 `isVoicePlaying()` 为准**，
+ *    它报 false 才算这句念完（另有 15 秒硬上限，防播放器卡住把队列挂死）。
+ *    系统 TTS 没有这个能力，仍退回按字数估时。
  *
  * ⚠️ 全模块只有一份队列：页面切题、作答、离场都必须调 stopSteps()，
  *    否则上一题的"第三个"会在下一题继续念。
@@ -20,6 +32,27 @@
  */
 
 import { speak, cleanForSpeech, estimateSpeakMs } from './tts.uts'
+import { isVoicePlaying } from './voice.uts'
+
+/** 真人音频的进度复查间隔（毫秒）：播放器自己会在最后一段结束时把 playing 置 false */
+const POLL_MS: number = 150
+
+/**
+ * 题目念完 → 读第一个选项之间的留白（毫秒）
+ *
+ * 用户 2026-11-09 指定「保证题目读完，停顿 1 秒，再读答案选项」：
+ * 这 1 秒是孩子把注意力从题面挪到选项上的时间——题目一停选项就进来，
+ * 孩子根本不知道"选项在回答什么"。
+ */
+export const QUESTION_OPTION_GAP_MS: number = 1000
+
+/**
+ * 等真人音频放完的硬上限（毫秒）
+ *
+ * 播放器偶发丢 onEnded / 卡在 paused，`isVoicePlaying()` 会一直为真。
+ * 没有上限的话整队就停在这一句上，页面表现为"读完题之后再也不读选项"。
+ */
+const VOICE_CAP_MS: number = 15000
 
 /** 读第 i 条时回调（页面据此点亮选项） */
 export type SayIndexHandler = (i: number) => void
@@ -27,13 +60,19 @@ export type SayIndexHandler = (i: number) => void
 export type SayDoneHandler = () => void
 
 let texts: Array<string> = []
-let langCode: string = 'zh-CN'
+/** 每一条的语言（与 texts 等长）：英语题是一句中文一句英文，不能整队共用一个语言 */
+let langs: Array<string> = []
+/** 每一条念完之后停多久（与 texts 等长）：「读两遍，中间停 1 秒」就是靠它 */
+let gaps: Array<number> = []
 let speed: number = 1.0
-let gapMs: number = 320
 /** 下一条要读的下标 */
 let at: number = 0
+/** 当前这一条念完之后要停多久 */
+let curGap: number = 320
 /** 当前这条预计念完的时刻（毫秒时间戳），0 = 没在念 */
 let curEndAt: number = 0
+/** 这一条真人音频开始放的时刻（估算上限用），0 = 这一条不走真人音频 */
+let voiceSince: number = 0
 let timerId: number = -1
 let running: boolean = false
 let indexCb: SayIndexHandler | null = null
@@ -60,6 +99,8 @@ function tick(): void {
 		// 读完了：先清状态再回调，避免回调里再次 saySteps 时被旧状态覆盖
 		running = false
 		texts = []
+		langs = []
+		gaps = []
 		const done: SayDoneHandler | null = doneCb
 		indexCb = null
 		doneCb = null
@@ -72,10 +113,13 @@ function tick(): void {
 	const text: string = cleanForSpeech(texts[i])
 	// 先点亮再出声：孩子的眼睛比耳朵慢半拍，高亮要抢在声音前面
 	if (indexCb != null) indexCb(i)
-	let wait: number = gapMs
+	const lineLang: string = i < langs.length ? langs[i] : 'zh-CN'
+	curGap = i < gaps.length ? gaps[i] : 320
+	let wait: number = curGap
 	curEndAt = Date.now()
+	voiceSince = 0
 	if (text.length > 0) {
-		const started: boolean = speak(text, langCode, speed)
+		const started: boolean = speak(text, lineLang, speed)
 		if (!started) {
 			// 这台设备读不出来（标准基座缺 UTS 插件、系统没装语音包）：
 			// 不要"亮一下又灭"的假动作——收队并把高亮清掉，让页面回到静止状态。
@@ -86,13 +130,59 @@ function tick(): void {
 		}
 		const speakMs: number = estimateSpeakMs(text, speed)
 		curEndAt = Date.now() + speakMs
-		wait = speakMs + gapMs
+		// 这一句真的交给了真人语音包：改以播放器的真实进度为准。
+		// 按字数估普遍偏短 0.3~0.7 秒，直接推到下一格会把尾字盖掉
+		// （语文识字最常见：题目"选出大人的人字"还没念完，"第一个，人"就进来了）。
+		if (isVoicePlaying()) {
+			voiceSince = Date.now()
+			waitVoice()
+			return
+		}
+		wait = speakMs + curGap
 	}
 	later(wait)
 }
 
 /**
- * 开始逐条朗读
+ * 还要不要继续等这一句的真人音频
+ *
+ * 两个条件缺一不可：播放器说还在放 **且** 没到硬上限。
+ * 后者是为了"播放器卡住"这种真机上出现过的故障——宁可这一句提前收尾，
+ * 也不能让整队停在这里（表现为"读完题不读选项"，比多等半秒严重得多）。
+ *
+ * 抽成独立函数是为了能被 tests/say-queue.test.mts 直接验证：
+ * Node 里没有播放器，只能这样守住"上限必须生效"这条。
+ */
+export function keepWaitingVoice(voicePlaying: boolean, elapsedMs: number): boolean {
+	return voicePlaying && elapsedMs < VOICE_CAP_MS
+}
+
+/**
+ * 真人音频还在放：隔一会儿再看一眼，放完再走段间留白
+ *
+ * 每轮把 `curEndAt` 往后推一个复查间隔，`stepsRemainMs()` 才不会在音频还在放的时候
+ * 谎报"已经念完了"（「教我一下」靠它决定什么时候插话）。
+ */
+function waitVoice(): void {
+	clearTimer()
+	timerId = setTimeout(() => {
+		timerId = -1
+		if (!running) return
+		if (keepWaitingVoice(isVoicePlaying(), Date.now() - voiceSince)) {
+			curEndAt = Date.now() + POLL_MS
+			waitVoice()
+			return
+		}
+		curEndAt = 0
+		voiceSince = 0
+		later(curGap)
+	}, POLL_MS) as number
+}
+
+/**
+ * 开始逐条朗读（整队共用一个语言、一个段间留白）
+ *
+ * 英语题请用 `sayStepsRich`：它一句中文一句英文，还要"读两遍中间停 1 秒"。
  *
  * @param list 要读的句子（按顺序）；空串会被跳过但**不改变下标**，页面可用同一套下标做高亮
  * @param lang 语言：中文 zh-CN，英语选项 en-US
@@ -111,11 +201,39 @@ export function saySteps(
 	onIndex: SayIndexHandler | null,
 	onDone: SayDoneHandler | null
 ): void {
+	const langsIn: Array<string> = []
+	const gapsIn: Array<number> = []
+	for (let i = 0; i < list.length; i++) {
+		langsIn.push(lang)
+		gapsIn.push(gap)
+	}
+	sayStepsRich(list, langsIn, gapsIn, leadMs, rate, onIndex, onDone)
+}
+
+/**
+ * 开始逐条朗读（每条自带语言与留白）
+ *
+ * 英语单词模块要的正是这个：开场中文、英文词用英文音色，最后一行后面停 1 秒再重读一遍。
+ * 把语言/留白做成整队参数的话，"一句中文一句英文"根本表达不出来——
+ * 旧版本就是因为只有一个 `lang`，整题只能塞给一种音色，中文被英文音色吞掉了。
+ *
+ * @param langs 与 list 等长：每条的语言（短了按 zh-CN 兜底）
+ * @param gaps 与 list 等长：每条**念完之后**停多久（短了按 320ms 兜底）
+ */
+export function sayStepsRich(
+	list: Array<string>,
+	langsIn: Array<string>,
+	gapsIn: Array<number>,
+	leadMs: number,
+	rate: number,
+	onIndex: SayIndexHandler | null,
+	onDone: SayDoneHandler | null
+): void {
 	stopSteps()
 	texts = list
-	langCode = lang
+	langs = langsIn
+	gaps = gapsIn
 	speed = rate
-	gapMs = gap
 	at = 0
 	indexCb = onIndex
 	doneCb = onDone
@@ -135,8 +253,12 @@ export function stopSteps(): void {
 	clearTimer()
 	running = false
 	texts = []
+	langs = []
+	gaps = []
 	at = 0
+	curGap = 320
 	curEndAt = 0
+	voiceSince = 0
 	indexCb = null
 	doneCb = null
 }

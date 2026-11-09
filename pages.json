@@ -19,6 +19,26 @@
 				"pageOrientation": "landscape"
 			}
 		},
+		/* 黑板规则页：第一次打开程序进学习模块前讲规矩，点「确定」再到答题界面 */
+		{
+			"path": "pages/intro/intro",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
+		/* 数学题型页：6 大类 → 题型 → 专项训练；顶栏的「综合闯关」还是原来那套混合答题 */
+		{
+			"path": "pages/math/menu",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#0b1026",
+				"disableScroll": true,
+				"pageOrientation": "landscape"
+			}
+		},
 		{
 			"path": "pages/math/math",
 			"style": {

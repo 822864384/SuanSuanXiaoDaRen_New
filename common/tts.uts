@@ -22,6 +22,7 @@ import {
 } from '@/uni_modules/ssxdr-speech'
 // #endif
 import { playVoiceText, isVoicePlaying, stopVoice, releaseVoice, setVoiceMissHandler } from './voice.uts'
+import { OPTION_ORDS, PICK_ASK_LINE } from './voice-tpl.uts'
 
 let speaking: boolean = false
 /** App 端插件是否可用（第一次调用失败后置 false，避免每句都抛异常） */
@@ -437,6 +438,9 @@ export function estimateSpeakMs(text: string, speed: number = 1.0): number {
  * 目光还在屏幕上找不到对应那一格；听到"第二个"才会把视线挪过去。
  * 序号和选项高亮是同一个动作的两半，缺一个都不成立。
  *
+ * ⚠️ 序号文案直接取自 voice-tpl.uts 的 OPTION_ORDS（语音包按同一份文案录音），
+ * 差一个字、差一个逗号，这句就会整句退回系统 TTS——不要在这里另写一份。
+ *
  * @param i 选项下标（从 0 开始）
  * @param text 选项原文（可能带 emoji，朗读前会被清洗掉）
  * @returns 朗读文案；这个选项没有任何可读文字（纯图/纯色块）时返回空串
@@ -444,14 +448,13 @@ export function estimateSpeakMs(text: string, speed: number = 1.0): number {
 export function optionSpeech(i: number, text: string): string {
 	const body: string = cleanForSpeech(text).trim()
 	if (body.length == 0) return ''
-	const ord: Array<string> = ['第一个', '第二个', '第三个', '第四个', '第五个', '第六个']
 	let head: string = ''
-	if (i >= 0 && i < ord.length) head = ord[i]
+	if (i >= 0 && i < OPTION_ORDS.length) head = OPTION_ORDS[i]
 	if (head.length == 0) return body
 	return head + '，' + body
 }
 
-/** 选项读完之后的收尾问句：把决定权交回给孩子，不催 */
+/** 选项读完之后的收尾问句：把决定权交回给孩子，不催（文案与语音包同一份） */
 export function pickAskSpeech(): string {
-	return '你想选哪一个呀？'
+	return PICK_ASK_LINE
 }

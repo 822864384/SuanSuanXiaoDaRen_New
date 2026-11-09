@@ -4,11 +4,15 @@
 
 			<!-- 顶部：返回 / 关卡题号 / 连击 / 得分 -->
 			<view class="math-top" :class="cx('math-top')">
-				<view class="chip" @click="goHome">
-					<text class="chip-text">← 回首页</text>
+				<view class="chip" @click="tapBackTop">
+					<text class="chip-text">{{ special ? '← 换题型' : '← 回首页' }}</text>
 				</view>
 				<view class="chip">
 					<text class="chip-text">{{ headText }} · {{ idx }}/{{ roundSize }}</text>
+				</view>
+				<!-- 跳过本关（错题重练 / 专项训练没有关卡概念，不显示）：直接进下一关第一题 -->
+				<view v-if="!drill && !special" class="chip" @click="tapSkipLevel">
+					<text class="chip-text">⏭ 跳过本关</text>
 				</view>
 				<view v-if="combo >= 2" class="chip">
 					<text class="chip-gold">🔥 {{ combo }} 连击</text>
@@ -57,16 +61,17 @@
 					<text class="q-text" :class="cx('q-text')">{{ q.expr }}</text>
 				</view>
 
-				<!-- ⑤ 横条比长短（长度差 ≥2 倍，底部左对齐） -->
+				<!-- ⑤ 横条比长短（上下两根，长度差 ≥2 倍，左侧一头对齐）
+				     标签必须是上边/下边：两根是上下摆的，写左边右边会和画面打架 -->
 				<view v-else-if="q.layout == 'bars'" class="q-block">
 					<view class="bar-row">
-						<text class="bar-label">左边</text>
+						<text class="bar-label">上边</text>
 						<view class="bar-track">
 							<view class="bar" :class="q.leftClass"></view>
 						</view>
 					</view>
 					<view class="bar-row">
-						<text class="bar-label">右边</text>
+						<text class="bar-label">下边</text>
 						<view class="bar-track">
 							<view class="bar" :class="q.rightClass"></view>
 						</view>
@@ -209,11 +214,11 @@
 
 <script setup>
 	import {
-		genQuestion, buildRound, shuffleOptions, isCorrectNumber, isCorrectText,
+		genQuestion, genByKind, buildRound, shuffleOptions, isCorrectNumber, isCorrectText,
 		randomPraise, randomEncourage, starsOf,
 		Question, ROUND_SIZE, SECONDS_PER_QUESTION, URGENT_SECONDS
 	} from '@/common/math-engine.uts'
-	import { getLevel, recordAnswer, addStars, addCandy, getCurrentProfile } from '@/common/store.uts'
+	import { getLevel, setLevel, recordAnswer, addStars, addCandy, getCurrentProfile, getSeenSeeds, addSeenSeed } from '@/common/store.uts'
 	import { Explain, ExplainLine } from '@/common/explain.uts'
 	import { beginRound, endRound } from '@/common/session.uts'
 	import { inDrill, setDrillTotal, stopDrill, drillMode } from '@/common/wrong-session.uts'
@@ -225,6 +230,8 @@
 	} from '@/common/tts.uts'
 	import { playAsk, playCorrect, playWrong, playTimeUp, releaseSfx } from '@/common/sfx.uts'
 	import { safeBack } from '@/common/nav.uts'
+	import { takeMathKind, setMenuGroup } from '@/common/math-session.uts'
+	import { kindName, kindGroupId } from '@/common/math-menu.uts'
 
 	import { topInsetStyle } from '@/common/screen.uts'
 
@@ -235,6 +242,12 @@
 	const totalSeconds: number = SECONDS_PER_QUESTION
 	/** 这次是错题重练（顶栏文案与结算页都跟着变） */
 	const drill = ref<boolean>(false)
+	/** 专项训练：只练这一个题型（空串 = 综合闯关） */
+	const spcKind = ref<string>('')
+	/** 是否是专项训练（模板里多处 v-if 用） */
+	const special = computed((): boolean => {
+		return spcKind.value.length > 0
+	})
 
 	/**
 	 * 紧凑版式开关（手机横屏）
@@ -283,9 +296,11 @@
 	const score = ref<number>(0)
 	const combo = ref<number>(0)
 
-	/** 顶栏文案：错题重练时不显示"第 N 关"（重练没有关卡概念） */
+	/** 顶栏文案：专项训练显示题型名、错题重练显示"再练一次"、闯关显示"第 N 关" */
 	const headText = computed((): string => {
-		return drill.value ? '📕 再练一次' : '第 ' + level.value.toString() + ' 关'
+		if (drill.value) return '📕 再练一次'
+		if (special.value) return kindName(spcKind.value)
+		return '第 ' + level.value.toString() + ' 关'
 	})
 
 	/** 当前题目（首帧先给一题，避免空白闪一下） */
@@ -385,10 +400,87 @@
 	let sayId: number = -1
 	let sayEndId: number = -1
 
+	/**
+	 * 把"最近做对过"的题换掉（防重复）。
+	 *
+	 * 记账口径：做对一题就往 storage 记「题型:种子」，同一题型同一种子 = 同一道题。
+	 * 组卷后逐题检查：命中记账就重摇同一题型，最多 8 次；全撞了就用最后一版
+	 * （题型每关随机，5 题里同题型最多 2 道，撞满 8 次基本不会发生）。
+	 * 错题重练不走这里：重练的意义就是把做错的原题再来一遍。
+	 */
+	function freshen(list: Array<Question>): Array<Question> {
+		const out: Array<Question> = []
+		for (let i = 0; i < list.length; i++) {
+			let cur: Question = list[i]
+			for (let t = 0; t < 8; t++) {
+				const seen: Array<number> = getSeenSeeds('math', cur.kind)
+				if (seen.indexOf(cur.seed) < 0) break
+				cur = genByKind(cur.kind)
+			}
+			out.push(cur)
+		}
+		return out
+	}
+
+	/** 同一题型的题干指纹：挡"一轮里出两道一模一样的题" */
+	function questionKey(x: Question): string {
+		return x.prompt + '|' + x.emojis + '|' + x.emojis2 + '|' + x.expr + '|' + x.seq
+	}
+
+	/**
+	 * 题型专项的组卷：一轮 5 题，全是同一个题型
+	 *
+	 * 两条约束：
+	 *  1. 同一轮内不出重复题干（连摇 8 次还撞就认了：有的题型题库空间本来就小）；
+	 *  2. 做对过的题不再出现（`freshen`），与闯关共用同一套记账。
+	 * 难度就是该题型本身的难度——生成器没有档位参数，档位只决定混合闯关的题型池。
+	 */
+	function buildKindRound(kind: string, size: number): Array<Question> {
+		const list: Array<Question> = []
+		for (let i = 0; i < size; i++) {
+			let cur: Question = genByKind(kind)
+			for (let t = 0; t < 8; t++) {
+				let dup: boolean = false
+				for (let j = 0; j < list.length; j++) {
+					if (questionKey(list[j]) == questionKey(cur)) {
+						dup = true
+						break
+					}
+				}
+				if (!dup) break
+				cur = genByKind(kind)
+			}
+			list.push(cur)
+		}
+		return freshen(list)
+	}
+
+	/** 题型专项开练：不读关卡（level=0），结算页也不会推进关卡 */
+	function startSpecial(kind: string) {
+		level.value = 0
+		right = 0
+		wrong = 0
+		score.value = 0
+		combo.value = 0
+		lastOk.value = false
+		feedbackShow.value = false
+		locked = false
+		roundSize.value = ROUND_SIZE
+		beginRound('math', 0, kind)
+		roundQuestions = buildKindRound(kind, ROUND_SIZE)
+		idx.value = 1
+		q.value = roundQuestions[0]
+		options.value = shuffleOptions(q.value)
+		askQuestion()
+	}
+
 	onLoad(() => {
 		detectLayout()
 		profileName.value = getCurrentProfile().name
 		drill.value = inDrill()
+		// 题型专项：菜单页 / 结算页「再来一轮」指定了 kind，一轮 5 题只练这一种。
+		// 先取出来清掉，避免残留影响后面每一次进入（错题重练优先，见下）
+		const spc: string = takeMathKind()
 		if (drill.value) {
 			// 错题重练：不按关卡组卷，直接把库里的题按进库顺序拿出来
 			const list: Array<Question> = buildMathDrill(DRILL_SIZE)
@@ -412,11 +504,17 @@
 			askQuestion()
 			return
 		}
+		// 题型专项（错题重练没有 kind，走不到这里）
+		if (spc.length > 0) {
+			spcKind.value = spc
+			startSpecial(spc)
+			return
+		}
 		level.value = getLevel('math')
 		beginRound('math', level.value)
 		idx.value = 1
-		// 按难度档组卷：L1~L4 的题型池不同
-		roundQuestions = buildRound(level.value)
+		// 按难度档组卷：L1~L4 的题型池不同；做对过的题换掉，不重复出现
+		roundQuestions = freshen(buildRound(level.value))
 		q.value = roundQuestions[0]
 		options.value = shuffleOptions(q.value)
 		askQuestion()
@@ -571,6 +669,8 @@
 			addStars(1)
 			addCandy(1)
 			recordAnswer('math', true)
+			// 做对了记一笔"见过"：下次组卷时这道题会被换掉，不再重复出现
+			addSeenSeed('math', q.value.kind, q.value.seed)
 			// 做对了就从错题库出库：重练时是对号入座删这道题；正常练习里删掉"同一题面"的旧条目
 			if (drill.value) {
 				removeWrong('math', q.value.kind, q.value.seed, '', answerText())
@@ -956,6 +1056,33 @@
 		}, estimateSpeakMs(text))
 	}
 
+	/**
+	 * 顶栏左上角：专项训练回题型页（换一个题型练），综合闯关回首页
+	 *
+	 * 专项用 reLaunch 把栈清成"题型页"一页：栈里可能是 home→menu→math→result→math，
+	 * 无论 redirectTo 还是 navigateBack 都可能叠出/退到意料之外的页；
+	 * 清成单页后题型页的 safeBack 在栈底正好走 reLaunch 回首页，逻辑只有一条路径。
+	 *
+	 * setMenuGroup：回到的是**这类**的题型列表（练「数一数」就回「数与数数」），
+	 * 与结算页「换一个题型」同一口径，孩子不用每次从六大类重找。
+	 */
+	function tapBackTop() {
+		if (!special.value) {
+			goHome()
+			return
+		}
+		try {
+			clearTimer()
+			clearAdvance()
+			clearSay()
+			stopSpeak()
+		} catch (e) {
+			console.log('[math] 换题型清理异常')
+		}
+		setMenuGroup(kindGroupId(spcKind.value))
+		uni.reLaunch({ url: '/pages/math/menu' })
+	}
+
 	function goHome() {
 		// 清理必须包起来：任一处抛异常都会让下面的返回不执行，
 		// 表现就是"点了回首页没反应"。返回是用户意图，不能被清理动作挡住。
@@ -970,6 +1097,43 @@
 			console.log('[math] 离场清理异常')
 		}
 		safeBack()
+	}
+
+	/**
+	 * 跳过本关：把关卡 +1，原地从下一关的第一题重新开始（家长陪玩时递进用）。
+	 *
+	 * 口径与结算页"通关晋级"完全一致（setLevel(cur+1)），差别只是不经过结算页、
+	 * 本关没答的题不计对错、也不进错题库——跳过就是跳过，不算答错。
+	 * 错题重练没有关卡概念（level=0），按钮本来就不显示，这里再兜一层。
+	 */
+	function tapSkipLevel() {
+		if (drill.value || special.value) return
+		// 清理包起来：任一处抛异常都不能把页面留在"计时还在跑、题已作废"的烂摊子
+		try {
+			clearTimer()
+			clearAdvance()
+			clearSay()
+			stopSpeak()
+			locked = false
+			right = 0
+			wrong = 0
+			score.value = 0
+			combo.value = 0
+			lastOk.value = false
+			feedbackShow.value = false
+			// 关卡 +1：先写存储再更新页面文案（顶栏"第 X 关"跟着变）
+			setLevel('math', getLevel('math') + 1)
+			level.value = getLevel('math')
+			beginRound('math', level.value)
+			roundSize.value = ROUND_SIZE
+			roundQuestions = freshen(buildRound(level.value))
+			idx.value = 1
+			q.value = roundQuestions[0]
+			options.value = shuffleOptions(q.value)
+			askQuestion()
+		} catch (e) {
+			console.log('[math] 跳过本关异常')
+		}
 	}
 </script>
 

@@ -208,8 +208,30 @@ const GENERIC_PREFIXES: Array<string> = ['再听一遍。', '再看一遍。']
 
 /** 这些前缀会被单独念，正文再按自己的流程拆 */
 export function genericPrefixes(): Array<string> {
-  return GENERIC_PREFIXES
+	return GENERIC_PREFIXES
 }
+
+/**
+ * 读选项时先报的序号（**必须与 tts.uts 的 optionSpeech 逐字一致**）
+ *
+ * 序号单独录一条，选项正文再走自己的流程——这样 60 个字 × 6 个序号
+ * 不用录 360 个组合，只录 66 条就够了。语文识字的选项是"第一个，大"这种结构。
+ */
+export const OPTION_ORDS: Array<string> = ['第一个', '第二个', '第三个', '第四个', '第五个', '第六个']
+
+/** 序号音频的实际文本（带逗号：合成时逗号会自然停顿，key 也按带逗号的原文算） */
+export function optionOrdinalPrefixes(): Array<string> {
+	const out: Array<string> = []
+	for (let i = 0; i < OPTION_ORDS.length; i++) out.push(OPTION_ORDS[i] + '，')
+	return out
+}
+
+/**
+ * 选项读完后的收尾问句（tts.uts 的 pickAskSpeech 与生成脚本共用同一份文案）
+ *
+ * 单独一条音频：语文/英语读完选项都会念它，一句机械音夹在真人中间很刺耳。
+ */
+export const PICK_ASK_LINE: string = '你想选哪一个呀？'
 
 /**
  * 整句或模板 → 片段文本数组；都不命中返回空数组
@@ -234,6 +256,19 @@ export function voiceSegments(text: string): Array<string> {
   // ③ 通用句首：「再听一遍。」+ 正文
   for (let i = 0; i < GENERIC_PREFIXES.length; i++) {
     const g: string = GENERIC_PREFIXES[i]
+    if (t.indexOf(g) == 0) {
+      const rest: Array<string> = voiceSegments(t.substring(g.length))
+      if (rest.length == 0) return []
+      const all: Array<string> = []
+      all.push(g)
+      for (let m = 0; m < rest.length; m++) all.push(rest[m])
+      return all
+    }
+  }
+  // ③b 读选项序号：「第一个，大」——序号单独一段，选项正文再拆
+  // （语文识字的选项朗读就长这样；序号与正文各自成段，60 字 × 6 序号才不用录 360 个组合）
+  for (let i = 0; i < OPTION_ORDS.length; i++) {
+    const g: string = OPTION_ORDS[i] + '，'
     if (t.indexOf(g) == 0) {
       const rest: Array<string> = voiceSegments(t.substring(g.length))
       if (rest.length == 0) return []

@@ -43,7 +43,7 @@ for (const f of fs.readdirSync(commonDir)) {
 }
 console.log('已同步 ' + count + ' 个模块到 tests/engine-tmp')
 
-const files = ['engine.test.mts', 'narration.test.mts', 'mind.test.mts', 'study.test.mts', 'so.test.mts', 'explain.test.mts', 'voice.test.mts', 'voice-play.test.mts', 'say-queue.test.mts', 'wrongbook.test.mts']
+const files = ['engine.test.mts', 'math-grow.test.mts', 'math-menu.test.mts', 'narration.test.mts', 'mind.test.mts', 'study.test.mts', 'en-say.test.mts', 'intro.test.mts', 'so.test.mts', 'explain.test.mts', 'voice.test.mts', 'voice-play.test.mts', 'say-queue.test.mts', 'wrongbook.test.mts']
 let status = 0
 for (const f of files) {
   console.log('\n=== ' + f + ' ===')

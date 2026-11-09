@@ -1,0 +1,294 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶栏：返回 / 当前层级 / 综合闯关 -->
+			<view class="top">
+				<view class="chip" @click="tapBack">
+					<text class="chip-text">{{ viewGroup.length == 0 ? '← 回首页' : '← 六大类' }}</text>
+				</view>
+				<text class="title">{{ titleText }}</text>
+				<view class="top-space"></view>
+				<!-- 综合闯关：保留原来那套混合题型闯关，任何层级都能一眼看到 -->
+				<view class="round-btn" @click="tapFreeRound">
+					<text class="round-btn-text">🏆 综合闯关 · 第 {{ level }} 关</text>
+				</view>
+			</view>
+
+			<!-- 一级：六大类 -->
+			<view v-if="viewGroup.length == 0" class="grid">
+				<view v-for="(row, ri) in groupRows" :key="'gr' + ri" class="row">
+					<view v-for="(g, gi) in row" :key="'g' + ri + '-' + gi" class="card g-card"
+						:style="'border-color:' + g.color" @click="openGroup(g)">
+						<text class="g-emoji">{{ g.emoji }}</text>
+						<text class="g-name" :style="'color:' + g.color">{{ g.name }}</text>
+						<text class="g-count">{{ g.kinds.length }} 种题型</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 二级：该大类下的题型 -->
+			<view v-else class="grid">
+				<view v-for="(row, ri) in kindRows" :key="'kr' + ri" class="row">
+					<view v-for="(k, ki) in row" :key="'k' + ri + '-' + ki" class="card k-card"
+						:style="'border-color:' + curColor" @click="startKind(k)">
+						<text class="k-emoji">{{ k.emoji }}</text>
+						<text class="k-name">{{ k.name }}</text>
+					</view>
+				</view>
+			</view>
+
+			<text class="hint">{{ hintText }}</text>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { MATH_GROUPS, MathGroup, MathKind, findGroup } from '@/common/math-menu.uts'
+	import { setMathKind, takeMenuGroup } from '@/common/math-session.uts'
+	import { getLevel } from '@/common/store.uts'
+	import { safeBack } from '@/common/nav.uts'
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度：整页下移，避开系统时间/电量栏 */
+	const rootStyle: string = topInsetStyle()
+
+	/** 当前打开的大类 id（空 = 大类视图） */
+	const viewGroup = ref<string>('')
+	/** 当前大类的题型行（每行 5 张，跟电视上的手感对齐） */
+	const kindRows = ref<Array<Array<MathKind>>>([])
+	/** 当前大类主色：题型卡描边跟着变，孩子知道"还在这一类里" */
+	const curColor = ref<string>('#5b9cff')
+	/** 综合闯关按钮上的关卡号 */
+	const level = ref<number>(1)
+
+	const PER_ROW_G: number = 3
+	const PER_ROW_K: number = 5
+
+	/** 大类分组：固定 3 张一行，不用 flex-wrap（uvue 的 wrap 在个别机型上会挤成一条） */
+	function chunkGroups(src: Array<MathGroup>, per: number): Array<Array<MathGroup>> {
+		const rows: Array<Array<MathGroup>> = []
+		let cur: Array<MathGroup> = []
+		for (let i = 0; i < src.length; i++) {
+			cur.push(src[i])
+			if (cur.length >= per) {
+				rows.push(cur)
+				cur = []
+			}
+		}
+		if (cur.length > 0) rows.push(cur)
+		return rows
+	}
+
+	function chunkKinds(src: Array<MathKind>, per: number): Array<Array<MathKind>> {
+		const rows: Array<Array<MathKind>> = []
+		let cur: Array<MathKind> = []
+		for (let i = 0; i < src.length; i++) {
+			cur.push(src[i])
+			if (cur.length >= per) {
+				rows.push(cur)
+				cur = []
+			}
+		}
+		if (cur.length > 0) rows.push(cur)
+		return rows
+	}
+
+	const groupRows = ref<Array<Array<MathGroup>>>(chunkGroups(MATH_GROUPS, PER_ROW_G))
+
+	const titleText = computed((): string => {
+		if (viewGroup.value.length == 0) return '🧮 数学思维 · 选一类来练'
+		for (let i = 0; i < MATH_GROUPS.length; i++) {
+			const g: MathGroup = MATH_GROUPS[i]
+			if (g.id == viewGroup.value) return g.emoji + ' ' + g.name
+		}
+		return '🧮 数学思维'
+	})
+
+	const hintText = computed((): string => {
+		return viewGroup.value.length == 0
+			? '先选一个大类，再挑想练的题型'
+			: '每轮 5 道题，只练这一种题型'
+	})
+
+	onLoad(() => {
+		level.value = getLevel('math')
+		// 从结算页「换一个题型」/ 答题页「← 换题型」回来：直接展开刚才那一类的题型，
+		// 不用再从六大类里找一遍（单例一次性，取完即清空）
+		const gid: string = takeMenuGroup()
+		if (gid.length > 0) openGroupById(gid)
+	})
+
+	onShow(() => {
+		// 从答题/结算页回来时关卡号可能变了，重新读一次
+		level.value = getLevel('math')
+	})
+
+	/** 进某个大类：算好该类的题型行与主色 */
+	function openGroup(g: MathGroup) {
+		viewGroup.value = g.id
+		curColor.value = g.color
+		kindRows.value = chunkKinds(g.kinds, PER_ROW_K)
+	}
+
+	/** 按 id 打开某个大类（回菜单时用）；id 不认识就老实停在六大类，别显示空页 */
+	function openGroupById(id: string) {
+		const g: MathGroup | null = findGroup(id)
+		if (g == null) return
+		openGroup(g)
+	}
+
+	/** 点题型：记下 kind，进答题页（专项一轮 5 题） */
+	function startKind(k: MathKind) {
+		setMathKind(k.kind)
+		uni.navigateTo({ url: '/pages/math/math' })
+	}
+
+	/** 综合闯关：明确清空题型（防止上次专项的 kind 残留） */
+	function tapFreeRound() {
+		setMathKind('')
+		uni.navigateTo({ url: '/pages/math/math' })
+	}
+
+	/** 返回：题型视图回大类；大类视图回首页 */
+	function tapBack() {
+		if (viewGroup.value.length > 0) {
+			viewGroup.value = ''
+			curColor.value = '#5b9cff'
+			kindRows.value = []
+			return
+		}
+		safeBack()
+	}
+</script>
+
+<style>
+	.root {
+		width: 100%;
+		height: 100%;
+		background-color: #0b1026;
+	}
+
+	/*
+	 * 高度预算：1920×1080 屏上满屏只有约 422rpx（750rpx = 1920px）。
+	 * 本页合计约 300rpx：顶栏 40 + 两行卡 2×100 + 间距 + 提示，留足余量。
+	 */
+	.stage {
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* ---------------- 顶栏 ---------------- */
+
+	.top {
+		width: 690rpx;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 10rpx;
+	}
+
+	.chip {
+		background-color: rgba(255, 255, 255, 0.10);
+		border-radius: 16rpx;
+		padding: 5rpx 12rpx;
+	}
+
+	.chip-text {
+		color: #c7d4ee;
+		font-size: 12rpx;
+	}
+
+	.title {
+		color: #eaf1ff;
+		font-size: 15rpx;
+		font-weight: bold;
+		margin-left: 14rpx;
+	}
+
+	.top-space {
+		flex: 1;
+	}
+
+	/* 综合闯关：金底醒目，但比答题页主按钮含蓄一点 */
+	.round-btn {
+		background-color: #ffb02e;
+		border-radius: 16rpx;
+		padding: 6rpx 14rpx;
+		border-width: 2rpx;
+		border-color: #ffd76e;
+	}
+
+	.round-btn-text {
+		color: #5b3200;
+		font-size: 12rpx;
+		font-weight: bold;
+	}
+
+	/* ---------------- 卡片区 ---------------- */
+
+	.grid {
+		width: 690rpx;
+		align-items: center;
+	}
+
+	.row {
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	.card {
+		border-radius: 14rpx;
+		border-width: 2rpx;
+		background-color: #16203c;
+		align-items: center;
+		justify-content: center;
+		margin: 5rpx;
+	}
+
+	/* 大类卡：3 列 × 2 行 */
+	.g-card {
+		width: 210rpx;
+		height: 92rpx;
+	}
+
+	.g-emoji {
+		font-size: 22rpx;
+	}
+
+	.g-name {
+		font-size: 14rpx;
+		font-weight: bold;
+		margin-top: 2rpx;
+	}
+
+	.g-count {
+		color: #8ea3c6;
+		font-size: 10rpx;
+		margin-top: 1rpx;
+	}
+
+	/* 题型卡：5 列 × 2 行 */
+	.k-card {
+		width: 126rpx;
+		height: 86rpx;
+	}
+
+	.k-emoji {
+		font-size: 20rpx;
+	}
+
+	.k-name {
+		color: #eaf1ff;
+		font-size: 12rpx;
+		margin-top: 3rpx;
+	}
+
+	.hint {
+		color: #7f93b4;
+		font-size: 11rpx;
+		margin-top: 12rpx;
+	}
+</style>

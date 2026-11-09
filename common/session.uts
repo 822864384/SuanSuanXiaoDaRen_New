@@ -23,15 +23,23 @@ export class RoundResult {
   retry: number = 0
   /** 获得星星（= 答对题数，同原型） */
   stars: number = 0
+  /**
+   * 专项训练的题型（空串 = 综合闯关）
+   *
+   * 有值说明这一轮是"只练这一个题型"：结算页据此改文案、改按钮，
+   * 并且**不推进关卡**（专项练习不该让孩子跳关）。
+   */
+  kind: string = ''
 }
 
 /** 全局共享的结算数据 */
 export const round = new RoundResult()
 
-/** 开始新一关前清空 */
-export function beginRound(mode: string, level: number): void {
+/** 开始新一关前清空（kind 传空串 = 综合闯关） */
+export function beginRound(mode: string, level: number, kind: string = ''): void {
   round.mode = mode
   round.level = level
+  round.kind = kind
   round.right = 0
   round.wrong = 0
   round.retry = 0

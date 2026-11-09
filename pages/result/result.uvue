@@ -33,6 +33,8 @@
 <script setup>
 	import { round } from '@/common/session.uts'
 	import { starsOf, resultPraise } from '@/common/math-engine.uts'
+	import { kindName, kindGroupId } from '@/common/math-menu.uts'
+	import { setMathKind, setMenuGroup } from '@/common/math-session.uts'
 	import { getLevel, setLevel, getCurrentProfile } from '@/common/store.uts'
 	import { setStudyMode, studyModeName } from '@/common/study-session.uts'
 	import { inDrill, stopDrill } from '@/common/wrong-session.uts'
@@ -58,9 +60,11 @@
 
 	/** 这次是不是错题重练 */
 	const drilling = ref<boolean>(false)
-	/** 主按钮（重练：回错题库；闯关：下一关） */
+	/** 这次是不是题型专项（只练一个题型）：有值时结算页不推进关卡 */
+	const special = ref<boolean>(false)
+	/** 主按钮（重练：回错题库；专项：再来一轮；闯关：下一关） */
 	const primaryLabel = ref<string>('🚀 下一关')
-	/** 次按钮（重练：再练一轮；闯关：再玩一次） */
+	/** 次按钮（重练/专项：换题型；闯关：再玩一次） */
 	const secondaryLabel = ref<string>('🔁 再玩一次')
 
 	/** 语文英语是"课"，数学是"关"——量词错了孩子会听不懂 */
@@ -100,6 +104,28 @@
 			}, 300)
 			setTimeout(() => {
 				if (ttsReady) speak(cleanForSpeech(who + '，' + body + tail))
+			}, 1100)
+			return
+		}
+
+		// 题型专项（只练一个题型）：不提"第几关"，也不推进关卡——练完就练完了
+		if (round.kind.length > 0) {
+			special.value = true
+			const nm: string = kindName(round.kind)
+			title.value = '🎉 ' + nm + ' · 练完啦！'
+			starText.value = repeatStr('⭐', stars) + repeatStr('☆', 3 - stars)
+			praise.value = resultPraise(stars)
+			lineText.value = '答对 ' + round.right.toString() + ' 题 · 答错 ' + round.wrong.toString() + ' 题'
+			primaryLabel.value = '🔁 再来一轮'
+			secondaryLabel.value = '🔀 换一个题型'
+			const who: string = getCurrentProfile().name
+			const body: string = '答对' + round.right.toString() + '题。'
+			const tail: string = stars >= 3 ? '太棒啦，我们再来一轮！' : '再练一轮就记住啦！'
+			setTimeout(() => {
+				playCorrect()
+			}, 300)
+			setTimeout(() => {
+				if (ttsReady) speak(cleanForSpeech(who + '，' + nm + '练完啦！' + body + tail))
 			}, 1100)
 			return
 		}
@@ -148,22 +174,52 @@
 		gotoRound()
 	}
 
-	/** 主按钮：重练时是"回错题库"，闯关时是"下一关" */
+	/** 主按钮：重练时"回错题库"，专项时"再来一轮"，闯关时"下一关" */
 	function primaryTap() {
 		if (drilling.value) {
 			backToWrongBook()
 			return
 		}
+		if (special.value) {
+			replaySpecial()
+			return
+		}
 		nextLevel()
 	}
 
-	/** 次按钮：重练时是"再练一轮"（库里的下一批），闯关时是"再玩一次" */
+	/** 次按钮：重练时"再练一轮"，专项时"换一个题型"，闯关时"再玩一次" */
 	function secondaryTap() {
 		if (drilling.value) {
 			gotoRound()
 			return
 		}
+		if (special.value) {
+			backToMenu()
+			return
+		}
 		replay()
+	}
+
+	/** 专项：同一个题型再来一轮（从题库重摇 5 道，做对过的会自动跳过） */
+	function replaySpecial() {
+		setMathKind(round.kind)
+		gotoRound()
+	}
+
+	/**
+	 * 专项：回题型页换一个题型（落在**刚才那一类**的题型列表，不是六大类首页）
+	 *
+	 * setMenuGroup(kindGroupId(...))：比如刚练完「数一数」，回来就是「数与数数」
+	 * 的 10 个题型，孩子不用再把大类找一遍；菜单页 onLoad 取走即清空。
+	 *
+	 * 用 reLaunch 而不是 redirectTo：栈里可能已经是 home→menu→math→result，
+	 * redirectTo 会再叠一层 menu，之后"回首页"只退一层就还在题型页，看起来像按钮失灵。
+	 * reLaunch 把栈清成"题型页"一页，题型页的 safeBack 在栈底正好走 reLaunch 回首页。
+	 */
+	function backToMenu() {
+		setMathKind('')
+		setMenuGroup(kindGroupId(round.kind))
+		uni.reLaunch({ url: '/pages/math/menu' })
 	}
 
 	function backToWrongBook() {
@@ -190,6 +246,9 @@
 
 	function goHome() {
 		stopDrill()
+		setMathKind('')
+		// 回首页就别留"下次要展开哪个大类"的残留，否则下次进题型页会莫名跳过六大类
+		setMenuGroup('')
 		uni.reLaunch({ url: '/pages/home/home' })
 	}
 </script>

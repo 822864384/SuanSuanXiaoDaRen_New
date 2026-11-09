@@ -1,0 +1,164 @@
+/**
+ * 算算小达人 · 数学题型菜单（6 大类 / 29 种题型）
+ *
+ * 为什么单独一个模块：菜单页（pages/math/menu.uvue）要用它铺卡片，
+ * 答题页（pages/math/math.uvue）在「专项训练」时要用它把 kind 翻成中文名，
+ * 结算页（pages/result/result.uvue）要用它写标题。三处共用一份，名字不会各说各话。
+ *
+ * 口径（2026-11-09 与用户确认）：
+ *  - 题型页三层：数学思维 → 6 大类 → 该类题型 → 开始训练；
+ *  - 名字给 4~8 岁孩子和家长共用：**用孩子听得懂的大白话**，不写"序数认知"这类术语。
+ *
+ * 注意：这里的 kind 必须与 math-engine.uts 的 KIND_* 一一对应，
+ * tests/math-menu.test.mts 会拿引擎的题型清单逐个对照，漏一个直接红。
+ */
+
+/** 一种题型 */
+export class MathKind {
+	/** 引擎里的题型标识（math-engine.uts 的 KIND_*） */
+	kind: string = ''
+	/** 卡片上的名字（大白话） */
+	name: string = ''
+	/** 卡片图标：给不识字的孩子一个视觉锚点 */
+	emoji: string = ''
+	/** 一句话说明（家长看得懂就行，不朗读） */
+	tip: string = ''
+
+	constructor(kind: string, name: string, emoji: string, tip: string) {
+		this.kind = kind
+		this.name = name
+		this.emoji = emoji
+		this.tip = tip
+	}
+}
+
+/** 一个能力大类 */
+export class MathGroup {
+	/** 大类标识（与 math-engine.uts 的 groupOf 同口径，便于排查） */
+	id: string = ''
+	/** 大类名（孩子看得懂） */
+	name: string = ''
+	emoji: string = ''
+	/** 大类主色（卡片描边/角标用） */
+	color: string = ''
+	/** 该大类下的题型（顺序 = 由易到难） */
+	kinds: Array<MathKind> = []
+
+	constructor(id: string, name: string, emoji: string, color: string, kinds: Array<MathKind>) {
+		this.id = id
+		this.name = name
+		this.emoji = emoji
+		this.color = color
+		this.kinds = kinds
+	}
+}
+
+/** 六大类（顺序即页面顺序：最常练的排在前面） */
+export const MATH_GROUPS: Array<MathGroup> = [
+	new MathGroup('num', '数与数数', '🔢', '#5b9cff', [
+		new MathKind('count', '数一数', '🔢', '图上有几个，数出来'),
+		new MathKind('neighbor', '邻居数', '↔️', '谁在它前面、谁在它后面'),
+		new MathKind('nextnum', '接着数', '➡️', '接下来该数到几'),
+		new MathKind('compare', '比大小', '⬆️', '两个数哪个更大'),
+		new MathKind('ordinal', '第几个', '🥇', '从头数排第几'),
+		new MathKind('tens', '十位个位', '🔟', '几个十、几个一'),
+		new MathKind('split', '分一分', '🍬', '一堆分成两份'),
+		new MathKind('half', '一半是多少', '🍕', '平均分成两半'),
+		new MathKind('share', '平均分', '🤝', '每个人分到几个'),
+		new MathKind('conserve', '一样多吗', '⚖️', '换个排法还一样多吗')
+	]),
+	new MathGroup('op', '加减运算', '➕', '#3ecf8e', [
+		new MathKind('add', '加法', '➕', '合起来一共几个'),
+		new MathKind('sub', '减法', '➖', '还剩几个'),
+		new MathKind('take', '拿走多少', '🍪', '被拿走的是几个'),
+		new MathKind('twostep', '两步运算', '🧮', '先加后减算一算'),
+		new MathKind('mult', '几个几', '✖️', '几组一样多，一共几个')
+	]),
+	new MathGroup('measure', '比一比', '📏', '#ffb02e', [
+		new MathKind('longer', '比长短', '📏', '上下两根哪根更长'),
+		new MathKind('taller', '比高矮', '🦒', '左右两座哪个更高'),
+		new MathKind('weight', '比轻重', '🎈', '哪个更重、哪个更轻'),
+		new MathKind('more3', '谁最多', '🍎', '三堆里哪堆最多')
+	]),
+	new MathGroup('class', '分类', '🗂️', '#c88bff', [
+		new MathKind('odd', '找不同', '🔍', '哪一个和其他不一样'),
+		new MathKind('notcat', '不是同类', '🚫', '哪一个不是这一类')
+	]),
+	new MathGroup('pattern', '找规律', '🔁', '#4fd1d9', [
+		new MathKind('pattern', '简单规律', '🔁', '按顺序接着排'),
+		new MathKind('pattern2', '复杂规律', '🌀', '两种一组反复出现'),
+		new MathKind('seq', '数列接力', '🔗', '数字一个接一个怎么变')
+	]),
+	new MathGroup('reason', '想一想', '💡', '#ff8fab', [
+		new MathKind('analogy', '想一想', '🤔', '照着前面的样子推一推'),
+		new MathKind('cause', '生活常识', '💡', '这样做会发生什么'),
+		new MathKind('daytime', '什么时候', '🌞', '这件事发生在什么时候'),
+		new MathKind('shape', '认图形', '🔺', '认三角形、正方形'),
+		new MathKind('clock', '认整点', '🕐', '钟面上是几点')
+	])
+]
+
+/** 题型总数（tests 会拿它和引擎对照） */
+export const MATH_KIND_TOTAL: number = 29
+
+/** kind → 中文名；查不到时返回 kind 本身（宁可显示英文也不显示空白） */
+export function kindName(kind: string): string {
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		const g: MathGroup = MATH_GROUPS[i]
+		for (let j = 0; j < g.kinds.length; j++) {
+			if (g.kinds[j].kind == kind) return g.kinds[j].name
+		}
+	}
+	return kind
+}
+
+/** kind → 图标 */
+export function kindEmoji(kind: string): string {
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		const g: MathGroup = MATH_GROUPS[i]
+		for (let j = 0; j < g.kinds.length; j++) {
+			if (g.kinds[j].kind == kind) return g.kinds[j].emoji
+		}
+	}
+	return '🧩'
+}
+
+/** kind → 所属大类名（结算页/调试用） */
+export function kindGroupName(kind: string): string {
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		const g: MathGroup = MATH_GROUPS[i]
+		for (let j = 0; j < g.kinds.length; j++) {
+			if (g.kinds[j].kind == kind) return g.name
+		}
+	}
+	return ''
+}
+
+/** kind → 所属大类 id（回菜单时用：把小朋友放回"刚才练的那一类"的题型页） */
+export function kindGroupId(kind: string): string {
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		const g: MathGroup = MATH_GROUPS[i]
+		for (let j = 0; j < g.kinds.length; j++) {
+			if (g.kinds[j].kind == kind) return g.id
+		}
+	}
+	return ''
+}
+
+/** 按 id 找大类；找不到返回 null（菜单页开二级视图前要判空，别拿 null 去读字段） */
+export function findGroup(id: string): MathGroup | null {
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		if (MATH_GROUPS[i].id == id) return MATH_GROUPS[i]
+	}
+	return null
+}
+
+/** 全部题型标识（测试用：与引擎清单对照） */
+export function allMenuKinds(): Array<string> {
+	const out: Array<string> = []
+	for (let i = 0; i < MATH_GROUPS.length; i++) {
+		const g: MathGroup = MATH_GROUPS[i]
+		for (let j = 0; j < g.kinds.length; j++) out.push(g.kinds[j].kind)
+	}
+	return out
+}

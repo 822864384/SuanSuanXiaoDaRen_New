@@ -25,9 +25,8 @@ import {
 	lessonIndex, unitOfLesson, lessonOfUnit, STUDY_ROUND_SIZE
 } from './quiz.uts'
 import { rngState } from './rng.uts'
-
-/** 英文数字（数词联动题的读题用） */
-const NUM_EN: Array<string> = ['zero', 'one', 'two', 'three', 'four', 'five']
+// 英文数字只在这里留一份：数词题的题干、朗读稿（en-say.uts）、语音包枚举共用
+import { EN_NUM_WORDS } from './en-say.uts'
 
 function cut(arr: Array<string>, from: number, to: number): Array<string> {
 	const out: Array<string> = []
@@ -217,14 +216,14 @@ function genCountEn(en: string, unit: number): StudyQuestion {
 	q.layout = 'items'
 	q.mainEmoji = line
 	q.subText = '数一数，有几个？'
-	q.prompt = NUM_EN[n] + ' ' + en + '，几个呀？'
+	q.prompt = EN_NUM_WORDS[n] + ' ' + en + '，几个呀？'
 	q.hint = '🔢 用英语数字说说看'
 	q.optionType = 'num'
 	q.answer = n.toString()
 	const opts: Array<string> = []
 	for (let i = 1; i <= 5; i++) opts.push(i.toString())
 	q.options = opts
-	q.explain = '对啦，' + NUM_EN[n] + ' ' + en
+	q.explain = '对啦，' + EN_NUM_WORDS[n] + ' ' + en
 	q.seed = seed
 	q.src = en
 	q.unitNo = unit

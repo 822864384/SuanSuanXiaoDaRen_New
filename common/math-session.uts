@@ -1,0 +1,61 @@
+/**
+ * 算算小达人 · 数学模块的"本轮要练哪个题型"中转
+ *
+ * 为什么要有这个模块：菜单页（pages/math/menu）选好题型后要告诉答题页
+ * （pages/math/math）"这一轮练哪个 kind"。uvue 的页面参数是 UTSJSONObject，
+ * 跨端取值容易踩坑（工程惯例：不用页面参数），所以走模块级单例。
+ *
+ * 三种入口：
+ *  1. 菜单页点题型          → setMathKind('count') → navigateTo math
+ *  2. 结算页「再来一轮」     → setMathKind(round.kind) → redirectTo math
+ *  3. 综合闯关 / 直接进 math → 不设（takeMathKind 返回空串 = 走闯关）
+ */
+
+/** 待消费的题型（一次性：取走即清空，防止下次误进专项） */
+let pendingKind: string = ''
+
+/** 记下这一轮要练的题型（传空串 = 明确要求"综合闯关"） */
+export function setMathKind(kind: string): void {
+	pendingKind = kind
+}
+
+/** 答题页 onLoad 调用：取走题型（取完即清空；空串表示综合闯关） */
+export function takeMathKind(): string {
+	const k: string = pendingKind
+	pendingKind = ''
+	return k
+}
+
+/** 当前是否有待消费的题型（测试/排查用，不会清空） */
+export function peekMathKind(): string {
+	return pendingKind
+}
+
+/**
+ * 待打开的菜单大类（一次性：菜单页 onLoad 取走即清空）
+ *
+ * 为什么需要：结算页「换一个题型」/ 答题页左上角「← 换题型」都要回到
+ * **刚才那一类**的题型列表（比如「数与数数」的 10 个题型），而不是回到六大类。
+ * 菜单页在 reLaunch 后是全新实例，拿不到上一页的变量；工程惯例又不用页面参数
+ * （UTSJSONObject 跨端取值易踩坑），所以同样走模块级单例。
+ *
+ * 传空串 = 打开六大类首页（首页进入菜单时本来就是这个结果）。
+ */
+let pendingGroup: string = ''
+
+/** 记下"回到菜单时展开哪个大类"（空串 = 六大类首页） */
+export function setMenuGroup(groupId: string): void {
+	pendingGroup = groupId
+}
+
+/** 菜单页 onLoad 调用：取走大类 id（取完即清空，之后手动返回不会又跳回该类） */
+export function takeMenuGroup(): string {
+	const g: string = pendingGroup
+	pendingGroup = ''
+	return g
+}
+
+/** 当前是否有待展开的大类（测试/排查用，不会清空） */
+export function peekMenuGroup(): string {
+	return pendingGroup
+}

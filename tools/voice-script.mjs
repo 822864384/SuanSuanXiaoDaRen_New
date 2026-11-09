@@ -35,6 +35,7 @@ const cnWordsMod = await mod('cn-words')
 const enWordsMod = await mod('en-words')
 const cnEngMod = await mod('cn-engine')
 const enEngMod = await mod('en-engine')
+const enSayMod = await mod('en-say')
 const mathMod = await mod('math-engine')
 
 /* ---------------- 收集器 ---------------- */
@@ -66,6 +67,16 @@ for (const c of ['fruit', 'animal', 'vehicle', 'toy']) add(wordsMod.catName(c), 
 // 比长短/比轻重题面里的选项词
 for (const w of ['左边', '右边', '一样多', '最长', '最短']) add(w, 'teach', 'option')
 
+/* 2b. 语文/英语的选项朗读（2026-11-09 用户要求"读答案也用真人"）
+ *
+ * 语文选项读出来是「第一个，大」：序号单独录一条、字单独录一条，
+ * 60 字 × 6 序号只要 66 条音频，不用录 360 个组合。
+ * 英语选项是光秃秃的英文词（en-US 音色），enAllSpeechLines 已经全量收录，不用重复。
+ * 收尾问句「你想选哪一个呀？」语文/英语读完选项都会念，单独一条。 */
+for (const w of cnWordsMod.CN_WORDS) add(w.ch, 'num', 'cn-char')
+for (const o of vtp.optionOrdinalPrefixes()) add(o, 'num', 'option-ord')
+add(vtp.PICK_ASK_LINE, 'teach', 'option-ask')
+
 /* 3. 夸奖与鼓励（情绪不同，单独 role） */
 for (const p of mathMod.PRAISE) add(p, 'cheer', 'praise')
 for (const e of mathMod.ENCOURAGE) add(e, 'soothe', 'encourage')
@@ -75,13 +86,18 @@ for (let lv = 1; lv <= 30; lv++) {
   for (const q of cnEngMod.buildCnRound(lv)) add(q.prompt, 'teach', 'cn-q' + q.kind)
 }
 
-/* 5. 英语：30 课全量题干（英文词本身用英文音色） */
-for (let lv = 1; lv <= 30; lv++) {
-  for (const q of enEngMod.buildEnRound(lv)) {
-    add(q.prompt, 'en', 'en-q' + q.kind, 'en-US')
-    // 跟读题只给一个词，单独再收一次（可能和 prompt 相同，去重后无副作用）
-    if (q.kind === 'en5') add(q.mainText, 'en', 'en-word', 'en-US')
-  }
+/* 5. 英语：**按语言分行**收（中文引导录中文音色，英文词录英文音色）
+ *
+ * 以前这里收的是 `q.prompt`（"cat，小猫，哪个是cat？"）并按 en-US 合成，结果英文音色把
+ * 中文字全吞了，音频里只剩 "cat cat"——孩子听到"请听题"之后就没了题干。
+ * 现在朗读稿来自 common/en-say.uts，一行一种语言，各自用对的音色。
+ *
+ * 这里用 `enAllSpeechLines()`（全量枚举）而不是抽样组卷：组卷随机，抽 30 课只碰到 46 个词，
+ * 剩下十几种引导语到了真机上会退回系统 TTS。 */
+const enLines = enSayMod.enAllSpeechLines()
+for (let i = 0; i < enLines.texts.length; i++) {
+  const isEn = enLines.langs[i].indexOf('en') === 0
+  add(enLines.texts[i], isEn ? 'en' : 'teach', 'en-line' + (isEn ? '-en' : '-zh'), enLines.langs[i])
 }
 
 /* 6. 交往剧场：旁白 / 提问 / 选项 / 示范 / 跟读句 */
@@ -102,6 +118,10 @@ for (const c of mindMod.MIND_CARDS) {
   // 反馈浮层：先解释后办法
   add(c.why + '。可以这样做。' + c.solve, 'soothe', 'mind-solve')
 }
+
+/* 8. 开场白：数学思维 / 语文识字 / 英语单词进模块时的开场包（固定文案） */
+const introSayMod = await mod('intro-say')
+for (const line of introSayMod.INTRO_LINES) add(line, 'teach', 'intro', 'zh-CN')
 
 /* ---------------- 统计 ---------------- */
 

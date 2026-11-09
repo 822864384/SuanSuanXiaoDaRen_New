@@ -4,10 +4,10 @@
  * 用法：node tests/run-engine-test.mjs
  *
  * 覆盖：
- *  1. 14 个题型全抽样，每题答案在 4~5 岁口径内
+ *  1. 29 个题型全抽样，每题答案在对应年龄段口径内
  *  2. 每题型专属边界（点数行数、三堆互异、守恒两边相等、模式 ABAB…）
- *  3. 数字垫 6 个、升序、含答案、值域 0~10
- *  4. 组卷 buildRound：5 题、同大类 ≤2、同题型不连续、至少 1 个送分题
+ *  3. 数字垫 6 个、升序、含答案、值域 0~10（扩龄题型走文本选项，另有值域断言）
+ *  4. 组卷 buildRound：5 题、同大类 ≤2、同题型不连续、至少 1 个送分题；新题型按档出现
  *  5. 判定（严格 / 宽匹配）、语音同音映射、星级
  */
 import {
@@ -17,7 +17,8 @@ import {
   KIND_COUNT, KIND_TAKE, KIND_CONSERVE, KIND_NEIGHBOR, KIND_SPLIT, KIND_ORDINAL,
   KIND_MORE3, KIND_LONGER, KIND_TALLER, KIND_WEIGHT, KIND_ODD, KIND_PATTERN,
   KIND_ADD, KIND_SUB,
-  KIND_NEXTNUM, KIND_PATTERN2, KIND_HALF, KIND_ANALOGY, KIND_CAUSE, KIND_DAYTIME, KIND_NOTCAT
+  KIND_NEXTNUM, KIND_PATTERN2, KIND_HALF, KIND_ANALOGY, KIND_CAUSE, KIND_DAYTIME, KIND_NOTCAT,
+  KIND_COMPARE, KIND_SEQ, KIND_SHAPE, KIND_TENS, KIND_TWOSTEP, KIND_MULT, KIND_SHARE, KIND_CLOCK
 } from './engine-tmp/math-engine.mts'
 
 let failures = 0
@@ -41,7 +42,8 @@ const ALL_KINDS = [
   KIND_COUNT, KIND_TAKE, KIND_CONSERVE, KIND_NEIGHBOR, KIND_SPLIT, KIND_ORDINAL,
   KIND_MORE3, KIND_LONGER, KIND_TALLER, KIND_WEIGHT, KIND_ODD, KIND_PATTERN,
   KIND_ADD, KIND_SUB,
-  KIND_NEXTNUM, KIND_PATTERN2, KIND_HALF, KIND_ANALOGY, KIND_CAUSE, KIND_DAYTIME, KIND_NOTCAT
+  KIND_NEXTNUM, KIND_PATTERN2, KIND_HALF, KIND_ANALOGY, KIND_CAUSE, KIND_DAYTIME, KIND_NOTCAT,
+  KIND_COMPARE, KIND_SEQ, KIND_SHAPE, KIND_TENS, KIND_TWOSTEP, KIND_MULT, KIND_SHARE, KIND_CLOCK
 ]
 
 /* ---------- 1. 每个题型抽样 400 次 ---------- */
@@ -116,6 +118,16 @@ for (const kind of ALL_KINDS) {
     } else if (kind === KIND_LONGER || kind === KIND_TALLER) {
       check(q.leftClass !== q.rightClass, '比长短/高矮两侧档位相同')
       check(q.options.length === 2, '比长短/高矮应为 2 选 1')
+      // 方位词必须和画面摆放方向一致（真机反馈过：面条上下摆，选项却写左/右）
+      //   bars  = 两根面条上下摆  → 上边 / 下边
+      //   towers = 两座塔左右并排 → 左边 / 右边
+      const dirs = kind === KIND_LONGER ? ['上边', '下边'] : ['左边', '右边']
+      check(q.layout === (kind === KIND_LONGER ? 'bars' : 'towers'), kind + ' 布局不对：' + q.layout)
+      check(
+        q.options[0] === dirs[0] && q.options[1] === dirs[1],
+        kind + ' 选项方位词与摆放方向不符：' + q.options.join('/')
+      )
+      check(dirs.indexOf(q.ansText) >= 0, kind + ' 答案不在方位词里：' + q.ansText)
     } else if (kind === KIND_WEIGHT) {
       check(q.groups.length === 2, '比轻重应两组')
       check(q.ansText === q.groupLabels[0] || q.ansText === q.groupLabels[1], '比轻重答案应为其中一个物品')
@@ -136,6 +148,36 @@ for (const kind of ALL_KINDS) {
     } else if (kind === KIND_SUB) {
       check(q.ans >= 1 && q.ans <= 7, '减法越界：' + q.ans)
       check(countEmoji(q.emojis) <= 8, '减法被减数应 ≤8')
+    } else if (kind === KIND_COMPARE) {
+      const vals = q.options.map((s) => parseInt(s, 10))
+      check(vals.length === 2 && vals[0] !== vals[1], '比大小应有两个不同数：' + q.options.join(','))
+      check(parseInt(q.ansText, 10) === Math.max(...vals), '比大小答案应是较大数')
+      check(Math.min(...vals) >= 20, '比大小数值应 ≥20')
+    } else if (kind === KIND_SEQ) {
+      check(q.options.length === 3, '数列应 3 个选项')
+      check(parseInt(q.ansText, 10) >= 6 && parseInt(q.ansText, 10) <= 46, '数列答案越界：' + q.ansText)
+    } else if (kind === KIND_SHAPE) {
+      check(q.options.length === 3, '图形题应 3 个选项')
+    } else if (kind === KIND_TENS) {
+      const n = parseInt(q.ansText, 10)
+      check(n >= 11 && n <= 99 && n % 10 !== 0, '数位答案应在 11~99 且个位非 0：' + q.ansText)
+      check(q.options.length === 3, '数位应 3 个选项')
+    } else if (kind === KIND_TWOSTEP) {
+      const n = parseInt(q.ansText, 10)
+      check(n >= 1 && n <= 19, '两步运算结果越界：' + q.ansText)
+      check(q.expr.indexOf('+') > 0 && q.expr.indexOf('−') > 0, '两步运算应有 + 和 −')
+    } else if (kind === KIND_MULT) {
+      const n = parseInt(q.ansText, 10)
+      check(n >= 4 && n <= 15, '乘法启蒙结果越界：' + q.ansText)
+      check(q.groupSep === '+' && (q.groups.length === 2 || q.groups.length === 3), '乘法应 2~3 组')
+    } else if (kind === KIND_SHARE) {
+      check(q.numeric, '平均分应走数字垫（答案 ≤5）')
+      check(q.ans >= 1 && q.ans <= 5, '平均分每人个数越界：' + q.ans)
+      check(q.prompt.indexOf('平均分') >= 0, '平均分题干应含"平均分"')
+    } else if (kind === KIND_CLOCK) {
+      check(q.ansText.endsWith(' 点'), '整点答案应以"点"结尾：' + q.ansText)
+      const hrs = q.options.map((s) => parseInt(s, 10))
+      check(hrs.length === 3 && hrs[0] !== hrs[1] && hrs[1] !== hrs[2] && hrs[0] !== hrs[2], '整点选项小时应互不相同')
     }
   }
 }
@@ -148,8 +190,11 @@ const GROUP_OF = {
   [KIND_ADD]: 'op', [KIND_SUB]: 'op',
   [KIND_MORE3]: 'measure', [KIND_LONGER]: 'measure', [KIND_TALLER]: 'measure', [KIND_WEIGHT]: 'measure',
   [KIND_ODD]: 'class', [KIND_NOTCAT]: 'class',
-  [KIND_PATTERN]: 'pattern', [KIND_PATTERN2]: 'pattern',
-  [KIND_ANALOGY]: 'reason', [KIND_CAUSE]: 'reason', [KIND_DAYTIME]: 'reason'
+  [KIND_PATTERN]: 'pattern', [KIND_PATTERN2]: 'pattern', [KIND_SEQ]: 'pattern',
+  [KIND_ANALOGY]: 'reason', [KIND_CAUSE]: 'reason', [KIND_DAYTIME]: 'reason',
+  [KIND_SHAPE]: 'reason', [KIND_CLOCK]: 'reason',
+  [KIND_TWOSTEP]: 'op', [KIND_MULT]: 'op',
+  [KIND_COMPARE]: 'num', [KIND_TENS]: 'num', [KIND_SHARE]: 'num'
 }
 function groupOf(kind) {
   return GROUP_OF[kind] || 'num'
@@ -178,6 +223,20 @@ for (let level = 1; level <= 15; level++) {
 for (let r = 0; r < 80; r++) {
   const kinds = buildRound(1).map((q) => q.kind)
   check(kinds.indexOf(KIND_CONSERVE) < 0 && kinds.indexOf(KIND_ORDINAL) < 0, 'L1 池混入进阶题型：' + kinds.join(','))
+}
+
+/* 扩龄题型按档出现：档1~2 不出，档3 出 compare/seq/shape，档4 才出 7~8 岁题型 */
+const AGE3_ONLY = [KIND_COMPARE, KIND_SEQ, KIND_SHAPE]
+const AGE4_ONLY = [KIND_TENS, KIND_TWOSTEP, KIND_MULT, KIND_SHARE, KIND_CLOCK]
+for (let r = 0; r < 120; r++) {
+  const l2 = buildRound(4).map((q) => q.kind)
+  for (const k of AGE3_ONLY.concat(AGE4_ONLY)) {
+    check(l2.indexOf(k) < 0, '档2（L4~6）不应出现扩龄题型：' + k)
+  }
+  const l3 = buildRound(7).map((q) => q.kind)
+  for (const k of AGE4_ONLY) {
+    check(l3.indexOf(k) < 0, '档3（L7~9）不应出现 7~8 岁题型：' + k)
+  }
 }
 
 /* ---------- 3. 判定与语音 ---------- */

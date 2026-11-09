@@ -108,9 +108,11 @@
 	import {
 		getCurrentProfile, getLevel, getRightTotal, getWrongTotal, addCandy, resetProgress,
 		getMindDoneCount, getMoodLog, getSoDoneCount, getMindLevels, Profile, MoodEntry, ThemeLevel,
-		avatarIsImage
+		avatarIsImage, getIntroDone
 	} from '@/common/store.uts'
 	import { setStudyMode } from '@/common/study-session.uts'
+	import { setIntroTarget } from '@/common/intro-say.uts'
+	import { setMenuGroup } from '@/common/math-session.uts'
 	import { wrongCount, clearAllWrong } from '@/common/wrongbook.uts'
 
 	import { topInsetStyle } from '@/common/screen.uts'
@@ -205,16 +207,37 @@
 			return
 		}
 		if (id == 'math') {
-			uni.navigateTo({ url: '/pages/math/math' })
+			goStudyModule('math')
 			return
 		}
 		// 语文与英语共用同一个答题页，靠单例区分（不用页面参数：uvue 传参取值容易踩坑）
 		if (id == 'cn' || id == 'en') {
 			setStudyMode(id)
-			uni.navigateTo({ url: '/pages/study/study' })
+			goStudyModule(id)
 			return
 		}
 		uni.showToast({ title: '这一科还在做', icon: 'none' })
+	}
+
+	/**
+	 * 进三个学习模块（数学/语文/英语）的统一入口：
+	 * 第一次打开程序先去「黑板规则页」讲规矩，点「确定」后再到答题界面；
+	 * 讲过一次（getIntroDone）就直接进。
+	 */
+	function goStudyModule(id: string) {
+		if (!getIntroDone()) {
+			setIntroTarget(id)
+			uni.navigateTo({ url: '/pages/intro/intro' })
+			return
+		}
+		if (id == 'math') {
+			// 数学先到题型页（6 大类 → 题型 → 专项训练），综合闯关在题型页顶栏。
+			// 从首页进来一律停在大类首页：清掉可能残留的"上次要展开的大类"
+			setMenuGroup('')
+			uni.navigateTo({ url: '/pages/math/menu' })
+		} else {
+			uni.navigateTo({ url: '/pages/study/study' })
+		}
 	}
 
 	function feedPet() {

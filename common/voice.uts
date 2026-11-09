@@ -55,8 +55,20 @@ const GUARD_TAIL_MS: number = 1000
  */
 const VOICE_RATE: number = 1.15
 
-/** 倍速上限：再高就变调成"快进"，孩子听不清字 */
+/** 倍速上限（默认）：再高就变调成"快进"，孩子听不清字 */
 const VOICE_RATE_MAX: number = 1.24
+
+/** 放宽后允许的最高倍速：留给"纯嘱咐、不含题目内容"的长段（开场白） */
+const VOICE_RATE_HARD_MAX: number = 1.5
+
+/**
+ * 当前允许的倍速上限
+ *
+ * 默认 1.24：念题目、念选项都守着这个值，快了孩子抓不住字。
+ * 开场白是"听不听都不影响做题"的嘱咐话，用户 2026-11-09 要求读快一点，
+ * 所以允许页面用 `setVoiceRateCap()` 临时放宽，离开页面再复位。
+ */
+let rateCap: number = VOICE_RATE_MAX
 
 /** 当前这条朗读要用的倍速（页面按"解读稍快"传 1.1 之类，这里换算成播放器倍速） */
 let curRate: number = VOICE_RATE
@@ -177,14 +189,35 @@ function applyRate(c: InnerAudioContext): void {
  * 按语速倍率设置本句的播放倍速
  *
  * 页面传的 1.0 就是语音包的原节奏（1.15）；解读类文案传 1.1 → 约 1.26，
- * 再往上会明显变调，所以夹在 VOICE_RATE_MAX。
+ * 再往上会明显变调，所以夹在 rateCap（默认 1.24，开场白可临时放宽到 1.45）。
  */
 function useSpeed(speed: number): void {
   let s: number = speed
   if (s < 0.7) s = 0.7
   let r: number = VOICE_RATE * s
-  if (r > VOICE_RATE_MAX) r = VOICE_RATE_MAX
+  if (r > rateCap) r = rateCap
   curRate = r
+}
+
+/**
+ * 放宽 / 恢复真人音频的倍速上限
+ *
+ * 只影响"下一次"开始朗读的句子；已排进队列的那句仍用排入时的倍速。
+ * 越界值会夹回 [1.0, 1.5]——再高就成了快进，孩子一个字也听不清。
+ *
+ * @param cap 上限倍速；传 0（或负数）恢复默认 1.24
+ */
+export function setVoiceRateCap(cap: number): void {
+  if (cap <= 0) {
+    rateCap = VOICE_RATE_MAX
+    return
+  }
+  rateCap = cap < VOICE_RATE_MAX ? VOICE_RATE_MAX : (cap > VOICE_RATE_HARD_MAX ? VOICE_RATE_HARD_MAX : cap)
+}
+
+/** 当前倍速上限（测试与排查用） */
+export function voiceRateCap(): number {
+  return rateCap
 }
 
 function ensureCtx(): InnerAudioContext | null {

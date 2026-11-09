@@ -23,7 +23,7 @@ import {
 } from './cn-words.uts'
 import {
 	StudyQuestion, studyShuffle, studyShuffleDifferent, studyPick, studyRandInt, studyRandIndex,
-	lessonIndex, unitOfLesson, lessonOfUnit, STUDY_ROUND_SIZE
+	lessonIndexOf, unitOfLesson, lessonOfUnit, STUDY_ROUND_SIZE, CN_TOTAL_LESSONS
 } from './quiz.uts'
 import { rngState } from './rng.uts'
 
@@ -321,7 +321,7 @@ function learnedChars(unit: number, lesson: number): Array<string> {
  * @param level 关卡号（1 起）
  */
 export function buildCnRound(level: number): Array<StudyQuestion> {
-	const lessonNo: number = lessonIndex(level)
+	const lessonNo: number = lessonIndexOf(level, CN_TOTAL_LESSONS)
 	const unit: number = unitOfLesson(lessonNo)
 	const lesson: number = lessonOfUnit(lessonNo)
 	const all: Array<string> = cnCharsOfUnit(unit)
@@ -394,7 +394,7 @@ export function genCnByKind(kind: string, ch: string, unit: number): StudyQuesti
 
 /** 课标题：给顶栏和结算页用，如「第 1 单元 · 动物 · 第 2 课」 */
 export function cnLessonTitle(level: number): string {
-	const lessonNo: number = lessonIndex(level)
+	const lessonNo: number = lessonIndexOf(level, CN_TOTAL_LESSONS)
 	const unit: number = unitOfLesson(lessonNo)
 	const lesson: number = lessonOfUnit(lessonNo)
 	return '第 ' + unit.toString() + ' 单元 · ' + cnThemeName(cnThemeOfUnit(unit)) +

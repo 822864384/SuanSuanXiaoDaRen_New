@@ -105,7 +105,7 @@
 		optionSpeech, pickAskSpeech, estimateSpeakMs, isTtsAvailable, unlockTts,
 		releaseSpeech
 	} from '@/common/tts.uts'
-	import { saySteps, stopSteps } from '@/common/say-queue.uts'
+	import { sayStepsRich, stopSteps, QUESTION_OPTION_GAP_MS } from '@/common/say-queue.uts'
 	import { playAsk, playCorrect, playSoft, releaseSfx } from '@/common/sfx.uts'
 	import { safeBack } from '@/common/nav.uts'
 
@@ -231,13 +231,22 @@
 		if (!ttsReady) return
 		const opts: Array<SoOption> = ep.value.options
 		const list: Array<string> = []
+		const langs: Array<string> = []
+		const gaps: Array<number> = []
+		// 问句念完停 1 秒再进选项（用户 2026-11-09 指定）：先听懂情境，选项才有意义
 		list.push(soAskSpeech(name.value, ep.value.ask))
+		langs.push('zh-CN')
+		gaps.push(QUESTION_OPTION_GAP_MS)
 		for (let i = 0; i < opts.length; i++) {
 			list.push(optionSpeech(i, opts[i].text))
+			langs.push('zh-CN')
+			gaps.push(OPTION_GAP_MS)
 		}
 		list.push(pickAskSpeech())
+		langs.push('zh-CN')
+		gaps.push(OPTION_GAP_MS)
 		const n: number = opts.length
-		saySteps(list, 'zh-CN', lead, OPTION_GAP_MS, 1.0, (i: number): void => {
+		sayStepsRich(list, langs, gaps, lead, 1.0, (i: number): void => {
 			readIdx.value = (i >= 1 && i <= n) ? i - 1 : -1
 			speaking.value = true
 		}, (): void => {

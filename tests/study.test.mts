@@ -4,8 +4,8 @@
  * 用法：node tests/run-engine-test.mjs
  *
  * 覆盖：
- *  1. 字表/词表完整性：60 条、唯一、主题分组均衡、必填字段非空
- *  2. 组卷：30 课 × 多轮，每轮 5 题，答案必须在选项里、选项不重复
+ *  1. 字表/词表完整性：语文 200 条 / 英语 60 条、唯一、主题分组均衡、必填字段非空
+ *  2. 组卷：语文 100 课 / 英语 30 课 × 多轮，每轮 5 题，答案必须在选项里、选项不重复
  *  3. 题干不泄露答案（CN4/CN5 的"目标字可见"是设计如此，单列白名单）
  *  4. 填字题唯一性：正确字拼回去是真词，干扰字拼回去不是词
  *  5. 题型覆盖：cn1~cn6 / en1~en5 在 30 课内都必须出现
@@ -20,7 +20,7 @@ import {
   EN_WORDS, enWordsOfUnit, enWordOf, enSameSound, enFirstLetter, enThemeName
 } from './engine-tmp/en-words.mts'
 import {
-  STUDY_ROUND_SIZE, TOTAL_LESSONS, lessonIndex, unitOfLesson, lessonOfUnit, isCorrectStudy
+  STUDY_ROUND_SIZE, TOTAL_LESSONS, CN_TOTAL_LESSONS, lessonIndex, lessonIndexOf, unitOfLesson, lessonOfUnit, isCorrectStudy
 } from './engine-tmp/quiz.mts'
 import { buildCnRound, cnLessonTitle } from './engine-tmp/cn-engine.mts'
 import { buildEnRound, enLessonTitle } from './engine-tmp/en-engine.mts'
@@ -35,8 +35,8 @@ function check(cond, msg) {
 
 /* ---------------- 1. 字表 ---------------- */
 
-console.log('语文 60 字')
-check(CN_WORDS.length === 60, '字表应为 60 个，实际 ' + CN_WORDS.length)
+console.log('语文 200 字')
+check(CN_WORDS.length === 200, '字表应为 200 个，实际 ' + CN_WORDS.length)
 
 const cnSeen = new Set()
 const cnEmoji = new Set()
@@ -49,9 +49,10 @@ for (const w of CN_WORDS) {
   check(w.emoji.length > 0, '缺 emoji：' + w.ch)
   check(!cnEmoji.has(w.emoji), 'emoji 重复：' + w.emoji + '（' + w.ch + '）')
   cnEmoji.add(w.emoji)
-  check(['T1', 'T2', 'T3', 'T4', 'T5', 'T6'].indexOf(w.theme) >= 0, '主题非法：' + w.theme)
+  const themeOk = /^T([1-9]|1[0-9]|20)$/.test(w.theme)
+  check(themeOk, '主题非法：' + w.theme + '（' + w.ch + '）')
 }
-for (let u = 1; u <= 6; u++) {
+for (let u = 1; u <= 20; u++) {
   check(cnCharsOfUnit(u).length === 10, '第 ' + u + ' 单元应 10 字，实际 ' + cnCharsOfUnit(u).length)
 }
 
@@ -160,10 +161,10 @@ function checkRound(qs, label) {
   }
 }
 
-console.log('语文组卷 30 课 × 60 轮')
+console.log('语文组卷 100 课 × 20 轮')
 const cnKinds = new Set()
-for (let level = 1; level <= TOTAL_LESSONS; level++) {
-  for (let r = 0; r < 60; r++) {
+for (let level = 1; level <= CN_TOTAL_LESSONS; level++) {
+  for (let r = 0; r < 20; r++) {
     const qs = buildCnRound(level)
     checkRound(qs, 'cn L' + level)
     for (const q of qs) cnKinds.add(q.kind)
@@ -189,7 +190,7 @@ for (const k of ['en1', 'en2', 'en3', 'en4', 'en5']) {
 /* ---------------- 4. 第 5 课 = 3 句字卡 + 2 题复习 ---------------- */
 
 console.log('语文第 5 课结构')
-for (let u = 1; u <= 6; u++) {
+for (let u = 1; u <= 20; u++) {
   const level = (u - 1) * 5 + 5
   const qs = buildCnRound(level)
   const stories = qs.filter((q) => q.kind === 'cn6')
@@ -219,8 +220,8 @@ function checkFill(q) {
   }
   fillCount++
 }
-for (let level = 1; level <= TOTAL_LESSONS; level++) {
-  for (let r = 0; r < 30; r++) {
+for (let level = 1; level <= CN_TOTAL_LESSONS; level++) {
+  for (let r = 0; r < 10; r++) {
     for (const q of buildCnRound(level)) {
       if (q.kind === 'cn5') checkFill(q)
     }
@@ -266,12 +267,15 @@ if (sayIt != null) {
   check(/^[a-z]+$/.test(sayIt.prompt), '跟读题的朗读文本应只有英文：' + sayIt.prompt)
 }
 
-/* 课序号换算：超过 30 课要循环回第 1 课 */
+/* 课序号换算：英语 30 课循环；语文 100 课循环 */
 check(lessonIndex(1) === 1, 'lessonIndex(1) 应为 1')
 check(lessonIndex(30) === 30, 'lessonIndex(30) 应为 30')
 check(lessonIndex(31) === 1, 'lessonIndex(31) 应循环回 1')
 check(unitOfLesson(1) === 1 && lessonOfUnit(1) === 1, '第 1 课换算错误')
 check(unitOfLesson(30) === 6 && lessonOfUnit(30) === 5, '第 30 课换算错误')
+check(lessonIndexOf(100, CN_TOTAL_LESSONS) === 100, '语文第 100 课应为 100')
+check(lessonIndexOf(101, CN_TOTAL_LESSONS) === 1, '语文第 101 课应循环回 1')
+check(unitOfLesson(100) === 20 && lessonOfUnit(100) === 5, '语文第 100 课应落在第 20 单元第 5 课')
 
 /* 判定：严格相等 */
 const fake = buildCnRound(1)[0]
@@ -279,5 +283,5 @@ check(isCorrectStudy(fake, fake.answer) === true, '判定：正确答案应通�
 check(isCorrectStudy(fake, fake.answer + 'x') === false, '判定：多一个字不应通过')
 
 console.log('')
-console.log(failures === 0 ? '✅ 三科引擎测试通过（语文 60 字 / 英语 60 词 / 30 课组卷）' : '❌ 共 ' + failures + ' 处问题')
+console.log(failures === 0 ? '✅ 三科引擎测试通过（语文 200 字 / 英语 60 词 / 语文 100 课 · 英语 30 课组卷）' : '❌ 共 ' + failures + ' 处问题')
 process.exit(failures === 0 ? 0 : 1)

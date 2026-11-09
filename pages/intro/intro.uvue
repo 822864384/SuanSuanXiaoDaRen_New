@@ -1,0 +1,382 @@
+<template>
+	<view class="root" :style="rootStyle">
+		<view class="stage">
+
+			<!-- 顶部小返回：家长陪同下可以离开规则页（不标记已读，下次进模块还会讲） -->
+			<view class="top-row">
+				<view class="back-chip" @click="goHome">
+					<text class="back-text">← 回首页</text>
+				</view>
+			</view>
+
+			<!-- 黑板：木框 + 墨绿板面 + 粉笔字 -->
+			<view class="board-frame">
+				<view class="board">
+					<text class="board-title">📖 学习时间到啦！</text>
+
+					<!-- 五条规矩：老师读到哪条，哪条就亮（粉笔黄） -->
+					<view v-for="(line, i) in lines" :key="'r' + i" class="rule"
+						:class="readIdx == i ? 'rule-on' : ''">
+						<text class="rule-emoji">{{ emojis[i] }}</text>
+						<text class="rule-text" :class="readIdx == i ? 'rule-text-on' : ''">{{ line }}</text>
+					</view>
+				</view>
+
+				<!-- 粉笔槽：三截粉笔 + 板擦 -->
+				<view class="tray">
+					<view class="chalk chalk-a"></view>
+					<view class="chalk chalk-b"></view>
+					<view class="chalk chalk-c"></view>
+					<view class="eraser"></view>
+				</view>
+			</view>
+
+			<!-- 确定 + 跳过：确定大、亮、会呼吸；跳过弱化成描边，不抢注意力 -->
+			<view class="btn-wrap">
+				<text class="spark" :class="sparkOn ? 'spark-on' : ''">✨</text>
+				<view class="ok-btn" :class="btnClass" @click="confirmGo">
+					<text class="ok-text">✔ 确 定</text>
+				</view>
+				<view class="skip-btn" @click="skipIntro">
+					<text class="skip-text">跳过</text>
+				</view>
+				<text class="spark spark-r" :class="sparkOn ? 'spark-on' : ''">✨</text>
+			</view>
+			<text class="btn-hint">{{ spokenAll ? '点一下确定，我们就开始啦！' : '听老师说完，再点确定哦～' }}</text>
+
+		</view>
+	</view>
+</template>
+
+<script setup>
+	import { INTRO_LINES, INTRO_LINE_GAP_MS, INTRO_SPEED, INTRO_RATE_CAP, takeIntroTarget } from '@/common/intro-say.uts'
+	import { setIntroDone } from '@/common/store.uts'
+	import { sayStepsRich, stopSteps } from '@/common/say-queue.uts'
+	import { isTtsAvailable, releaseSpeech } from '@/common/tts.uts'
+	import { setVoiceRateCap } from '@/common/voice.uts'
+	import { hasVoice } from '@/common/voice-tpl.uts'
+	import { safeBack } from '@/common/nav.uts'
+	import { topInsetStyle } from '@/common/screen.uts'
+
+	/** 顶部状态栏高度：整页下移，与其他页面同一套安全区做法 */
+	const rootStyle: string = topInsetStyle()
+
+	/** 黑板上的五条规矩（与朗读一字不差：孩子边听边看） */
+	const lines: Array<string> = INTRO_LINES
+	/** 每条规矩前的小图标（讲台感，也给不识字的孩子一个"数得过来"的视觉锚点） */
+	const emojis: Array<string> = ['✏️', '🪑', '🤫', '🧸', '🙋']
+
+	/** 老师正读到第几条（-1 = 没在读） */
+	const readIdx = ref(-1)
+	/** 五条是否已全部读完（读完按钮提示语升级） */
+	const spokenAll = ref(false)
+	/** 呼吸节拍：按钮缩放与星星闪灭共用一个节拍 */
+	const sparkOn = ref(false)
+
+	/** 呼吸 / 星光 / 朗读的定时器 */
+	let pulseId: number = -1
+	/** 正在离开：确定 / 跳过连点只跳一次 */
+	let leaving: boolean = false
+
+	const ttsReady: boolean = isTtsAvailable()
+
+	/** 按钮样式：读完之前小步呼吸，读完之后满格发光 */
+	const btnClass = computed((): string => {
+		let c: string = sparkOn.value ? 'ok-breath' : ''
+		if (spokenAll.value) c += ' ok-ready'
+		return c
+	})
+
+	onLoad(() => {
+		// 呼吸节拍：500ms 一拍。@keyframes App 端不支持，工程惯例用定时器切类
+		pulseId = setInterval(() => {
+			sparkOn.value = !sparkOn.value
+		}, 500)
+
+		// 逐条朗读五条规矩，读到哪条哪条亮；不支持朗读的设备直接亮按钮
+		if (ttsReady) {
+			// 开场白读快一点（用户要求）：先放宽真人音频的倍速上限，读题时再复位
+			setVoiceRateCap(INTRO_RATE_CAP)
+			const langs: Array<string> = []
+			const gaps: Array<number> = []
+			for (let i = 0; i < lines.length; i++) {
+				langs.push('zh-CN')
+				gaps.push(INTRO_LINE_GAP_MS)
+				// 开场白**全部走真人语音包**：五句都已在包里（tests/intro.test.mts 守着）。
+				// 万一以后改台词忘了重录，这里会打日志，不会静悄悄换成机器音。
+				if (!hasVoice(lines[i])) {
+					console.log('[intro] 缺真人音频，已退回系统朗读：' + lines[i])
+				}
+			}
+			sayStepsRich(lines, langs, gaps, 420, INTRO_SPEED, (i: number): void => {
+				readIdx.value = i
+			}, (): void => {
+				readIdx.value = -1
+				spokenAll.value = true
+			})
+		} else {
+			spokenAll.value = true
+		}
+	})
+
+	onUnload(() => {
+		if (pulseId >= 0) {
+			clearInterval(pulseId)
+			pulseId = -1
+		}
+		stopSteps()
+		// 复位倍速上限：开场白放宽的 1.45 不能泄漏到答题页，否则题目会被念快
+		setVoiceRateCap(0)
+		releaseSpeech()
+	})
+
+	/** 点确定：停朗读、记"已读过"、去这次要进的答题页 */
+	function confirmGo() {
+		goTarget()
+	}
+
+	/** 点跳过：不等朗读放完，直接进答题页（同样记已读，免得每次进模块都被拦一次） */
+	function skipIntro() {
+		goTarget()
+	}
+
+	function goTarget() {
+		if (leaving) return
+		leaving = true
+		stopSteps()
+		setIntroDone()
+		const target: string = takeIntroTarget()
+		if (target == 'math') {
+			// 数学先到题型页（6 大类 → 题型 → 专项训练），综合闯关在题型页顶栏
+			uni.redirectTo({ url: '/pages/math/menu' })
+		} else if (target == 'cn' || target == 'en') {
+			// 语文/英语进规则页前 home 已经 setStudyMode，答题页自己读单例
+			uni.redirectTo({ url: '/pages/study/study' })
+		} else {
+			goHome()
+		}
+	}
+
+	/** 回首页：规则页没讲完不算数，下次进模块还会再讲 */
+	function goHome() {
+		stopSteps()
+		safeBack()
+	}
+</script>
+
+<style>
+	.root {
+		width: 100%;
+		height: 100%;
+		background-color: #0b1026;
+	}
+
+	/*
+	 * 版式高度预算（关键）：
+	 * 1920×1080 屏上一行 750rpx = 1920px，所以**满屏高度只有约 422rpx**。
+	 * 黑板 + 按钮 + 提示语必须压进这个高度，否则 justify-content:center 的
+	 * flex 会把内容上下各溢出一半 —— 表现就是"确定按钮跑到屏幕外面点不到"。
+	 * 下面所有尺寸合计 ≈ 300rpx（约 770px），留足余量。
+	 */
+	.stage {
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* 顶部小返回 */
+	.top-row {
+		position: absolute;
+		top: 14rpx;
+		left: 22rpx;
+	}
+
+	.back-chip {
+		background-color: rgba(255, 255, 255, 0.10);
+		border-radius: 18rpx;
+		padding: 5rpx 13rpx;
+	}
+
+	.back-text {
+		color: #c7d4ee;
+		font-size: 12rpx;
+	}
+
+	/* ---------------- 黑板 ---------------- */
+
+	.board-frame {
+		width: 470rpx;
+		background-color: #9a6430;
+		border-radius: 16rpx;
+		padding: 10rpx;
+		align-items: center;
+		/* 木框双描边：外亮内暗，厚度感就出来了 */
+		border-width: 2rpx;
+		border-color: #7a4a1e;
+	}
+
+	.board {
+		width: 450rpx;
+		background-color: #2e5d43;
+		border-radius: 10rpx;
+		border-width: 2rpx;
+		border-color: #1f4630;
+		padding: 12rpx 20rpx 10rpx 20rpx;
+		align-items: center;
+	}
+
+	.board-title {
+		color: #ffe27a;
+		font-size: 19rpx;
+		font-weight: bold;
+		letter-spacing: 1rpx;
+		margin-bottom: 7rpx;
+	}
+
+	/* 规矩行：粉笔白；读到时换粉笔黄 + 一层浅黄粉笔灰 */
+	.rule {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 5rpx;
+		padding: 3rpx 10rpx;
+		border-radius: 10rpx;
+		background-color: rgba(255, 255, 255, 0.00);
+	}
+
+	.rule-on {
+		background-color: rgba(255, 226, 122, 0.16);
+	}
+
+	.rule-emoji {
+		font-size: 13rpx;
+		margin-right: 8rpx;
+	}
+
+	.rule-text {
+		color: #f7f3e3;
+		font-size: 12rpx;
+		line-height: 17rpx;
+	}
+
+	.rule-text-on {
+		color: #ffe27a;
+		font-weight: bold;
+	}
+
+	/* 粉笔槽 */
+	.tray {
+		width: 470rpx;
+		height: 10rpx;
+		margin-top: -2rpx;
+		background-color: #7a4a1e;
+		border-radius: 0 0 12rpx 12rpx;
+		flex-direction: row;
+		align-items: center;
+		padding-left: 50rpx;
+	}
+
+	.chalk {
+		width: 26rpx;
+		height: 4rpx;
+		border-radius: 2rpx;
+		margin-right: 10rpx;
+	}
+
+	.chalk-a {
+		background-color: #ffffff;
+	}
+
+	.chalk-b {
+		background-color: #ffe27a;
+	}
+
+	.chalk-c {
+		background-color: #f3b3c2;
+	}
+
+	.eraser {
+		width: 34rpx;
+		height: 7rpx;
+		border-radius: 2rpx;
+		background-color: #4f7fd9;
+		margin-left: 80rpx;
+	}
+
+	/* ---------------- 确定 / 跳过 ---------------- */
+
+	.btn-wrap {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 20rpx;
+	}
+
+	.spark {
+		font-size: 18rpx;
+		margin: 0 10rpx;
+		opacity: 0.35;
+	}
+
+	.spark-r {
+		transform: scaleX(-1);
+	}
+
+	/* 星星只在呼吸的亮拍出现：与按钮同节拍 */
+	.spark-on {
+		opacity: 1;
+	}
+
+	.ok-btn {
+		width: 200rpx;
+		height: 48rpx;
+		border-radius: 24rpx;
+		background-color: #ffb02e;
+		border-width: 2rpx;
+		border-color: #ffd76e;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* 呼吸拍：微微放大 + 光圈 */
+	.ok-breath {
+		transform: scale(1.07);
+		box-shadow: 0 0 16rpx rgba(255, 176, 46, 0.85);
+	}
+
+	/* 读完后的常亮态：底色更暖、光圈更满，像一块发光的糖 */
+	.ok-ready {
+		background-color: #ffc247;
+		box-shadow: 0 0 24rpx rgba(255, 194, 71, 0.95);
+	}
+
+	.ok-text {
+		color: #5b3200;
+		font-size: 16rpx;
+		font-weight: bold;
+		letter-spacing: 2rpx;
+	}
+
+	/* 跳过：描边弱化，孩子不会误以为它才是"开始" */
+	.skip-btn {
+		width: 104rpx;
+		height: 48rpx;
+		border-radius: 24rpx;
+		margin-left: 16rpx;
+		background-color: rgba(255, 255, 255, 0.06);
+		border-width: 2rpx;
+		border-color: rgba(199, 212, 238, 0.55);
+		align-items: center;
+		justify-content: center;
+	}
+
+	.skip-text {
+		color: #c7d4ee;
+		font-size: 14rpx;
+	}
+
+	.btn-hint {
+		color: #9fb3d1;
+		font-size: 11rpx;
+		margin-top: 10rpx;
+	}
+</style>

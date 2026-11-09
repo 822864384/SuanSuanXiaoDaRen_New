@@ -140,6 +140,7 @@
 	} from '@/common/quiz.uts'
 	import { buildCnRound, cnLessonTitle } from '@/common/cn-engine.uts'
 	import { buildEnRound, enLessonTitle } from '@/common/en-engine.uts'
+	import { EnNarration, enNarration } from '@/common/en-say.uts'
 	import { getStudyMode, studyModeName } from '@/common/study-session.uts'
 	import { getLevel, recordAnswer, addStars, addCandy, getCurrentProfile } from '@/common/store.uts'
 	import { beginRound, endRoundStudy } from '@/common/session.uts'
@@ -147,11 +148,11 @@
 	import { addWrong, removeWrong, clearOnCorrect, buildStudyDrill, WrongItem, DRILL_SIZE } from '@/common/wrongbook.uts'
 	import {
 		speak, stopSpeak, cleanForSpeech, questionSpeech, repeatSpeech,
-		optionSpeech, pickAskSpeech, estimateSpeakMs,
+		pickAskSpeech, estimateSpeakMs,
 		isTtsAvailable, unlockTts,
 		releaseSpeech
 	} from '@/common/tts.uts'
-	import { saySteps, stopSteps, stepsRemainMs } from '@/common/say-queue.uts'
+	import { sayStepsRich, stopSteps, stepsRemainMs, QUESTION_OPTION_GAP_MS } from '@/common/say-queue.uts'
 	import { playAsk, playCorrect, playSoft, releaseSfx } from '@/common/sfx.uts'
 	import { safeBack } from '@/common/nav.uts'
 
@@ -387,6 +388,13 @@
 	/**
 	 * 读题 + 逐条读选项（读到哪一格，哪一格亮起来）
 	 *
+	 * **英语题走另一条路**（`common/en-say.uts`）：中文引导与英文单词分别用中文/英文音色念，
+	 * 英文词读两遍、中间稍微停顿；有可读选项时词后加一句过渡（「下方选出正确答案」）再逐个亮选项。原因见该模块头部：中英混排整句交给一种音色，
+	 * 必然丢内容（英文音色念「cat，小猫，哪个是cat？」只出 "cat cat"，孩子听到的就是
+	 * "请听题"之后没声了）。
+	 *
+	 * 语文题仍是一遍：题干 + 逐条选项，整队中文音色。
+	 *
 	 * 哪几种选项要读：
 	 *   - 字卡 char（认字）、单词卡 word（英语词）、数字卡 num（数词）→ 有字可读，必须读
 	 *   - 图卡 emoji、色点 color → 没有可读文字，念出来只有"第一个"，孩子更糊涂，跳过
@@ -399,30 +407,58 @@
 	function readQuestionAndOptions(lead: number, again: boolean) {
 		if (!ttsReady) return
 		const list: Array<string> = []
+		const langs: Array<string> = []
+		const gaps: Array<number> = []
 		stepCell = []
-		list.push(again
-			? repeatSpeech(q.value.prompt)
-			: questionSpeech(profileName.value, q.value.prompt))
-		stepCell.push(-1)
 
+		// 只读"字卡 / 词卡"选项（用户 2026-11-09 指定）：
+		//   - char 语文识字、word 英语单词 → 是语言内容，必须念；
+		//   - num 数字、emoji 图卡、color 色点 → 屏幕上一眼能认，念出来反而添乱。
 		const t: string = q.value.optionType
-		const readable: boolean = t == 'char' || t == 'word' || t == 'num'
-		if (readable) {
-			const zhOrd: boolean = q.value.speakLang.indexOf('en') != 0
-			for (let i = 0; i < options.value.length; i++) {
-				const cell: string = options.value[i]
-				const line: string = zhOrd ? optionSpeech(i, cell) : cleanForSpeech(cell).trim()
-				if (line.length == 0) continue
-				list.push(line)
-				stepCell.push(i)
-			}
-			if (zhOrd) {
-				list.push(pickAskSpeech())
+		const readable: boolean = t == 'char' || t == 'word'
+
+		if (mode.value == 'en') {
+			// 英语：开场 + 一遍（英文词读两遍、中间稍微停顿）+ 过渡句（有可读选项才加），
+			// 每行自带语言；然后逐个亮选项
+			const nar: EnNarration = enNarration(profileName.value, q.value, again, readable)
+			for (let i = 0; i < nar.texts.length; i++) {
+				list.push(nar.texts[i])
+				langs.push(nar.langs[i])
+				gaps.push(nar.gaps[i])
 				stepCell.push(-1)
 			}
+			// 词（第二遍）/ 过渡句念完 → 停 1 秒 → 再进选项：孩子要把注意力从题面挪到选项
+			if (gaps.length > 0) gaps[gaps.length - 1] = QUESTION_OPTION_GAP_MS
+		} else {
+			list.push(again
+				? repeatSpeech(q.value.prompt)
+				: questionSpeech(profileName.value, q.value.prompt))
+			langs.push('zh-CN')
+			gaps.push(QUESTION_OPTION_GAP_MS)
+			stepCell.push(-1)
 		}
 
-		saySteps(list, q.value.speakLang, lead, OPTION_GAP_MS, 1.0, (i: number): void => {
+		if (readable) {
+			// 单词卡用英文音色（中文音色会把 cat 念成"凯特"）；
+			// 中文题保持原样。序号"第几个"不再念（用户 2026-11-09 指定）：读到哪一格
+			// 哪一格就亮起来（stepCell → readIdx），突出显示已经足够定位，念序号反而啰嗦。
+			// 心情小课堂 / 交往剧场的选项朗读仍带序号（optionSpeech），不受影响。
+			const wordLang: string = t == 'word' ? 'en-US' : 'zh-CN'
+			for (let i = 0; i < options.value.length; i++) {
+				const body: string = cleanForSpeech(options.value[i]).trim()
+				if (body.length == 0) continue
+				list.push(body)
+				langs.push(wordLang)
+				gaps.push(OPTION_GAP_MS)
+				stepCell.push(i)
+			}
+			list.push(pickAskSpeech())
+			langs.push('zh-CN')
+			gaps.push(OPTION_GAP_MS)
+			stepCell.push(-1)
+		}
+
+		sayStepsRich(list, langs, gaps, lead, 1.0, (i: number): void => {
 			readIdx.value = i < stepCell.length ? stepCell[i] : -1
 			speaking.value = true
 		}, (): void => {

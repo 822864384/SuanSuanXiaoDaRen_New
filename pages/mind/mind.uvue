@@ -69,7 +69,7 @@
 		speak, cleanForSpeech, optionSpeech,
 		isTtsAvailable, releaseSpeech
 	} from '@/common/tts.uts'
-	import { saySteps, stopSteps } from '@/common/say-queue.uts'
+	import { sayStepsRich, stopSteps, QUESTION_OPTION_GAP_MS } from '@/common/say-queue.uts'
 
 	import { topInsetStyle } from '@/common/screen.uts'
 
@@ -135,13 +135,22 @@
 	function readMoods(lead: number) {
 		if (!ttsReady) return
 		const list: Array<string> = []
+		const langs: Array<string> = []
+		const gaps: Array<number> = []
+		// 问句念完停 1 秒再逐档念（用户 2026-11-09 指定）：孩子要先明白"在问心情"才能跟着找
 		list.push('今天心里是什么天气？')
+		langs.push('zh-CN')
+		gaps.push(QUESTION_OPTION_GAP_MS)
 		for (let i = 0; i < moods.length; i++) {
 			list.push(optionSpeech(i, moods[i].label))
+			langs.push('zh-CN')
+			gaps.push(280)
 		}
 		list.push('选一个就好。')
+		langs.push('zh-CN')
+		gaps.push(280)
 		const n: number = moods.length
-		saySteps(list, 'zh-CN', lead, 280, 1.0, (i: number): void => {
+		sayStepsRich(list, langs, gaps, lead, 1.0, (i: number): void => {
 			readIdx.value = (i >= 1 && i <= n) ? i - 1 : -1
 		}, (): void => {
 			readIdx.value = -1

@@ -12,11 +12,15 @@
  *  6. 语音包就绪时：所有片段都能在索引里找到（覆盖率的硬保证）
  */
 import {
-  voiceKey, hasVoice, numToCnText, voiceSegments, MATH_TPLS, tplFixedParts, NAME_HEADS
+  voiceKey, hasVoice, numToCnText, voiceSegments, MATH_TPLS, tplFixedParts, NAME_HEADS,
+  OPTION_ORDS, optionOrdinalPrefixes, PICK_ASK_LINE
 } from './engine-tmp/voice-tpl.mts'
 import { VOICE_KEYS } from './engine-tmp/voice-index.mts'
 import { genByKind } from './engine-tmp/math-engine.mts'
-import { cleanForSpeech } from './engine-tmp/tts.mts'
+import { cleanForSpeech, optionSpeech, pickAskSpeech } from './engine-tmp/tts.mts'
+import { CN_WORDS } from './engine-tmp/cn-words.mts'
+import { EN_WORDS } from './engine-tmp/en-words.mts'
+import { EN_NUM_WORDS } from './engine-tmp/en-say.mts'
 
 let pass = 0
 let fail = 0
@@ -119,6 +123,29 @@ check(cleaned.indexOf('？') > 0, 'cleanForSpeech 不该删中文问号：' + cl
 const cleanSeg = voiceSegments(cleaned)
 check(cleanSeg.length > 1, '清洗后的题干拆不开：' + JSON.stringify(cleanSeg))
 
+/* ---------------- 5c. 语文/英语选项的朗读稿与拆段 ---------------- */
+// 「读答案也用真人」（2026-11-09）：选项句 =「序号，正文」，序号与正文必须各自成段，
+// 且每一段都要在语音包里，缺一段整句就会退回系统 TTS。
+
+// 朗读稿与语音包共用同一份常量：optionSpeech 另写一份序号就一定会失配
+check(optionSpeech(0, '大') === '第一个，大', 'optionSpeech 应产出「第一个，大」：' + optionSpeech(0, '大'))
+check(optionSpeech(2, '猫') === '第三个，猫', 'optionSpeech 应产出「第三个，猫」：' + optionSpeech(2, '猫'))
+check(optionSpeech(9, '大') === '大', '下标越界时应只念正文：' + optionSpeech(9, '大'))
+check(pickAskSpeech() === PICK_ASK_LINE, '收尾问句必须与语音包同一份文案')
+check(OPTION_ORDS.length === 6, '序号应为 6 个，实际 ' + OPTION_ORDS.length)
+
+// 「序号，正文」必须拆成两段，且第一段就是带逗号的序号
+const optSeg = voiceSegments('第一个，大')
+check(optSeg.length === 2 && optSeg[0] === '第一个，' && optSeg[1] === '大',
+  '「第一个，大」应拆成 [' + JSON.stringify(optSeg) + ']')
+const optSeg2 = voiceSegments('第三个，猫')
+check(optSeg2.length === 2 && optSeg2[0] === '第三个，' && optSeg2[1] === '猫',
+  '「第三个，猫」应拆成 [' + JSON.stringify(optSeg2) + ']')
+// 正文拆不开时整句放弃（半句真人半句机械比整句机械更难受）
+check(voiceSegments('第一个，这句话包里肯定没有').length === 0, '选项正文拆不开时应整句回退')
+// 英语选项是光秃秃的英文词：整句直接命中
+check(voiceSegments('cat').length === 1 && voiceSegments('cat')[0] === 'cat', '英语选项应整句命中：cat')
+
 /* ---------------- 6. 语音包覆盖率 ---------------- */
 if (VOICE_KEYS.length === 0) {
   console.log('  ⚠ 语音包为空（未生成或未跑索引），跳过覆盖率检查')
@@ -139,6 +166,24 @@ if (VOICE_KEYS.length === 0) {
       }
     }
   }
+  // 语文/英语选项全覆盖：漏一个字、一个序号，那一格就会念成机器音
+  for (const o of optionOrdinalPrefixes()) {
+    if (!hasVoice(o)) missing.add('序号 ' + o)
+  }
+  for (const w of CN_WORDS) {
+    if (!hasVoice(w.ch)) missing.add('cn字 ' + w.ch)
+    // 真实朗读路径：「第一个，{字}」
+    for (const s of voiceSegments(optionSpeech(0, w.ch))) {
+      if (!hasVoice(s)) missing.add('cn选项段 ' + s)
+    }
+  }
+  for (const w of EN_WORDS) {
+    if (!hasVoice(w.en)) missing.add('en词 ' + w.en)
+  }
+  for (const w of EN_NUM_WORDS) {
+    if (!hasVoice(w)) missing.add('en数词 ' + w)
+  }
+  if (!hasVoice(PICK_ASK_LINE)) missing.add('收尾问句 ' + PICK_ASK_LINE)
   if (missing.size > 0) {
     const arr = Array.from(missing).slice(0, 12)
     check(false, '语音包缺 ' + missing.size + ' 段：' + arr.join(' / '))

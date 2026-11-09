@@ -1,0 +1,182 @@
+/**
+ * 英语单词模块 · 朗读脚本
+ *
+ * 一遍 = 中文引导（zh-CN 音色）+ 英文单词（en-US 音色），**中英文各用各的嗓音**；
+ * **英文词读两遍**，中间稍微停顿（`EN_TWICE_GAP_MS`）；有可读选项的题型
+ * 读完词再报一句过渡（`EN_OPTIONS_LEAD`），然后逐个亮选项。
+ *
+ * 为什么必须按语言拆行（2026-11-07 真机反馈"只说了请听题，没有题目内容"）：
+ *   语音包是按句合成、按句取音频的。旧版本把「cat，小猫，哪个是cat？」整句交给 **英文**音色
+ *   合成，英文音色把中文整段吞掉，音频里只剩 "cat cat"（`v6e28b769.mp3` 实测转写就是
+ *   "Cat cat."）。孩子听到的是「豆豆，请听题。」之后一片安静——题干根本没念出来。
+ *   反过来，让中文音色念英文又会歪成"凯特"。两种病只能靠拆分治：中文行交中文音色，
+ *   英文行交英文音色。
+ *
+ * 为什么读两遍（2026-11-09 用户细化）：**只把英文词读两遍**，中间稍微停顿；
+ * 整题不再复读。4~5 岁第一次听到陌生音节抓不住，第二遍才是"跟着找"的那一遍；
+ * 中文引导语重复一遍只会拖时间。词与词之间那点停顿（`EN_TWICE_GAP_MS`）是留给他
+ * 把音和屏幕上的词对上的时间；太短两遍会糊成一片。
+ *
+ * 为什么不复用 `q.prompt`：题干是**给孩子看的混排文本**（中文 + 英文词 + 问号），
+ * 它是屏幕上的字，不是朗读稿。朗读稿按题型单独写在这里，两者互不牵连。
+ */
+
+import { StudyQuestion } from './quiz.uts'
+import { EnWord, enWordOf, EN_WORDS } from './en-words.uts'
+
+/** 两遍之间的停顿（毫秒）：用户 2026-11-07 指定「中间有 1 秒停顿」 */
+export const EN_PASS_GAP_MS: number = 1000
+
+/** 英文词复读两遍之间的停顿（毫秒）：用户 2026-11-09 指定「读 2 遍并且稍微停顿」 */
+export const EN_TWICE_GAP_MS: number = 700
+
+/** 一遍之内两行之间的停顿（毫秒）：中文引导与英文单词不宜贴太紧 */
+export const EN_LINE_GAP_MS: number = 240
+
+/** 数词题"数字/名词"两行之间的停顿（毫秒）：比引导语更短，听起来像一口气数出来 */
+export const EN_NUM_GAP_MS: number = 180
+
+/** 中文行用中文音色，英文行用英文音色——这两条是这条链路的全部秘密 */
+export const EN_LANG_ZH: string = 'zh-CN'
+export const EN_LANG_EN: string = 'en-US'
+
+/** 英文数字（数词联动题的英文行与选项都用它） */
+export const EN_NUM_WORDS: Array<string> = ['zero', 'one', 'two', 'three', 'four', 'five']
+
+/**
+ * 一次朗读的全部行
+ *
+ * `texts` / `langs` / `gaps` 三个数组等长、同下标对应：
+ * `gaps[i]` 是"这一行念完之后停多久"。
+ */
+export class EnNarration {
+	texts: Array<string> = []
+	langs: Array<string> = []
+	gaps: Array<number> = []
+}
+
+/** 数字 → 英文读法；不是 0~5 就原样返回（选项万一变成汉字也不至于变空） */
+export function enNumWord(digit: string): string {
+	const s: string = digit.trim()
+	const n: number = parseInt(s) as number
+	if (n >= 0 && n < EN_NUM_WORDS.length && s.length > 0) return EN_NUM_WORDS[n]
+	return s
+}
+
+function pushLine(out: EnNarration, text: string, lang: string, gap: number): void {
+	const t: string = text.trim()
+	if (t.length == 0) return
+	out.texts.push(t)
+	out.langs.push(lang)
+	out.gaps.push(gap)
+}
+
+/**
+ * 读完题干、读选项之前的过渡句（用户 2026-11-09 指定措辞）
+ *
+ * 只有**选项会被念出来**的题型才播（en2 / en3，词卡选项）；
+ * en1 图卡、en4 数字卡、en5 跟读没有可读选项，说了"读选项"却不读，孩子会等。
+ */
+export const EN_OPTIONS_LEAD: string = '下方选出正确答案。'
+
+/**
+ * 一遍的内容（英文词**读两遍**，中间稍微停顿）
+ *
+ * 顺序按题型定，不是随手写的：
+ *  - en1 听词选图：**先出声两遍**再给中文指令。孩子要先听熟这个词，"找哪张图"才有意义；
+ *  - en2 看图选词：**先中文**再给词。图已经摆在眼前，先说是"图上的东西"，
+ *    再把它的英语读音给两遍，最后才让他去四个词里认形状；
+ *  - en3 首音感知：先给参照词（屏幕上那个大字）两遍，再问"哪个词开头一样"；
+ *  - en4 数词联动：数字与名词**分两行**念（"three" / "panda"），整组给两遍。
+ *    合成一句 "three panda" 会多出 60×6 种组合要录，只录到其中几个又会出现
+ *    "这句是真人、那句是机器"的割裂；拆成两行后，数字 6 条 + 单词 60 条就全覆盖了；
+ *  - en5 跟读：一句中文引导 + 单词两遍，中文只负责让他开口，第二遍正好让他跟着说。
+ */
+export function enPass(q: StudyQuestion): EnNarration {
+	const out = new EnNarration()
+	const word: string = q.src.length > 0 ? q.src : q.mainText
+	const w: EnWord = enWordOf(word)
+	if (q.kind == 'en1') {
+		pushLine(out, word, EN_LANG_EN, EN_TWICE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_LINE_GAP_MS)
+		pushLine(out, w.zh + '，是哪一个呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+	} else if (q.kind == 'en2') {
+		pushLine(out, '图上是' + w.zh + '，英文读', EN_LANG_ZH, EN_LINE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_TWICE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_LINE_GAP_MS)
+	} else if (q.kind == 'en3') {
+		pushLine(out, word, EN_LANG_EN, EN_TWICE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_LINE_GAP_MS)
+		pushLine(out, '哪个词和它开头一样呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+	} else if (q.kind == 'en4') {
+		pushLine(out, enNumWord(q.answer), EN_LANG_EN, EN_NUM_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_TWICE_GAP_MS)
+		pushLine(out, enNumWord(q.answer), EN_LANG_EN, EN_NUM_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_LINE_GAP_MS)
+		pushLine(out, '数一数，有几个呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+	} else {
+		pushLine(out, '跟我说一说', EN_LANG_ZH, EN_LINE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_TWICE_GAP_MS)
+		pushLine(out, word, EN_LANG_EN, EN_LINE_GAP_MS)
+	}
+	return out
+}
+
+/**
+ * 语音包要录的全部行（**不依赖随机组卷**）
+ *
+ * 为什么不从 buildEnRound 抽样：组卷是随机的，抽 30 课只能碰到 46 个单词的引导语，
+ * 剩下十几个单词到了真机上就整句退回系统 TTS——同一模块里一半真人一半机器，很刺耳。
+ * 这里直接按词表全量枚举，录一次就再也不会漏。
+ *
+ * `tests/en-say.test.mts` 会断言"朗读稿里的每一行都在这个清单里"，
+ * 改了 enPass 的措辞却没同步这里，测试会立刻报。
+ */
+export function enAllSpeechLines(): EnNarration {
+	const out = new EnNarration()
+	for (let i = 0; i < EN_WORDS.length; i++) {
+		const w: EnWord = EN_WORDS[i]
+		pushLine(out, w.en, EN_LANG_EN, EN_LINE_GAP_MS)
+		pushLine(out, w.zh + '，是哪一个呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+		pushLine(out, '图上是' + w.zh + '，英文读', EN_LANG_ZH, EN_LINE_GAP_MS)
+	}
+	for (let i = 0; i < EN_NUM_WORDS.length; i++) {
+		pushLine(out, EN_NUM_WORDS[i], EN_LANG_EN, EN_LINE_GAP_MS)
+	}
+	pushLine(out, '哪个词和它开头一样呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+	pushLine(out, '数一数，有几个呀？', EN_LANG_ZH, EN_LINE_GAP_MS)
+	pushLine(out, '跟我说一说', EN_LANG_ZH, EN_LINE_GAP_MS)
+	pushLine(out, EN_OPTIONS_LEAD, EN_LANG_ZH, EN_LINE_GAP_MS)
+	return out
+}
+
+/**
+ * 完整读题序列：开场 + 一遍（英文词读两遍、中间稍微停顿）+ 过渡句（可选）
+ *
+ * 整题**不再复读**（2026-11-09 用户细化：只把英文词读两遍）；
+ * 读完题干之后、读选项之前，加一句「下方选出正确答案」，
+ * 让孩子知道接下来要逐个亮选项、从里面挑。
+ *
+ * @param name 当前档案名字（豆豆 / 滔滔）
+ * @param q 题目
+ * @param again 是"再听一遍"：开头换成「再听一遍。」，不再叫名字（叫了孩子会以为换人）
+ * @param willReadOptions 这道题的选项会不会被念出来（en2/en3 词卡会，en1/en4/en5 不会）；
+ *        会读才加过渡句——说了"读选项"却不读，孩子会干等
+ */
+export function enNarration(name: string, q: StudyQuestion, again: boolean, willReadOptions: boolean): EnNarration {
+	const out = new EnNarration()
+	const who: string = name.trim()
+	let head: string = '小朋友，请听题。'
+	if (again) head = '再听一遍。'
+	else if (who.length > 0) head = who + '，请听题。'
+	pushLine(out, head, EN_LANG_ZH, EN_LINE_GAP_MS)
+
+	const one: EnNarration = enPass(q)
+	for (let i = 0; i < one.texts.length; i++) {
+		pushLine(out, one.texts[i], one.langs[i], one.gaps[i])
+	}
+	if (willReadOptions) {
+		pushLine(out, EN_OPTIONS_LEAD, EN_LANG_ZH, EN_LINE_GAP_MS)
+	}
+	return out
+}
